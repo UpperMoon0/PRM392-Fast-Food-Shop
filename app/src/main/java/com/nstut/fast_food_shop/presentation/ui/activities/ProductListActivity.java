@@ -34,7 +34,7 @@ public class ProductListActivity extends AppCompatActivity {
 
     private void loadData() {
         new Thread(() -> {
-            products = AppDatabase.getInstance(this).productDao().getAllAvailable();
+            products = AppDatabase.getInstance(this).productDao().getAll();
             for (ProductRoom p : products) {
                 Log.d("Product", "Product: " + p.toString());
             }

@@ -105,6 +105,7 @@ public class EditProductActivity extends AppCompatActivity {
         currentProduct.setPrice(price);
         currentProduct.setImageUrl(imageUrl);
         String now = java.time.LocalDateTime.now().toString();
+        currentProduct.setAvailable(true);
         currentProduct.setUpdatedAt(now);
 
         Executors.newSingleThreadExecutor().execute(() -> {

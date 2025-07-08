@@ -57,16 +57,25 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ViewHold
         holder.txtPrice.setText(String.valueOf(p.getPrice()));
         Glide.with(context).load(p.getImageUrl()).into(holder.imageView);
 
+        // Làm mờ item nếu không available
+        boolean available = p.isAvailable();
+        float alpha = available ? 1.0f : 0.4f;
+        holder.itemView.setAlpha(alpha);
+        holder.txtName.setAlpha(alpha);
+        holder.txtPrice.setAlpha(alpha);
+        holder.imageView.setAlpha(alpha);
+        holder.btnEdit.setAlpha(alpha);
+        holder.btnDelete.setEnabled(available);
+
         holder.btnDelete.setOnClickListener(v -> {
+            if (!available) return;
+            // Cập nhật trạng thái ngay trên UI trước khi gọi DB
+            p.setAvailable(false);
+            p.setUpdatedAt(java.time.LocalDateTime.now().toString());
+            notifyItemChanged(position);
             new Thread(() -> {
                 // Soft delete: set isAvailable = false, update updatedAt
-                p.setAvailable(false);
-                p.setUpdatedAt(java.time.LocalDateTime.now().toString());
                 AppDatabase.getInstance(context).productDao().update(p);
-                ((Activity) context).runOnUiThread(() -> {
-                    products.remove(position);
-                    notifyItemRemoved(position);
-                });
             }).start();
         });
 
