@@ -38,6 +38,10 @@ dependencies {
     testImplementation(libs.junit)
     androidTestImplementation(libs.ext.junit)
     androidTestImplementation(libs.espresso.core)
+    implementation("com.cloudinary:cloudinary-android:2.4.0")
+    implementation("com.github.bumptech.glide:glide:4.15.0")
+    annotationProcessor("com.github.bumptech.glide:compiler:4.15.0")
+
 
     //Room
     implementation("androidx.room:room-runtime:2.6.0")

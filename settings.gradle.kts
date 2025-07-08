@@ -21,4 +21,3 @@ dependencyResolutionManagement {
 
 rootProject.name = "Fast Food Shop"
 include(":app")
- 
