@@ -1,8 +1,10 @@
 package com.nstut.fast_food_shop.presentation.ui.activities;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
+import android.widget.Button;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
@@ -25,11 +27,13 @@ public class ProductListActivity extends AppCompatActivity {
     RecyclerView recyclerView;
     ProductAdapter adapter;
     List<ProductRoom> products;
+    Button loginLogoutButton;
 
     @Override
     protected void onResume() {
         super.onResume();
         loadData();
+        checkUserLoginStatus();
     }
 
     private void loadData() {
@@ -65,5 +69,28 @@ public class ProductListActivity extends AppCompatActivity {
             startActivity(intent);
         });
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
+
+        loginLogoutButton = findViewById(R.id.login_logout_button);
+        loginLogoutButton.setOnClickListener(v -> {
+            SharedPreferences sharedPreferences = getSharedPreferences("user_prefs", MODE_PRIVATE);
+            if (sharedPreferences.getString("user_id", null) != null) {
+                SharedPreferences.Editor editor = sharedPreferences.edit();
+                editor.remove("user_id");
+                editor.apply();
+                checkUserLoginStatus();
+            } else {
+                Intent intent = new Intent(this, LoginActivity.class);
+                startActivity(intent);
+            }
+        });
+    }
+
+    private void checkUserLoginStatus() {
+        SharedPreferences sharedPreferences = getSharedPreferences("user_prefs", MODE_PRIVATE);
+        if (sharedPreferences.getString("user_id", null) != null) {
+            loginLogoutButton.setText("Logout");
+        } else {
+            loginLogoutButton.setText("Login");
+        }
     }
 }

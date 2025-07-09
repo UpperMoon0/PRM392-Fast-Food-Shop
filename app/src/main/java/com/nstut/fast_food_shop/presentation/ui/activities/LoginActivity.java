@@ -26,12 +26,21 @@ public class LoginActivity extends AppCompatActivity {
     private AppDatabase appDatabase;
     private ExecutorService executorService;
     private SharedPreferences sharedPreferences;
+    private Button loginLogoutButton;
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        checkUserLoginStatus();
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
-
+        if (getSupportActionBar() != null) {
+            getSupportActionBar().hide();
+        }
         etEmail = findViewById(R.id.et_email);
         etPassword = findViewById(R.id.et_password);
         cbRememberMe = findViewById(R.id.cb_remember_me);
@@ -53,6 +62,19 @@ public class LoginActivity extends AppCompatActivity {
 
         tvRegister.setOnClickListener(v -> {
             startActivity(new Intent(LoginActivity.this, RegisterActivity.class));
+        });
+
+        loginLogoutButton = findViewById(R.id.login_logout_button);
+        loginLogoutButton.setOnClickListener(v -> {
+            SharedPreferences userPrefs = getSharedPreferences("user_prefs", MODE_PRIVATE);
+            if (userPrefs.getString("user_id", null) != null) {
+                SharedPreferences.Editor editor = userPrefs.edit();
+                editor.remove("user_id");
+                editor.apply();
+                checkUserLoginStatus();
+            } else {
+                // Already on login screen
+            }
         });
     }
 
@@ -78,6 +100,11 @@ public class LoginActivity extends AppCompatActivity {
                     } else {
                         sharedPreferences.edit().clear().apply();
                     }
+                    SharedPreferences userPrefs = getSharedPreferences("user_prefs", MODE_PRIVATE);
+                    SharedPreferences.Editor editor = userPrefs.edit();
+                    editor.putString("user_id", String.valueOf(user.userId));
+                    editor.apply();
+
                     Toast.makeText(this, "Login successful", Toast.LENGTH_SHORT).show();
                     // Navigate to the main activity
                     startActivity(new Intent(LoginActivity.this, ProductListActivity.class));
@@ -87,5 +114,14 @@ public class LoginActivity extends AppCompatActivity {
                 }
             });
         });
+    }
+
+    private void checkUserLoginStatus() {
+        SharedPreferences sharedPreferences = getSharedPreferences("user_prefs", MODE_PRIVATE);
+        if (sharedPreferences.getString("user_id", null) != null) {
+            loginLogoutButton.setText("Logout");
+        } else {
+            loginLogoutButton.setText("Login");
+        }
     }
 }
