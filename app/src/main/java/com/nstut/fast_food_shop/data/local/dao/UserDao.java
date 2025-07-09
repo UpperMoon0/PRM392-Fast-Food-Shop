@@ -11,5 +11,8 @@ public interface UserDao {
     void insert(User user);
 
     @Query("SELECT * FROM users WHERE email = :email LIMIT 1")
-    User findByEmail(String email);
-}
+        User findByEmail(String email);
+    
+        @Query("SELECT * FROM users WHERE user_id = :userId")
+        User getUserById(String userId);
+    }

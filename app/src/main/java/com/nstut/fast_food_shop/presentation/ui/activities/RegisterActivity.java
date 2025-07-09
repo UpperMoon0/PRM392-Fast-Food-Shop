@@ -92,6 +92,7 @@ public class RegisterActivity extends AppCompatActivity {
             user.email = email;
             user.passwordHash = password; // In a real app, use a proper hashing algorithm
             user.phoneNumber = phoneNumber;
+            user.role = User.ROLE_USER;
             user.createdAt = System.currentTimeMillis();
             user.updatedAt = System.currentTimeMillis();
 

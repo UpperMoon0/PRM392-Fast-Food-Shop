@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
 import android.widget.Button;
 
 import androidx.activity.EdgeToEdge;
@@ -19,21 +20,47 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.nstut.fast_food_shop.R;
 import com.nstut.fast_food_shop.data.local.db.AppDatabase;
 import com.nstut.fast_food_shop.data.models.ProductRoom;
+import com.nstut.fast_food_shop.data.models.User;
 import com.nstut.fast_food_shop.presentation.ui.adapters.ProductAdapter;
 
 import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 public class ProductListActivity extends AppCompatActivity {
     RecyclerView recyclerView;
     ProductAdapter adapter;
     List<ProductRoom> products;
     Button loginLogoutButton;
+    private ExecutorService executorService;
+    private AppDatabase appDatabase;
+    private User currentUser;
 
     @Override
     protected void onResume() {
         super.onResume();
         loadData();
         checkUserLoginStatus();
+    }
+
+    private void checkUserRole() {
+        FloatingActionButton fab = findViewById(R.id.fabAddProduct);
+        SharedPreferences sharedPreferences = getSharedPreferences("user_prefs", MODE_PRIVATE);
+        String userId = sharedPreferences.getString("user_id", null);
+        if (userId != null) {
+            executorService.execute(() -> {
+                currentUser = appDatabase.userDao().getUserById(userId);
+                runOnUiThread(() -> {
+                    if (currentUser != null && User.ROLE_ADMIN.equals(currentUser.role)) {
+                        fab.setVisibility(View.VISIBLE);
+                    } else {
+                        fab.setVisibility(View.GONE);
+                    }
+                });
+            });
+        } else {
+            fab.setVisibility(View.GONE);
+        }
     }
 
     private void loadData() {
@@ -53,6 +80,10 @@ public class ProductListActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_product_list);
+
+        executorService = Executors.newSingleThreadExecutor();
+        appDatabase = AppDatabase.getInstance(this);
+
         EdgeToEdge.enable(this);
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(android.R.id.content), (v, insets) -> {
             Insets insetsCompat = insets.getInsets(WindowInsetsCompat.Type.systemBars());
@@ -94,5 +125,6 @@ public class ProductListActivity extends AppCompatActivity {
             loginLogoutButton.setText("Login");
             loginLogoutButton.setBackgroundColor(ActivityCompat.getColor(this, R.color.blue));
         }
+        checkUserRole();
     }
 }

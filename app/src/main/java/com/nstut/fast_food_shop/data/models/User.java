@@ -6,6 +6,10 @@ import androidx.room.PrimaryKey;
 
 @Entity(tableName = "users")
 public class User {
+
+    public static final String ROLE_ADMIN = "ADMIN";
+    public static final String ROLE_USER = "USER";
+
     @PrimaryKey(autoGenerate = true)
     @ColumnInfo(name = "user_id")
     public int userId;
@@ -21,6 +25,9 @@ public class User {
 
     @ColumnInfo(name = "phone_number")
     public String phoneNumber;
+
+    @ColumnInfo(name = "role")
+    public String role;
 
     @ColumnInfo(name = "created_at")
     public long createdAt;
