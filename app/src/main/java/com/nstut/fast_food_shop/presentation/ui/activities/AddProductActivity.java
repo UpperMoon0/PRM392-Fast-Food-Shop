@@ -42,11 +42,7 @@ public class AddProductActivity extends AppCompatActivity {
         btnChooseImage.setOnClickListener(v -> openGallery());
 
         btnSave.setOnClickListener(v -> {
-            if (selectedImageUri != null) {
-                uploadImageAndSaveProduct();
-            } else {
-                Toast.makeText(this, "Please choose image", Toast.LENGTH_SHORT).show();
-            }
+            saveProduct();
         });
     }
 
@@ -65,12 +61,14 @@ public class AddProductActivity extends AppCompatActivity {
         }
     }
 
-    private void uploadImageAndSaveProduct() {
+    private void saveProduct() {
         new Thread(() -> {
             try {
-                CloudinaryManager cloudinaryManager = new CloudinaryManager();
-                File file = FileUtil.from(this, selectedImageUri);
-                uploadedImageUrl = cloudinaryManager.uploadImageToFolder(file, "project-prm");
+                if (selectedImageUri != null) {
+                    CloudinaryManager cloudinaryManager = new CloudinaryManager();
+                    File file = FileUtil.from(this, selectedImageUri);
+                    uploadedImageUrl = cloudinaryManager.uploadImageToFolder(file, "project-prm");
+                }
 
                 ProductRoom product = new ProductRoom();
                 product.setName(edtName.getText().toString());
@@ -91,6 +89,9 @@ public class AddProductActivity extends AppCompatActivity {
                 });
             } catch (Exception e) {
                 e.printStackTrace();
+                runOnUiThread(() -> {
+                    Toast.makeText(this, "Failed to save product", Toast.LENGTH_SHORT).show();
+                });
             }
         }).start();
     }
