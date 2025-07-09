@@ -89,8 +89,10 @@ public class ProductListActivity extends AppCompatActivity {
         SharedPreferences sharedPreferences = getSharedPreferences("user_prefs", MODE_PRIVATE);
         if (sharedPreferences.getString("user_id", null) != null) {
             loginLogoutButton.setText("Logout");
+            loginLogoutButton.setBackgroundColor(ActivityCompat.getColor(this, R.color.red));
         } else {
             loginLogoutButton.setText("Login");
+            loginLogoutButton.setBackgroundColor(ActivityCompat.getColor(this, R.color.blue));
         }
     }
 }
