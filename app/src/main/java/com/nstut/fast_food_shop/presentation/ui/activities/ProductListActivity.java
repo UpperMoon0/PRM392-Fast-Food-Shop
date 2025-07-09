@@ -46,18 +46,9 @@ public class ProductListActivity extends BaseActivity {
     private void checkUserRole() {
         FloatingActionButton fab = findViewById(R.id.fabAddProduct);
         SharedPreferences sharedPreferences = getSharedPreferences("user_prefs", MODE_PRIVATE);
-        String userId = sharedPreferences.getString("user_id", null);
-        if (userId != null) {
-            executorService.execute(() -> {
-                currentUser = appDatabase.userDao().getUserById(userId);
-                runOnUiThread(() -> {
-                    if (currentUser != null && User.ROLE_ADMIN.equals(currentUser.role)) {
-                        fab.setVisibility(View.VISIBLE);
-                    } else {
-                        fab.setVisibility(View.GONE);
-                    }
-                });
-            });
+        String userRole = sharedPreferences.getString("user_role", null);
+        if (User.ROLE_ADMIN.equals(userRole)) {
+            fab.setVisibility(View.VISIBLE);
         } else {
             fab.setVisibility(View.GONE);
         }
@@ -104,9 +95,10 @@ public class ProductListActivity extends BaseActivity {
         loginLogoutButton = findViewById(R.id.login_logout_button);
         loginLogoutButton.setOnClickListener(v -> {
             SharedPreferences sharedPreferences = getSharedPreferences("user_prefs", MODE_PRIVATE);
-            if (sharedPreferences.getString("user_id", null) != null) {
+            if (sharedPreferences.getString("user_id", null) != null || sharedPreferences.getString("user_role", null) != null) {
                 SharedPreferences.Editor editor = sharedPreferences.edit();
                 editor.remove("user_id");
+                editor.remove("user_role");
                 editor.apply();
                 checkUserLoginStatus();
             } else {
@@ -119,7 +111,7 @@ public class ProductListActivity extends BaseActivity {
 
     private void checkUserLoginStatus() {
         SharedPreferences sharedPreferences = getSharedPreferences("user_prefs", MODE_PRIVATE);
-        if (sharedPreferences.getString("user_id", null) != null) {
+        if (sharedPreferences.getString("user_id", null) != null || User.ROLE_ADMIN.equals(sharedPreferences.getString("user_role", null))) {
             loginLogoutButton.setText("Logout");
             loginLogoutButton.setBackgroundColor(ActivityCompat.getColor(this, R.color.red));
         } else {

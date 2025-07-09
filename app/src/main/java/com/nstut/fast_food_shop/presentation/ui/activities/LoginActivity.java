@@ -90,6 +90,11 @@ public class LoginActivity extends BaseActivity {
             User user = appDatabase.userDao().findByEmail(email);
             if (email.equals("admin@gmail.com") && password.equals("123")) {
                 runOnUiThread(() -> {
+                    SharedPreferences userPrefs = getSharedPreferences("user_prefs", MODE_PRIVATE);
+                    SharedPreferences.Editor editor = userPrefs.edit();
+                    editor.putString("user_role", User.ROLE_ADMIN);
+                    editor.apply();
+
                     Toast.makeText(this, "Admin Login successful", Toast.LENGTH_SHORT).show();
                     startActivity(new Intent(LoginActivity.this, ProductListActivity.class));
                     finish();
@@ -110,6 +115,7 @@ public class LoginActivity extends BaseActivity {
                     SharedPreferences userPrefs = getSharedPreferences("user_prefs", MODE_PRIVATE);
                     SharedPreferences.Editor editor = userPrefs.edit();
                     editor.putString("user_id", String.valueOf(user.userId));
+                    editor.putString("user_role", user.role);
                     editor.apply();
 
                     Toast.makeText(this, "Login successful", Toast.LENGTH_SHORT).show();
