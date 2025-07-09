@@ -11,7 +11,7 @@ import com.nstut.fast_food_shop.data.local.dao.UserDao;
 import com.nstut.fast_food_shop.data.models.ProductRoom;
 import com.nstut.fast_food_shop.data.models.User;
 
-@Database(entities = {ProductRoom.class, User.class}, version = 2)
+@Database(entities = {ProductRoom.class, User.class}, version = 3, exportSchema = false)
 public abstract class AppDatabase extends RoomDatabase {
     private static volatile AppDatabase INSTANCE;
 

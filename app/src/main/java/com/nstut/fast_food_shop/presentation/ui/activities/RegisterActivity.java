@@ -1,6 +1,7 @@
 package com.nstut.fast_food_shop.presentation.ui.activities;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.widget.Button;
@@ -22,12 +23,21 @@ public class RegisterActivity extends AppCompatActivity {
     private EditText etFullName, etEmail, etPassword, etPhoneNumber;
     private AppDatabase appDatabase;
     private ExecutorService executorService;
+    private Button loginLogoutButton;
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        checkUserLoginStatus();
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_register);
-
+        if (getSupportActionBar() != null) {
+            getSupportActionBar().hide();
+        }
         etFullName = findViewById(R.id.et_full_name);
         etEmail = findViewById(R.id.et_email);
         etPassword = findViewById(R.id.et_password);
@@ -42,6 +52,20 @@ public class RegisterActivity extends AppCompatActivity {
 
         tvLogin.setOnClickListener(v -> {
             startActivity(new Intent(RegisterActivity.this, LoginActivity.class));
+        });
+
+        loginLogoutButton = findViewById(R.id.login_logout_button);
+        loginLogoutButton.setOnClickListener(v -> {
+            SharedPreferences sharedPreferences = getSharedPreferences("user_prefs", MODE_PRIVATE);
+            if (sharedPreferences.getString("user_id", null) != null) {
+                SharedPreferences.Editor editor = sharedPreferences.edit();
+                editor.remove("user_id");
+                editor.apply();
+                checkUserLoginStatus();
+            } else {
+                Intent intent = new Intent(this, LoginActivity.class);
+                startActivity(intent);
+            }
         });
     }
 
@@ -68,6 +92,7 @@ public class RegisterActivity extends AppCompatActivity {
             user.email = email;
             user.passwordHash = password; // In a real app, use a proper hashing algorithm
             user.phoneNumber = phoneNumber;
+            user.role = User.ROLE_USER;
             user.createdAt = System.currentTimeMillis();
             user.updatedAt = System.currentTimeMillis();
 
@@ -77,5 +102,14 @@ public class RegisterActivity extends AppCompatActivity {
                 finish();
             });
         });
+    }
+
+    private void checkUserLoginStatus() {
+        SharedPreferences sharedPreferences = getSharedPreferences("user_prefs", MODE_PRIVATE);
+        if (sharedPreferences.getString("user_id", null) != null) {
+            loginLogoutButton.setText("Logout");
+        } else {
+            loginLogoutButton.setText("Login");
+        }
     }
 }
