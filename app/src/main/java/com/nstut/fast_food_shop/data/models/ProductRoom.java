@@ -1,6 +1,7 @@
 package com.nstut.fast_food_shop.data.models;
 
 import androidx.room.Entity;
+import androidx.room.Ignore;
 import androidx.room.PrimaryKey;
 
 @Entity(tableName = "products")
@@ -16,6 +17,7 @@ public class ProductRoom {
     public String createdAt;
     public String updatedAt;
 
+    @Ignore
     public ProductRoom(int productId, String name, String description, double price, String imageUrl, String category, boolean isAvailable, String createdAt, String updatedAt) {
         this.productId = productId;
         this.name = name;

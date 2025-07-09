@@ -13,7 +13,7 @@ import com.nstut.fast_food_shop.data.models.ProductRoom;
 import com.nstut.fast_food_shop.data.models.User;
 import java.util.concurrent.Executors;
 
-@Database(entities = {ProductRoom.class, User.class}, version = 3)
+@Database(entities = {ProductRoom.class, User.class}, version = 3, exportSchema = false)
 public abstract class AppDatabase extends RoomDatabase {
     private static volatile AppDatabase INSTANCE;
 
