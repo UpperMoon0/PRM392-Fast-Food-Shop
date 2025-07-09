@@ -6,9 +6,9 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.TextView;
 
 import androidx.activity.EdgeToEdge;
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
@@ -27,7 +27,7 @@ import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-public class ProductListActivity extends AppCompatActivity {
+public class ProductListActivity extends BaseActivity {
     RecyclerView recyclerView;
     ProductAdapter adapter;
     List<ProductRoom> products;
@@ -114,6 +114,7 @@ public class ProductListActivity extends AppCompatActivity {
                 startActivity(intent);
             }
         });
+
     }
 
     private void checkUserLoginStatus() {
