@@ -3,6 +3,7 @@ package com.nstut.fast_food_shop.presentation.ui.adapters;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -55,6 +56,7 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ViewHold
     @Override
     public void onBindViewHolder(ProductAdapter.ViewHolder holder, int position) {
         ProductRoom p = products.get(position);
+        Log.d("ProductAdapter", "Binding view for position: " + position + ", product: " + p.getName());
         holder.txtName.setText(p.getName());
         holder.txtPrice.setText(String.valueOf(p.getPrice()));
         Glide.with(context).load(p.getImageUrl()).into(holder.imageView);
@@ -96,7 +98,9 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ViewHold
 
     @Override
     public int getItemCount() {
-        return products.size();
+        int count = products.size();
+        Log.d("ProductAdapter", "getItemCount: " + count);
+        return count;
     }
 
     public interface OnProductClickListener {

@@ -5,9 +5,7 @@ import androidx.room.Delete;
 import androidx.room.Insert;
 import androidx.room.Query;
 import androidx.room.Update;
-
 import com.nstut.fast_food_shop.data.models.ProductRoom;
-
 import java.util.List;
 
 @Dao
