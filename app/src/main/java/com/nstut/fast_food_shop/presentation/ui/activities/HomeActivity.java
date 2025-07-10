@@ -49,7 +49,7 @@ public class HomeActivity extends BaseActivity implements CategoryAdapter.OnCate
         categoryList = new ArrayList<>();
         productList = new ArrayList<>();
 
-        categoryAdapter = new CategoryAdapter(categoryList, this);
+        categoryAdapter = new CategoryAdapter(categoryList, (CategoryAdapter.OnCategoryClickListener) this);
         categoriesRecyclerView.setAdapter(categoryAdapter);
 
         productAdapter = new ProductAdapter(productList, this);
@@ -67,11 +67,9 @@ public class HomeActivity extends BaseActivity implements CategoryAdapter.OnCate
         executorService.execute(() -> {
             // Add sample categories if none exist
             if (appDatabase.categoryDao().getAllCategories().isEmpty()) {
-                appDatabase.categoryDao().insertAll(
-                        new Category("1", "Burgers"),
-                        new Category("2", "Pizzas"),
-                        new Category("3", "Drinks")
-                );
+                appDatabase.categoryDao().insert(new Category("Burgers", "Delicious burgers", ""));
+                appDatabase.categoryDao().insert(new Category("Pizzas", "Cheesy pizzas", ""));
+                appDatabase.categoryDao().insert(new Category("Drinks", "Refreshing drinks", ""));
             }
             List<Category> categories = appDatabase.categoryDao().getAllCategories();
             List<ProductRoom> products = appDatabase.productDao().getAllAvailable();

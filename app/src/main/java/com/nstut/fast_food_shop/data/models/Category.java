@@ -8,22 +8,37 @@ import java.io.Serializable;
 
 @Entity(tableName = "categories")
 public class Category implements Serializable {
-    @PrimaryKey
+    @PrimaryKey(autoGenerate = true)
     @NonNull
-    private String id;
+    private int id;
     private String name;
+    private String description;
+    private String imageUrl;
 
-    public Category(@NonNull String id, String name) {
-        this.id = id;
+    public Category(String name, String description, String imageUrl) {
         this.name = name;
+        this.description = description;
+        this.imageUrl = imageUrl;
     }
 
     @NonNull
-    public String getId() {
+    public int getId() {
         return id;
+    }
+
+    public void setId(@NonNull int id) {
+        this.id = id;
     }
 
     public String getName() {
         return name;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public String getImageUrl() {
+        return imageUrl;
     }
 }

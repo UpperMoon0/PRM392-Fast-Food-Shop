@@ -1,11 +1,18 @@
 package com.nstut.fast_food_shop.data.models;
 
 import androidx.room.Entity;
+import androidx.room.ForeignKey;
 import androidx.room.Ignore;
+import androidx.room.Index;
 import androidx.room.PrimaryKey;
 import java.io.Serializable;
 
-@Entity(tableName = "products")
+@Entity(tableName = "products",
+        foreignKeys = @ForeignKey(entity = Category.class,
+                parentColumns = "id",
+                childColumns = "categoryId",
+                onDelete = ForeignKey.CASCADE),
+        indices = {@Index(value = "categoryId")})
 public class ProductRoom implements Serializable {
     @PrimaryKey(autoGenerate = true)
     public int productId;
@@ -13,13 +20,13 @@ public class ProductRoom implements Serializable {
     public String description;
     public double price;
     public String imageUrl;
-    public String categoryId;
+    public int categoryId;
     public boolean isAvailable;
     public String createdAt;
     public String updatedAt;
 
     @Ignore
-    public ProductRoom(int productId, String name, String description, double price, String imageUrl, String categoryId, boolean isAvailable, String createdAt, String updatedAt) {
+    public ProductRoom(int productId, String name, String description, double price, String imageUrl, int categoryId, boolean isAvailable, String createdAt, String updatedAt) {
         this.productId = productId;
         this.name = name;
         this.description = description;
@@ -74,11 +81,11 @@ public class ProductRoom implements Serializable {
         this.imageUrl = imageUrl;
     }
 
-    public String getCategoryId() {
+    public int getCategoryId() {
         return categoryId;
     }
 
-    public void setCategoryId(String categoryId) {
+    public void setCategoryId(int categoryId) {
         this.categoryId = categoryId;
     }
 

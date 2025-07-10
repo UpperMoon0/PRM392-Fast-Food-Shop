@@ -31,5 +31,5 @@ public interface ProductDao {
     List<ProductRoom> getAllAvailable();
 
     @Query("SELECT * FROM products WHERE categoryId = :categoryId")
-    List<ProductRoom> getProductsByCategory(String categoryId);
+    List<ProductRoom> getProductsByCategory(int categoryId);
 }

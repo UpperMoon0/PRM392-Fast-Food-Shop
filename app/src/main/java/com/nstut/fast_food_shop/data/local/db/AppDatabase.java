@@ -13,7 +13,7 @@ import com.nstut.fast_food_shop.data.models.Category;
 import com.nstut.fast_food_shop.data.models.ProductRoom;
 import com.nstut.fast_food_shop.data.models.User;
 
-@Database(entities = {ProductRoom.class, User.class, Category.class}, version = 4, exportSchema = false)
+@Database(entities = {ProductRoom.class, User.class, Category.class}, version = 5, exportSchema = false)
 public abstract class AppDatabase extends RoomDatabase {
     private static volatile AppDatabase INSTANCE;
 

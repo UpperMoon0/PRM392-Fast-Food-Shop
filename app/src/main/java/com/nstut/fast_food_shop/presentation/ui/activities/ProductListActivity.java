@@ -56,17 +56,23 @@ public class ProductListActivity extends BaseActivity implements ProductAdapter.
     }
 
     private void loadData() {
-        String categoryId = getIntent().getStringExtra("category_id");
+        String categoryIdStr = getIntent().getStringExtra("category_id");
         executorService.execute(() -> {
             List<ProductRoom> newProducts;
-            if (categoryId != null) {
-                newProducts = appDatabase.productDao().getProductsByCategory(categoryId);
+            if (categoryIdStr != null) {
+                try {
+                    int categoryId = Integer.parseInt(categoryIdStr);
+                    newProducts = appDatabase.productDao().getProductsByCategory(categoryId);
+                } catch (NumberFormatException e) {
+                    newProducts = appDatabase.productDao().getAllAvailable();
+                }
             } else {
                 newProducts = appDatabase.productDao().getAllAvailable();
             }
+            List<ProductRoom> finalNewProducts = newProducts;
             runOnUiThread(() -> {
                 products.clear();
-                products.addAll(newProducts);
+                products.addAll(finalNewProducts);
                 adapter.notifyDataSetChanged();
             });
         });
