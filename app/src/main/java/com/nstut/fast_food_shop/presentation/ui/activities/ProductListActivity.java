@@ -46,12 +46,15 @@ public class ProductListActivity extends BaseActivity implements ProductAdapter.
 
     private void checkUserRole() {
         FloatingActionButton fab = findViewById(R.id.fabAddProduct);
+        View secondaryHeader = findViewById(R.id.secondary_header);
         SharedPreferences sharedPreferences = getSharedPreferences("user_prefs", MODE_PRIVATE);
         String userRole = sharedPreferences.getString("user_role", null);
         if (User.ROLE_ADMIN.equals(userRole)) {
             fab.setVisibility(View.VISIBLE);
+            secondaryHeader.setVisibility(View.VISIBLE);
         } else {
             fab.setVisibility(View.GONE);
+            secondaryHeader.setVisibility(View.GONE);
         }
     }
 
@@ -98,7 +101,7 @@ public class ProductListActivity extends BaseActivity implements ProductAdapter.
         recyclerView = findViewById(R.id.recyclerView);
         FloatingActionButton fab = findViewById(R.id.fabAddProduct);
         fab.setOnClickListener(v -> {
-            Intent intent = new Intent(this, AddProductActivity.class);
+            Intent intent = new Intent(this, AddEditProductActivity.class);
             startActivity(intent);
         });
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
@@ -121,6 +124,11 @@ public class ProductListActivity extends BaseActivity implements ProductAdapter.
             }
         });
 
+        Button btnCategoryList = findViewById(R.id.btn_category_list);
+        btnCategoryList.setOnClickListener(v -> {
+            Intent intent = new Intent(this, ManageCategoryActivity.class);
+            startActivity(intent);
+        });
     }
 
     private void checkUserLoginStatus() {

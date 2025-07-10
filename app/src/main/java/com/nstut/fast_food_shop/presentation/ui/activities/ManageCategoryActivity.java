@@ -3,6 +3,7 @@ package com.nstut.fast_food_shop.presentation.ui.activities;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.Button;
 
 import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -58,6 +59,12 @@ public class ManageCategoryActivity extends BaseActivity {
             public void onClick(View view) {
                 startActivity(new Intent(ManageCategoryActivity.this, AddEditCategoryActivity.class));
             }
+        });
+
+        Button btnProductList = findViewById(R.id.btn_product_list);
+        btnProductList.setOnClickListener(v -> {
+            Intent intent = new Intent(this, ProductListActivity.class);
+            startActivity(intent);
         });
     }
 

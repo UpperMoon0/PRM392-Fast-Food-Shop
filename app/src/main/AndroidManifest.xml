@@ -18,8 +18,7 @@
         </activity>
         <activity android:name=".presentation.ui.activities.RegisterActivity"
             android:theme="@style/Theme.FastFoodShop.NoActionBar"/>
-        <activity android:name=".presentation.ui.activities.AddProductActivity"/>
-        <activity android:name=".presentation.ui.activities.EditProductActivity"/>
+        <activity android:name=".presentation.ui.activities.AddEditProductActivity"/>
         <activity android:name=".presentation.ui.activities.ProductListActivity"/>
         <activity android:name=".presentation.ui.activities.HomeActivity"
             android:exported="true"
@@ -30,6 +29,8 @@
             </intent-filter>
         </activity>
         <activity android:name=".presentation.ui.activities.ProductDetailActivity"/>
+        <activity android:name=".presentation.ui.activities.ManageCategoryActivity"/>
+        <activity android:name=".presentation.ui.activities.AddEditCategoryActivity"/>
     </application>
 
 </manifest>

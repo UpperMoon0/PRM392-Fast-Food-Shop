@@ -16,7 +16,7 @@ import com.bumptech.glide.Glide;
 import com.nstut.fast_food_shop.R;
 import com.nstut.fast_food_shop.data.local.db.AppDatabase;
 import com.nstut.fast_food_shop.data.models.ProductRoom;
-import com.nstut.fast_food_shop.presentation.ui.activities.EditProductActivity;
+import com.nstut.fast_food_shop.presentation.ui.activities.AddEditProductActivity;
 
 import java.util.List;
 
@@ -88,7 +88,7 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ViewHold
         });
 
         holder.btnEdit.setOnClickListener(v -> {
-            Intent i = new Intent(context, EditProductActivity.class);
+            Intent i = new Intent(context, AddEditProductActivity.class);
             i.putExtra("product_id", p.getProductId());
             context.startActivity(i);
         });

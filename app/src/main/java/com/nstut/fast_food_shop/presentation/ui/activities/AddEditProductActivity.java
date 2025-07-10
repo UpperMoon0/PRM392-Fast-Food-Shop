@@ -28,18 +28,19 @@ import java.util.List;
 import java.util.concurrent.Executors;
 import java.util.stream.Collectors;
 
-public class EditProductActivity extends AppCompatActivity {
+public class AddEditProductActivity extends AppCompatActivity {
 
-    private EditText edtName, edtDescription, edtPrice;
+    private EditText edtName, edtDesc, edtPrice;
     private Spinner spinnerCategory;
     private ImageView imageView;
-    private Button btnSelectImage, btnSave;
+    private Button btnChooseImage, btnSave;
     private Uri selectedImageUri;
     private ProductDao productDao;
     private int productId;
     private ProductRoom currentProduct;
     private String uploadedImageUrl = "";
     private List<Category> categoryList;
+    private boolean isEditMode = false;
 
     private CloudinaryManager cloudinaryManager;
 
@@ -49,49 +50,31 @@ public class EditProductActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         cloudinaryManager = new CloudinaryManager();
-        setContentView(R.layout.activity_edit_product);
+        setContentView(R.layout.activity_add_edit_product);
 
         edtName = findViewById(R.id.edtName);
-        edtDescription = findViewById(R.id.edtDescription);
+        edtDesc = findViewById(R.id.edtDesc);
         edtPrice = findViewById(R.id.edtPrice);
         spinnerCategory = findViewById(R.id.spinnerCategory);
         imageView = findViewById(R.id.imageView);
-        btnSelectImage = findViewById(R.id.btnSelectImage);
+        btnChooseImage = findViewById(R.id.btnChooseImage);
         btnSave = findViewById(R.id.btnSave);
 
         productDao = AppDatabase.getInstance(this).productDao();
 
-        // Lấy productId từ Intent
         productId = getIntent().getIntExtra("product_id", -1);
+        isEditMode = productId != -1;
 
         loadCategories();
 
-        if (productId != -1) {
+        if (isEditMode) {
+            btnSave.setText("Save Changes");
             loadProductDetails();
         }
 
-        btnSelectImage.setOnClickListener(v -> openImagePicker());
+        btnChooseImage.setOnClickListener(v -> openImagePicker());
 
-        btnSave.setOnClickListener(v -> {
-            String name = edtName.getText().toString();
-            String description = edtDescription.getText().toString();
-            double price = Double.parseDouble(edtPrice.getText().toString());
-
-            if (selectedImageUri != null) {
-                try {
-                    File imageFile = FileUtil.from(this, selectedImageUri);
-                    cloudinaryManager.uploadImage(imageFile, "project-prm", result -> {
-                        uploadedImageUrl = result;
-                        updateProduct(name, description, price, uploadedImageUrl);
-                    });
-                } catch (IOException e) {
-                    e.printStackTrace();
-                    Toast.makeText(this, "Upload image failed", Toast.LENGTH_SHORT).show();
-                }
-            } else {
-                updateProduct(name, description, price, currentProduct.getImageUrl()); // Không thay ảnh
-            }
-        });
+        btnSave.setOnClickListener(v -> saveProduct());
     }
 
     private void loadCategories() {
@@ -103,7 +86,7 @@ public class EditProductActivity extends AppCompatActivity {
                 adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
                 spinnerCategory.setAdapter(adapter);
 
-                if (currentProduct != null) {
+                if (isEditMode && currentProduct != null) {
                     setSpinnerSelection();
                 }
             });
@@ -115,10 +98,9 @@ public class EditProductActivity extends AppCompatActivity {
             currentProduct = productDao.getById(productId);
             runOnUiThread(() -> {
                 edtName.setText(currentProduct.getName());
-                edtDescription.setText(currentProduct.getDescription());
+                edtDesc.setText(currentProduct.getDescription());
                 edtPrice.setText(String.valueOf(currentProduct.getPrice()));
                 if (currentProduct.getImageUrl() != null && !currentProduct.getImageUrl().isEmpty()) {
-                    // Dùng thư viện Glide hoặc Picasso để load ảnh
                     Glide.with(this).load(currentProduct.getImageUrl()).into(imageView);
                 }
                 if (categoryList != null) {
@@ -137,6 +119,59 @@ public class EditProductActivity extends AppCompatActivity {
         }
     }
 
+    private void saveProduct() {
+        String name = edtName.getText().toString();
+        String description = edtDesc.getText().toString();
+        double price = Double.parseDouble(edtPrice.getText().toString());
+
+        if (selectedImageUri != null) {
+            try {
+                File imageFile = FileUtil.from(this, selectedImageUri);
+                cloudinaryManager.uploadImage(imageFile, "project-prm", result -> {
+                    uploadedImageUrl = result;
+                    if (isEditMode) {
+                        updateProduct(name, description, price, uploadedImageUrl);
+                    } else {
+                        createProduct(name, description, price, uploadedImageUrl);
+                    }
+                });
+            } catch (IOException e) {
+                e.printStackTrace();
+                Toast.makeText(this, "Upload image failed", Toast.LENGTH_SHORT).show();
+            }
+        } else {
+            if (isEditMode) {
+                updateProduct(name, description, price, currentProduct.getImageUrl());
+            } else {
+                createProduct(name, description, price, "");
+            }
+        }
+    }
+
+    private void createProduct(String name, String description, double price, String imageUrl) {
+        ProductRoom product = new ProductRoom();
+        product.setName(name);
+        product.setDescription(description);
+        product.setPrice(price);
+        int selectedCategoryPosition = spinnerCategory.getSelectedItemPosition();
+        if (selectedCategoryPosition >= 0 && selectedCategoryPosition < categoryList.size()) {
+            product.setCategoryId(categoryList.get(selectedCategoryPosition).getId());
+        }
+        product.setAvailable(true);
+        String now = java.time.LocalDateTime.now().toString();
+        product.setCreatedAt(now);
+        product.setUpdatedAt(now);
+        product.setImageUrl(imageUrl);
+
+        Executors.newSingleThreadExecutor().execute(() -> {
+            productDao.insert(product);
+            runOnUiThread(() -> {
+                Toast.makeText(this, "Product Saved", Toast.LENGTH_SHORT).show();
+                finish();
+            });
+        });
+    }
+
     private void updateProduct(String name, String description, double price, String imageUrl) {
         currentProduct.setName(name);
         currentProduct.setDescription(description);
@@ -147,11 +182,8 @@ public class EditProductActivity extends AppCompatActivity {
         }
         if (imageUrl != null) {
             currentProduct.setImageUrl(imageUrl);
-        } else {
-            currentProduct.setImageUrl("");
         }
         String now = java.time.LocalDateTime.now().toString();
-        currentProduct.setAvailable(true);
         currentProduct.setUpdatedAt(now);
 
         Executors.newSingleThreadExecutor().execute(() -> {
