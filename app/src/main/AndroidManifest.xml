@@ -20,13 +20,15 @@
             android:theme="@style/Theme.FastFoodShop.NoActionBar"/>
         <activity android:name=".presentation.ui.activities.AddProductActivity"/>
         <activity android:name=".presentation.ui.activities.EditProductActivity"/>
-        <activity android:name=".presentation.ui.activities.ProductListActivity"
+        <activity android:name=".presentation.ui.activities.ProductListActivity"/>
+        <activity android:name=".presentation.ui.activities.HomeActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity android:name=".presentation.ui.activities.ProductDetailActivity"/>
     </application>
 
 </manifest>

@@ -3,28 +3,29 @@ package com.nstut.fast_food_shop.data.models;
 import androidx.room.Entity;
 import androidx.room.Ignore;
 import androidx.room.PrimaryKey;
+import java.io.Serializable;
 
 @Entity(tableName = "products")
-public class ProductRoom {
+public class ProductRoom implements Serializable {
     @PrimaryKey(autoGenerate = true)
     public int productId;
     public String name;
     public String description;
     public double price;
     public String imageUrl;
-    public String category;
+    public String categoryId;
     public boolean isAvailable;
     public String createdAt;
     public String updatedAt;
 
     @Ignore
-    public ProductRoom(int productId, String name, String description, double price, String imageUrl, String category, boolean isAvailable, String createdAt, String updatedAt) {
+    public ProductRoom(int productId, String name, String description, double price, String imageUrl, String categoryId, boolean isAvailable, String createdAt, String updatedAt) {
         this.productId = productId;
         this.name = name;
         this.description = description;
         this.price = price;
         this.imageUrl = imageUrl;
-        this.category = category;
+        this.categoryId = categoryId;
         this.isAvailable = isAvailable;
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
@@ -73,12 +74,12 @@ public class ProductRoom {
         this.imageUrl = imageUrl;
     }
 
-    public String getCategory() {
-        return category;
+    public String getCategoryId() {
+        return categoryId;
     }
 
-    public void setCategory(String category) {
-        this.category = category;
+    public void setCategoryId(String categoryId) {
+        this.categoryId = categoryId;
     }
 
     public boolean isAvailable() {
@@ -113,7 +114,7 @@ public class ProductRoom {
                 ", description='" + description + '\'' +
                 ", price=" + price +
                 ", imageUrl='" + imageUrl + '\'' +
-                ", category='" + category + '\'' +
+                ", categoryId='" + categoryId + '\'' +
                 ", isAvailable=" + isAvailable +
                 ", createdAt='" + createdAt + '\'' +
                 ", updatedAt='" + updatedAt + '\'' +

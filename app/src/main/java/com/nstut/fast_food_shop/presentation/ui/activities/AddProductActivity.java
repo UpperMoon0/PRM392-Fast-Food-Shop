@@ -74,7 +74,7 @@ public class AddProductActivity extends AppCompatActivity {
                 product.setName(edtName.getText().toString());
                 product.setDescription(edtDesc.getText().toString());
                 product.setPrice(Double.parseDouble(edtPrice.getText().toString()));
-                product.setCategory(edtCategory.getText().toString());
+                product.setCategoryId(edtCategory.getText().toString());
                 product.setAvailable(true); // Always true when adding
                 String now = java.time.LocalDateTime.now().toString();
                 product.setCreatedAt(now);

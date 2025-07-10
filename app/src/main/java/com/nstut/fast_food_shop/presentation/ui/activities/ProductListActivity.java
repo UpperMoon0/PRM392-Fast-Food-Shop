@@ -23,11 +23,12 @@ import com.nstut.fast_food_shop.data.models.ProductRoom;
 import com.nstut.fast_food_shop.data.models.User;
 import com.nstut.fast_food_shop.presentation.ui.adapters.ProductAdapter;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-public class ProductListActivity extends BaseActivity {
+public class ProductListActivity extends BaseActivity implements ProductAdapter.OnProductClickListener {
     RecyclerView recyclerView;
     ProductAdapter adapter;
     List<ProductRoom> products;
@@ -55,16 +56,20 @@ public class ProductListActivity extends BaseActivity {
     }
 
     private void loadData() {
-        new Thread(() -> {
-            products = AppDatabase.getInstance(this).productDao().getAll();
-            for (ProductRoom p : products) {
-                Log.d("Product", "Product: " + p.toString());
+        String categoryId = getIntent().getStringExtra("category_id");
+        executorService.execute(() -> {
+            List<ProductRoom> newProducts;
+            if (categoryId != null) {
+                newProducts = appDatabase.productDao().getProductsByCategory(categoryId);
+            } else {
+                newProducts = appDatabase.productDao().getAllAvailable();
             }
             runOnUiThread(() -> {
-                adapter = new ProductAdapter(products, this);
-                recyclerView.setAdapter(adapter);
+                products.clear();
+                products.addAll(newProducts);
+                adapter.notifyDataSetChanged();
             });
-        }).start();
+        });
     }
 
     @Override
@@ -91,6 +96,9 @@ public class ProductListActivity extends BaseActivity {
             startActivity(intent);
         });
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
+        products = new ArrayList<>();
+        adapter = new ProductAdapter(products, this);
+        recyclerView.setAdapter(adapter);
 
         loginLogoutButton = findViewById(R.id.login_logout_button);
         loginLogoutButton.setOnClickListener(v -> {
@@ -119,5 +127,12 @@ public class ProductListActivity extends BaseActivity {
             loginLogoutButton.setBackgroundColor(ActivityCompat.getColor(this, R.color.blue));
         }
         checkUserRole();
+    }
+
+    @Override
+    public void onProductClick(ProductRoom product) {
+        Intent intent = new Intent(this, ProductDetailActivity.class);
+        intent.putExtra(ProductDetailActivity.EXTRA_PRODUCT, product);
+        startActivity(intent);
     }
 }

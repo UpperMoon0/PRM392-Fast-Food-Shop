@@ -23,10 +23,11 @@ import java.util.List;
 public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ViewHolder> {
     private List<ProductRoom> products;
     private Context context;
+    private OnProductClickListener onProductClickListener;
 
-    public ProductAdapter(List<ProductRoom> products, Context context) {
+    public ProductAdapter(List<ProductRoom> products, OnProductClickListener onProductClickListener) {
         this.products = products;
-        this.context = context;
+        this.onProductClickListener = onProductClickListener;
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder {
@@ -46,6 +47,7 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ViewHold
 
     @Override
     public ProductAdapter.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+        context = parent.getContext();
         View view = LayoutInflater.from(context).inflate(R.layout.product_item, parent, false);
         return new ViewHolder(view);
     }
@@ -56,6 +58,12 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ViewHold
         holder.txtName.setText(p.getName());
         holder.txtPrice.setText(String.valueOf(p.getPrice()));
         Glide.with(context).load(p.getImageUrl()).into(holder.imageView);
+
+        holder.itemView.setOnClickListener(v -> {
+            if (onProductClickListener != null) {
+                onProductClickListener.onProductClick(p);
+            }
+        });
 
         // Làm mờ item nếu không available
         boolean available = p.isAvailable();
@@ -89,5 +97,9 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ViewHold
     @Override
     public int getItemCount() {
         return products.size();
+    }
+
+    public interface OnProductClickListener {
+        void onProductClick(ProductRoom product);
     }
 }

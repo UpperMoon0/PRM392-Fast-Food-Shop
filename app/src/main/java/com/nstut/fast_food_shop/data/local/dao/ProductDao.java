@@ -29,4 +29,7 @@ public interface ProductDao {
 
     @Query("SELECT * FROM products WHERE isAvailable = 1")
     List<ProductRoom> getAllAvailable();
+
+    @Query("SELECT * FROM products WHERE categoryId = :categoryId")
+    List<ProductRoom> getProductsByCategory(String categoryId);
 }
