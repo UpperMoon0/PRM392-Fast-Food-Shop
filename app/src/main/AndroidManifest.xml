@@ -13,16 +13,13 @@
         android:theme="@style/Theme.FastFoodShop"
         tools:targetApi="31">
         <activity android:name=".presentation.ui.activities.LoginActivity"
-            android:exported="true"
-            android:theme="@style/Theme.FastFoodShop.NoActionBar">
+            android:exported="true">
         </activity>
-        <activity android:name=".presentation.ui.activities.RegisterActivity"
-            android:theme="@style/Theme.FastFoodShop.NoActionBar"/>
+        <activity android:name=".presentation.ui.activities.RegisterActivity"/>
         <activity android:name=".presentation.ui.activities.AddEditProductActivity"/>
         <activity android:name=".presentation.ui.activities.ProductListActivity"/>
         <activity android:name=".presentation.ui.activities.HomeActivity"
-            android:exported="true"
-            android:theme="@style/Theme.FastFoodShop.NoActionBar">
+            android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />

@@ -11,8 +11,6 @@ import android.widget.ImageView;
 import android.widget.Spinner;
 import android.widget.Toast;
 
-import androidx.appcompat.app.AppCompatActivity;
-
 import com.bumptech.glide.Glide;
 import com.nstut.fast_food_shop.R;
 import com.nstut.fast_food_shop.data.local.dao.ProductDao;
@@ -28,7 +26,7 @@ import java.util.List;
 import java.util.concurrent.Executors;
 import java.util.stream.Collectors;
 
-public class AddEditProductActivity extends AppCompatActivity {
+public class AddEditProductActivity extends BaseActivity {
 
     private EditText edtName, edtDesc, edtPrice;
     private Spinner spinnerCategory;
@@ -51,7 +49,7 @@ public class AddEditProductActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         cloudinaryManager = new CloudinaryManager();
         setContentView(R.layout.activity_add_edit_product);
-
+        
         edtName = findViewById(R.id.edtName);
         edtDesc = findViewById(R.id.edtDesc);
         edtPrice = findViewById(R.id.edtPrice);

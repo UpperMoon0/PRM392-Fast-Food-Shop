@@ -40,35 +40,37 @@ public class BaseActivity extends AppCompatActivity {
         boolean isLoggedIn = sharedPreferences.getBoolean("is_logged_in", false);
         String role = sharedPreferences.getString("role", "user");
 
-        if (isLoggedIn) {
-            loginLogoutButton.setText("Logout");
-            loginLogoutButton.setOnClickListener(v -> {
-                SharedPreferences.Editor editor = sharedPreferences.edit();
-                editor.clear();
-                editor.apply();
-                Intent intent = new Intent(this, LoginActivity.class);
-                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                startActivity(intent);
-            });
-
-            if ("admin".equals(role)) {
-                adminNavLinks.setVisibility(View.VISIBLE);
-                manageProductsButton.setOnClickListener(v -> {
-                    Intent intent = new Intent(this, ProductListActivity.class);
+        if (loginLogoutButton != null) {
+            if (isLoggedIn) {
+                loginLogoutButton.setText("Logout");
+                loginLogoutButton.setOnClickListener(v -> {
+                    SharedPreferences.Editor editor = sharedPreferences.edit();
+                    editor.clear();
+                    editor.apply();
+                    Intent intent = new Intent(this, LoginActivity.class);
+                    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                     startActivity(intent);
                 });
-                manageCategoriesButton.setOnClickListener(v -> {
-                    Intent intent = new Intent(this, ManageCategoryActivity.class);
+
+                if ("admin".equals(role) && adminNavLinks != null && manageProductsButton != null && manageCategoriesButton != null) {
+                    adminNavLinks.setVisibility(View.VISIBLE);
+                    manageProductsButton.setOnClickListener(v -> {
+                        Intent intent = new Intent(this, ProductListActivity.class);
+                        startActivity(intent);
+                    });
+                    manageCategoriesButton.setOnClickListener(v -> {
+                        Intent intent = new Intent(this, ManageCategoryActivity.class);
+                        startActivity(intent);
+                    });
+                }
+
+            } else {
+                loginLogoutButton.setText("Login");
+                loginLogoutButton.setOnClickListener(v -> {
+                    Intent intent = new Intent(this, LoginActivity.class);
                     startActivity(intent);
                 });
             }
-
-        } else {
-            loginLogoutButton.setText("Login");
-            loginLogoutButton.setOnClickListener(v -> {
-                Intent intent = new Intent(this, LoginActivity.class);
-                startActivity(intent);
-            });
         }
     }
 }
