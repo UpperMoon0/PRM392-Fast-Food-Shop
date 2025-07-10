@@ -2,12 +2,14 @@ package com.nstut.fast_food_shop.presentation.ui.activities;
 
 import android.os.Bundle;
 import android.content.Intent;
+import android.view.View;
+import android.widget.Button;
+import android.widget.ImageView;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.nstut.fast_food_shop.R;
-import com.nstut.fast_food_shop.data.models.Category;
 import com.nstut.fast_food_shop.data.local.db.AppDatabase;
 import com.nstut.fast_food_shop.data.models.Category;
 import com.nstut.fast_food_shop.data.models.ProductRoom;
@@ -29,6 +31,8 @@ public class HomeActivity extends BaseActivity implements CategoryAdapter.OnCate
     private List<ProductRoom> productList;
     private AppDatabase appDatabase;
     private ExecutorService executorService = Executors.newSingleThreadExecutor();
+    private ImageView bannerImage;
+    private Button loginLogoutButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -37,6 +41,8 @@ public class HomeActivity extends BaseActivity implements CategoryAdapter.OnCate
 
         appDatabase = AppDatabase.getInstance(this);
 
+        bannerImage = findViewById(R.id.banner_image);
+        loginLogoutButton = findViewById(R.id.login_logout_button);
         categoriesRecyclerView = findViewById(R.id.categories_recycler_view);
         productsRecyclerView = findViewById(R.id.products_recycler_view);
 
@@ -48,6 +54,11 @@ public class HomeActivity extends BaseActivity implements CategoryAdapter.OnCate
 
         productAdapter = new ProductAdapter(productList, this);
         productsRecyclerView.setAdapter(productAdapter);
+
+        loginLogoutButton.setOnClickListener(v -> {
+            Intent intent = new Intent(HomeActivity.this, LoginActivity.class);
+            startActivity(intent);
+        });
 
         loadData();
     }

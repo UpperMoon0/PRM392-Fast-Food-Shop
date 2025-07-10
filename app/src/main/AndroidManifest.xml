@@ -22,7 +22,8 @@
         <activity android:name=".presentation.ui.activities.EditProductActivity"/>
         <activity android:name=".presentation.ui.activities.ProductListActivity"/>
         <activity android:name=".presentation.ui.activities.HomeActivity"
-            android:exported="true">
+            android:exported="true"
+            android:theme="@style/Theme.FastFoodShop.NoActionBar">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
