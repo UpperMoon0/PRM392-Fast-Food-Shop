@@ -19,6 +19,7 @@ public class CategoryAdapter extends RecyclerView.Adapter<CategoryAdapter.Catego
     private OnItemClickListener listener;
     private OnCategoryClickListener categoryClickListener;
 
+
     public interface OnItemClickListener {
         void onEditClick(Category category);
         void onDeleteClick(Category category);
@@ -27,6 +28,7 @@ public class CategoryAdapter extends RecyclerView.Adapter<CategoryAdapter.Catego
     public interface OnCategoryClickListener {
         void onCategoryClick(Category category);
     }
+
 
     public CategoryAdapter(List<Category> categoryList, OnItemClickListener listener) {
         this.categoryList = categoryList;

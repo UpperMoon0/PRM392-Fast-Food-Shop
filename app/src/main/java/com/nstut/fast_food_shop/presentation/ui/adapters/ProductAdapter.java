@@ -34,15 +34,12 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ViewHold
     public class ViewHolder extends RecyclerView.ViewHolder {
         TextView txtName, txtPrice;
         ImageView imageView;
-        Button btnEdit, btnDelete;
 
         public ViewHolder(View view) {
             super(view);
             txtName = view.findViewById(R.id.txtName);
             txtPrice = view.findViewById(R.id.txtPrice);
             imageView = view.findViewById(R.id.imageView);
-            btnEdit = view.findViewById(R.id.btnEdit);
-            btnDelete = view.findViewById(R.id.btnDelete);
         }
     }
 
@@ -74,26 +71,6 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ViewHold
         holder.txtName.setAlpha(alpha);
         holder.txtPrice.setAlpha(alpha);
         holder.imageView.setAlpha(alpha);
-        holder.btnEdit.setAlpha(alpha);
-        holder.btnDelete.setEnabled(available);
-
-        holder.btnDelete.setOnClickListener(v -> {
-            if (!available) return;
-            // Cập nhật trạng thái ngay trên UI trước khi gọi DB
-            p.setAvailable(false);
-            p.setUpdatedAt(java.time.LocalDateTime.now().toString());
-            notifyItemChanged(position);
-            new Thread(() -> {
-                // Soft delete: set isAvailable = false, update updatedAt
-                AppDatabase.getInstance(context).productDao().update(p);
-            }).start();
-        });
-
-        holder.btnEdit.setOnClickListener(v -> {
-            Intent i = new Intent(context, AddEditProductActivity.class);
-            i.putExtra("product_id", p.getProductId());
-            context.startActivity(i);
-        });
     }
 
     @Override
