@@ -23,14 +23,6 @@ public class BaseActivity extends AppCompatActivity {
 
     protected void setupHeader() {
         TextView appName = findViewById(R.id.app_name);
-        if (appName != null) {
-            appName.setOnClickListener(v -> {
-                Intent intent = new Intent(this, ProductListActivity.class);
-                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
-                startActivity(intent);
-            });
-        }
-
         Button loginLogoutButton = findViewById(R.id.login_logout_button);
         LinearLayout adminNavLinks = findViewById(R.id.admin_nav_links);
         Button manageProductsButton = findViewById(R.id.button_manage_products);
@@ -39,6 +31,19 @@ public class BaseActivity extends AppCompatActivity {
         SharedPreferences sharedPreferences = getSharedPreferences("user_prefs", MODE_PRIVATE);
         boolean isLoggedIn = sharedPreferences.getBoolean("is_logged_in", false);
         String role = sharedPreferences.getString("role", "user");
+
+        if (appName != null) {
+            appName.setOnClickListener(v -> {
+                Intent intent;
+                if (isLoggedIn && "admin".equals(role)) {
+                    intent = new Intent(this, ProductListActivity.class);
+                } else {
+                    intent = new Intent(this, HomeActivity.class);
+                }
+                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
+                startActivity(intent);
+            });
+        }
 
         if (loginLogoutButton != null) {
             if (isLoggedIn) {

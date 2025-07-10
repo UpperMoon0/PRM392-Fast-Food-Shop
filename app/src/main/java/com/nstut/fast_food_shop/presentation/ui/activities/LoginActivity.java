@@ -92,7 +92,8 @@ public class LoginActivity extends BaseActivity {
                 runOnUiThread(() -> {
                     SharedPreferences userPrefs = getSharedPreferences("user_prefs", MODE_PRIVATE);
                     SharedPreferences.Editor editor = userPrefs.edit();
-                    editor.putString("user_role", User.ROLE_ADMIN);
+                    editor.putString("role", User.ROLE_ADMIN);
+                    editor.putBoolean("is_logged_in", true);
                     editor.apply();
 
                     Toast.makeText(this, "Admin Login successful", Toast.LENGTH_SHORT).show();
@@ -115,12 +116,16 @@ public class LoginActivity extends BaseActivity {
                     SharedPreferences userPrefs = getSharedPreferences("user_prefs", MODE_PRIVATE);
                     SharedPreferences.Editor editor = userPrefs.edit();
                     editor.putString("user_id", String.valueOf(user.userId));
-                    editor.putString("user_role", user.role);
+                    editor.putString("role", user.role);
+                    editor.putBoolean("is_logged_in", true);
                     editor.apply();
 
                     Toast.makeText(this, "Login successful", Toast.LENGTH_SHORT).show();
-                    // Navigate to the main activity
-                    startActivity(new Intent(LoginActivity.this, ProductListActivity.class));
+                    if (User.ROLE_ADMIN.equals(user.role)) {
+                        startActivity(new Intent(LoginActivity.this, ProductListActivity.class));
+                    } else {
+                        startActivity(new Intent(LoginActivity.this, HomeActivity.class));
+                    }
                     finish();
                 } else {
                     Toast.makeText(this, "Invalid credentials", Toast.LENGTH_SHORT).show();
