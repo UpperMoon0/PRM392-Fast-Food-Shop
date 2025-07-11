@@ -64,6 +64,7 @@ public class HomeActivity extends BaseActivity implements CategoryAdapter.OnCate
         productList = new ArrayList<>();
 
         categoryAdapter = new CategoryAdapter(categoryList, this);
+        categoriesRecyclerView.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));
         categoriesRecyclerView.setAdapter(categoryAdapter);
 
         productAdapter = new ProductAdapter(productList, this);

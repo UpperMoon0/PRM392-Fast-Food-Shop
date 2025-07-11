@@ -43,7 +43,13 @@ public class CategoryAdapter extends RecyclerView.Adapter<CategoryAdapter.Catego
     @NonNull
     @Override
     public CategoryViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.category_item, parent, false);
+        View view;
+        // If it's for the home page (only categoryClickListener is set), use the card item layout.
+        if (categoryClickListener != null && listener == null) {
+            view = LayoutInflater.from(parent.getContext()).inflate(R.layout.category_card_item, parent, false);
+        } else {
+            view = LayoutInflater.from(parent.getContext()).inflate(R.layout.category_item, parent, false);
+        }
         return new CategoryViewHolder(view);
     }
 
@@ -51,7 +57,9 @@ public class CategoryAdapter extends RecyclerView.Adapter<CategoryAdapter.Catego
     public void onBindViewHolder(@NonNull CategoryViewHolder holder, int position) {
         Category category = categoryList.get(position);
         holder.textViewName.setText(category.getName());
-        holder.textViewDescription.setText(category.getDescription());
+        if (holder.textViewDescription != null) {
+            holder.textViewDescription.setText(category.getDescription());
+        }
         if (category.getImageUrl() != null && !category.getImageUrl().isEmpty()) {
             Glide.with(holder.itemView.getContext()).load(category.getImageUrl()).into(holder.imageView);
         }
