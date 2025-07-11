@@ -6,10 +6,17 @@
         android:id="@+id/header"
         layout="@layout/header" />
 
+    <include
+        android:id="@+id/secondary_header"
+        layout="@layout/secondary_header"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/header" />
+
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_below="@id/header">
+        android:layout_below="@id/secondary_header">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -36,11 +43,17 @@
                 android:hint="Price"
                 android:inputType="numberDecimal" />
 
-            <EditText
-                android:id="@+id/edtCategory"
+            <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="Category" />
+                android:text="Categories"
+                android:textSize="16sp"
+                android:layout_marginTop="8dp"/>
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/recycler_view_categories"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
 
             <ImageView
                 android:id="@+id/imageView"

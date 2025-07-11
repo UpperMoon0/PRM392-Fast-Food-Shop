@@ -3,8 +3,6 @@ package com.nstut.fast_food_shop.presentation.ui.activities;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
-import android.widget.ImageView;
-
 import androidx.activity.EdgeToEdge;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
@@ -12,10 +10,12 @@ import androidx.core.view.WindowInsetsCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.nstut.fast_food_shop.R;
 import com.nstut.fast_food_shop.data.local.db.AppDatabase;
 import com.nstut.fast_food_shop.data.models.ProductRoom;
 import com.nstut.fast_food_shop.data.models.ProductWithCategories;
+import com.nstut.fast_food_shop.data.models.User;
 import com.nstut.fast_food_shop.presentation.ui.adapters.ProductAdapter;
 
 import java.util.ArrayList;
@@ -23,41 +23,32 @@ import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-public class ProductListActivity extends BaseActivity implements ProductAdapter.OnProductClickListener {
+public class AdminProductListActivity extends BaseActivity implements ProductAdapter.OnAdminProductClickListener {
     RecyclerView recyclerView;
     ProductAdapter adapter;
     List<ProductWithCategories> products;
     private ExecutorService executorService;
     private AppDatabase appDatabase;
-    private ImageView backButton;
 
     @Override
     protected void onResume() {
         super.onResume();
+        setupHeader(findViewById(R.id.secondary_header));
         loadData();
     }
 
     private void loadData() {
-        int categoryId = getIntent().getIntExtra("category_id", -1);
-        if (categoryId != -1) {
-            appDatabase.productDao().getProductsWithCategoriesByCategoryId(categoryId).observe(this, newProducts -> {
-                adapter.updateProducts(newProducts);
-            });
-        } else {
-            loadAllAvailableProducts();
-        }
-    }
-
-    private void loadAllAvailableProducts() {
-        appDatabase.productDao().getAvailableProductsWithCategories().observe(this, newProducts -> {
-            adapter.updateProducts(newProducts);
+        appDatabase.productDao().getProductsWithCategories().observe(this, newProducts -> {
+            products.clear();
+            products.addAll(newProducts);
+            adapter.notifyDataSetChanged();
         });
     }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_product_list);
+        setContentView(R.layout.activity_admin_product_list);
 
         executorService = Executors.newSingleThreadExecutor();
         appDatabase = AppDatabase.getInstance(this);
@@ -72,22 +63,34 @@ public class ProductListActivity extends BaseActivity implements ProductAdapter.
             getSupportActionBar().hide();
         }
         recyclerView = findViewById(R.id.recyclerView);
+        FloatingActionButton fab = findViewById(R.id.fabAddProduct);
+        fab.setOnClickListener(v -> {
+            Intent intent = new Intent(this, AddEditProductActivity.class);
+            startActivity(intent);
+        });
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         products = new ArrayList<>();
 
+        findViewById(R.id.button_manage_categories).setOnClickListener(v -> {
+            Intent intent = new Intent(this, CategoryListActivity.class);
+            startActivity(intent);
+        });
         adapter = new ProductAdapter(products, this);
         recyclerView.setAdapter(adapter);
-
-        backButton = findViewById(R.id.back_button);
-        backButton.setOnClickListener(v -> {
-            onBackPressed();
-        });
     }
 
     @Override
-    public void onProductClick(ProductRoom product) {
-        Intent intent = new Intent(this, ProductDetailActivity.class);
-        intent.putExtra(ProductDetailActivity.EXTRA_PRODUCT_ID, product.getId());
+    public void onEditClick(ProductRoom product) {
+        Intent intent = new Intent(this, AddEditProductActivity.class);
+        intent.putExtra("product_id", product.getId());
         startActivity(intent);
+    }
+
+    @Override
+    public void onDeleteClick(ProductRoom product) {
+        executorService.execute(() -> {
+            appDatabase.productDao().delete(product);
+            loadData();
+        });
     }
 }

@@ -8,19 +8,19 @@
         android:id="@+id/header"
         layout="@layout/header" />
 
+    <ImageView
+        android:id="@+id/back_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/header"
+        android:background="?attr/selectableItemBackgroundBorderless"
+        android.padding="8dp"
+        android:src="@drawable/ic_arrow_back" />
+
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recyclerView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_below="@id/header" />
-
-    <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:id="@+id/fabAddProduct"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentEnd="true"
-        android:layout_alignParentBottom="true"
-        android:layout_margin="16dp"
-        app:srcCompat="@android:drawable/ic_input_add" />
+        android:layout_below="@id/back_button" />
 
 </RelativeLayout>

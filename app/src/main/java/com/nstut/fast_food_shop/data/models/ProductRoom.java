@@ -1,30 +1,33 @@
 package com.nstut.fast_food_shop.data.models;
 
 import androidx.room.Entity;
+import androidx.room.ForeignKey;
 import androidx.room.Ignore;
+import androidx.room.Index;
 import androidx.room.PrimaryKey;
+import java.io.Serializable;
+import java.util.List;
 
 @Entity(tableName = "products")
-public class ProductRoom {
+public class ProductRoom implements Serializable {
     @PrimaryKey(autoGenerate = true)
     public int productId;
     public String name;
     public String description;
     public double price;
     public String imageUrl;
-    public String category;
     public boolean isAvailable;
     public String createdAt;
     public String updatedAt;
-
+    public List<String> categoryIds;
+ 
     @Ignore
-    public ProductRoom(int productId, String name, String description, double price, String imageUrl, String category, boolean isAvailable, String createdAt, String updatedAt) {
+    public ProductRoom(int productId, String name, String description, double price, String imageUrl, boolean isAvailable, String createdAt, String updatedAt) {
         this.productId = productId;
         this.name = name;
         this.description = description;
         this.price = price;
         this.imageUrl = imageUrl;
-        this.category = category;
         this.isAvailable = isAvailable;
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
@@ -33,7 +36,7 @@ public class ProductRoom {
     public ProductRoom() {
     }
 
-    public int getProductId() {
+    public int getId() {
         return productId;
     }
 
@@ -73,14 +76,6 @@ public class ProductRoom {
         this.imageUrl = imageUrl;
     }
 
-    public String getCategory() {
-        return category;
-    }
-
-    public void setCategory(String category) {
-        this.category = category;
-    }
-
     public boolean isAvailable() {
         return isAvailable;
     }
@@ -105,6 +100,14 @@ public class ProductRoom {
         this.updatedAt = updatedAt;
     }
 
+    public List<String> getCategoryIds() {
+        return categoryIds;
+    }
+
+    public void setCategoryIds(List<String> categoryIds) {
+        this.categoryIds = categoryIds;
+    }
+ 
     @Override
     public String toString() {
         return "ProductRoom{" +
@@ -113,10 +116,10 @@ public class ProductRoom {
                 ", description='" + description + '\'' +
                 ", price=" + price +
                 ", imageUrl='" + imageUrl + '\'' +
-                ", category='" + category + '\'' +
                 ", isAvailable=" + isAvailable +
                 ", createdAt='" + createdAt + '\'' +
                 ", updatedAt='" + updatedAt + '\'' +
+                ", categoryIds=" + categoryIds +
                 '}';
     }
 }

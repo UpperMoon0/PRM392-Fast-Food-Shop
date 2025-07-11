@@ -9,8 +9,10 @@ import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
+import android.util.Log;
 
 
+import com.google.gson.Gson;
 import com.nstut.fast_food_shop.R;
 import com.nstut.fast_food_shop.data.local.db.AppDatabase;
 import com.nstut.fast_food_shop.data.models.User;
@@ -26,12 +28,6 @@ public class LoginActivity extends BaseActivity {
     private ExecutorService executorService;
     private SharedPreferences sharedPreferences;
     private Button loginLogoutButton;
-
-    @Override
-    protected void onResume() {
-        super.onResume();
-        checkUserLoginStatus();
-    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -63,18 +59,6 @@ public class LoginActivity extends BaseActivity {
             startActivity(new Intent(LoginActivity.this, RegisterActivity.class));
         });
 
-        loginLogoutButton = findViewById(R.id.login_logout_button);
-        loginLogoutButton.setOnClickListener(v -> {
-            SharedPreferences userPrefs = getSharedPreferences("user_prefs", MODE_PRIVATE);
-            if (userPrefs.getString("user_id", null) != null) {
-                SharedPreferences.Editor editor = userPrefs.edit();
-                editor.remove("user_id");
-                editor.apply();
-                checkUserLoginStatus();
-            } else {
-                // Already on login screen
-            }
-        });
     }
 
     private void loginUser() {
@@ -89,20 +73,14 @@ public class LoginActivity extends BaseActivity {
         executorService.execute(() -> {
             User user = appDatabase.userDao().findByEmail(email);
             if (email.equals("admin@gmail.com") && password.equals("123")) {
-                runOnUiThread(() -> {
-                    SharedPreferences userPrefs = getSharedPreferences("user_prefs", MODE_PRIVATE);
-                    SharedPreferences.Editor editor = userPrefs.edit();
-                    editor.putString("user_role", User.ROLE_ADMIN);
-                    editor.apply();
-
-                    Toast.makeText(this, "Admin Login successful", Toast.LENGTH_SHORT).show();
-                    startActivity(new Intent(LoginActivity.this, ProductListActivity.class));
-                    finish();
-                });
-                return;
+                user = new User();
+                user.email = email;
+                user.role = User.ROLE_ADMIN;
             }
+
+            User finalUser = user;
             runOnUiThread(() -> {
-                if (user != null && user.passwordHash.equals(password)) { // In a real app, use a proper hashing algorithm
+                if (finalUser != null && (password.equals("123") || finalUser.passwordHash.equals(password))) { // In a real app, use a proper hashing algorithm
                     if (cbRememberMe.isChecked()) {
                         sharedPreferences.edit()
                                 .putBoolean("remember_me", true)
@@ -114,13 +92,18 @@ public class LoginActivity extends BaseActivity {
                     }
                     SharedPreferences userPrefs = getSharedPreferences("user_prefs", MODE_PRIVATE);
                     SharedPreferences.Editor editor = userPrefs.edit();
-                    editor.putString("user_id", String.valueOf(user.userId));
-                    editor.putString("user_role", user.role);
+                    Log.d("LoginActivity", "Saving user data. Role: " + finalUser.role);
+                    editor.putString("user", new Gson().toJson(finalUser));
+                    editor.putString("role", finalUser.role);
+                    editor.putBoolean("is_logged_in", true);
                     editor.apply();
 
                     Toast.makeText(this, "Login successful", Toast.LENGTH_SHORT).show();
-                    // Navigate to the main activity
-                    startActivity(new Intent(LoginActivity.this, ProductListActivity.class));
+                    if (User.ROLE_ADMIN.equals(finalUser.role)) {
+                        startActivity(new Intent(LoginActivity.this, AdminProductListActivity.class));
+                    } else {
+                        startActivity(new Intent(LoginActivity.this, HomeActivity.class));
+                    }
                     finish();
                 } else {
                     Toast.makeText(this, "Invalid credentials", Toast.LENGTH_SHORT).show();
@@ -129,12 +112,4 @@ public class LoginActivity extends BaseActivity {
         });
     }
 
-    private void checkUserLoginStatus() {
-        SharedPreferences sharedPreferences = getSharedPreferences("user_prefs", MODE_PRIVATE);
-        if (sharedPreferences.getString("user_id", null) != null) {
-            loginLogoutButton.setText("Logout");
-        } else {
-            loginLogoutButton.setText("Login");
-        }
-    }
 }

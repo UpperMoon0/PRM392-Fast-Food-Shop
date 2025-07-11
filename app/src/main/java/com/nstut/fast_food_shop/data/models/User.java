@@ -34,4 +34,8 @@ public class User {
 
     @ColumnInfo(name = "updated_at")
     public long updatedAt;
+
+    public String getRole() {
+        return role;
+    }
 }

@@ -43,6 +43,7 @@ android {
         }
     }
     compileOptions {
+        isCoreLibraryDesugaringEnabled = true
         sourceCompatibility = JavaVersion.VERSION_11
         targetCompatibility = JavaVersion.VERSION_11
     }
@@ -50,6 +51,7 @@ android {
 
 dependencies {
 
+    coreLibraryDesugaring(libs.android.desugarJdkLibs)
     implementation(libs.appcompat)
     implementation(libs.material)
     testImplementation(libs.junit)
@@ -63,4 +65,7 @@ dependencies {
     //Room
     implementation("androidx.room:room-runtime:2.6.0")
     annotationProcessor("androidx.room:room-compiler:2.6.0")
+
+    // Gson
+    implementation("com.google.code.gson:gson:2.10.1")
 }
