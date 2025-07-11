@@ -32,6 +32,7 @@ public class AdminProductListActivity extends BaseActivity implements ProductAda
     @Override
     protected void onResume() {
         super.onResume();
+        setupHeader(findViewById(R.id.secondary_header));
         loadData();
     }
 
@@ -72,7 +73,6 @@ public class AdminProductListActivity extends BaseActivity implements ProductAda
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         products = new ArrayList<>();
 
-        findViewById(R.id.secondary_header).setVisibility(View.VISIBLE);
         findViewById(R.id.button_manage_categories).setOnClickListener(v -> {
             Intent intent = new Intent(this, CategoryListActivity.class);
             startActivity(intent);

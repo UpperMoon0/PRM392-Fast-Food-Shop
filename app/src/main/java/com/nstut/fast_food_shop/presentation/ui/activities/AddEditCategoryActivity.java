@@ -59,6 +59,12 @@ public class AddEditCategoryActivity extends BaseActivity {
         buttonSave.setOnClickListener(v -> saveCategory());
     }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+        setupHeader(findViewById(R.id.secondary_header));
+    }
+
     private void loadCategory() {
         new Thread(() -> {
             currentCategory = appDatabase.categoryDao().getCategoryById(categoryId);

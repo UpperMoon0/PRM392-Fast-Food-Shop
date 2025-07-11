@@ -75,6 +75,12 @@ public class AddEditProductActivity extends BaseActivity {
         btnSave.setOnClickListener(v -> saveProduct());
     }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+        setupHeader(findViewById(R.id.secondary_header));
+    }
+
     private void loadCategories() {
         Executors.newSingleThreadExecutor().execute(() -> {
             categoryList = AppDatabase.getInstance(this).categoryDao().getAllCategories();

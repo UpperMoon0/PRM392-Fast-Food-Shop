@@ -3,6 +3,7 @@ package com.nstut.fast_food_shop.presentation.ui.activities;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.LinearLayout;
@@ -16,6 +17,7 @@ import com.nstut.fast_food_shop.R;
 import com.nstut.fast_food_shop.data.models.User;
 
 public class BaseActivity extends AppCompatActivity {
+    private static final String TAG = "BaseActivity";
 
     @Override
     protected void onResume() {
@@ -26,28 +28,40 @@ public class BaseActivity extends AppCompatActivity {
     public User getCurrentUser() {
         SharedPreferences sharedPreferences = getSharedPreferences("user_prefs", MODE_PRIVATE);
         String userJson = sharedPreferences.getString("user", null);
+        Log.d(TAG, "getCurrentUser: userJson from SharedPreferences: " + userJson);
         if (userJson != null) {
-            return new Gson().fromJson(userJson, User.class);
+            User user = new Gson().fromJson(userJson, User.class);
+            Log.d(TAG, "getCurrentUser: User object created from JSON. Role: " + (user != null ? user.getRole() : "null user object"));
+            return user;
         }
+        Log.d(TAG, "getCurrentUser: userJson is null, returning null.");
         return null;
     }
 
     public void setupHeader() {
+        setupHeader(null);
+    }
+    public void setupHeader(View secondaryHeader) {
+        Log.d(TAG, "setupHeader called in " + this.getClass().getSimpleName());
         TextView appName = findViewById(R.id.app_name);
         Button loginLogoutButton = findViewById(R.id.login_logout_button);
-        LinearLayout adminNavLinks = findViewById(R.id.admin_nav_links);
-        Button manageProductsButton = findViewById(R.id.button_manage_products);
-        Button manageCategoriesButton = findViewById(R.id.button_manage_categories);
-        View secondaryHeader = findViewById(R.id.secondary_header);
-
         SharedPreferences sharedPreferences = getSharedPreferences("user_prefs", MODE_PRIVATE);
         boolean isLoggedIn = sharedPreferences.getBoolean("is_logged_in", false);
         String role = sharedPreferences.getString("role", "user");
+        Log.d(TAG, "--- setupHeader in " + this.getClass().getSimpleName() + " ---");
+        Log.d(TAG, "isLoggedIn from SharedPreferences: " + isLoggedIn);
+        Log.d(TAG, "Role from SharedPreferences: " + role);
 
-        if (appName != null) {
+        if (appName == null) {
+            Log.e(TAG, "appName TextView not found. Header not fully initialized.");
+        } else {
             appName.setOnClickListener(v -> {
                 Intent intent;
-                if (isLoggedIn && "admin".equalsIgnoreCase(role)) {
+                SharedPreferences currentPrefs = getSharedPreferences("user_prefs", MODE_PRIVATE);
+                boolean currentIsLoggedIn = currentPrefs.getBoolean("is_logged_in", false);
+                String currentRole = currentPrefs.getString("role", "user");
+                Log.d(TAG, "App name clicked. Role: " + currentRole);
+                if (currentIsLoggedIn && "admin".equalsIgnoreCase(currentRole)) {
                     intent = new Intent(this, AdminProductListActivity.class);
                 } else {
                     intent = new Intent(this, HomeActivity.class);
@@ -57,11 +71,14 @@ public class BaseActivity extends AppCompatActivity {
             });
         }
 
-        if (loginLogoutButton != null) {
+        if (loginLogoutButton == null) {
+            Log.e(TAG, "loginLogoutButton not found. Header not fully initialized.");
+        } else {
             if (isLoggedIn) {
                 loginLogoutButton.setText("Logout");
                 loginLogoutButton.setActivated(true);
                 loginLogoutButton.setOnClickListener(v -> {
+                    Log.d(TAG, "Logout button clicked. Clearing user_prefs.");
                     SharedPreferences.Editor editor = sharedPreferences.edit();
                     editor.clear();
                     editor.apply();
@@ -79,26 +96,40 @@ public class BaseActivity extends AppCompatActivity {
             }
         }
 
-        if (adminNavLinks != null) {
-            if ("admin".equalsIgnoreCase(role)) {
-                adminNavLinks.setVisibility(View.VISIBLE);
+        if (secondaryHeader == null) {
+            Log.d(TAG, "secondaryHeader is null. Admin links will not be configured.");
+        } else {
+            if (secondaryHeader instanceof LinearLayout) {
+                LinearLayout adminNavLinks = (LinearLayout) secondaryHeader;
+                Log.d(TAG, "Checking role for admin nav links visibility. Role: " + role);
+                if ("admin".equalsIgnoreCase(role)) {
+                    adminNavLinks.setVisibility(View.VISIBLE);
+                    Log.d(TAG, "Admin links visible.");
+                } else {
+                    adminNavLinks.setVisibility(View.GONE);
+                    Log.d(TAG, "Admin links gone.");
+                }
+
+                Button manageProductsButton = adminNavLinks.findViewById(R.id.button_manage_products);
+                if (manageProductsButton != null) {
+                    manageProductsButton.setOnClickListener(v -> {
+                        Log.d(TAG, "Manage Products button clicked.");
+                        Intent intent = new Intent(this, AdminProductListActivity.class);
+                        startActivity(intent);
+                    });
+                }
+
+                Button manageCategoriesButton = adminNavLinks.findViewById(R.id.button_manage_categories);
+                if (manageCategoriesButton != null) {
+                    manageCategoriesButton.setOnClickListener(v -> {
+                        Log.d(TAG, "Manage Categories button clicked.");
+                        Intent intent = new Intent(this, CategoryListActivity.class);
+                        startActivity(intent);
+                    });
+                }
             } else {
-                adminNavLinks.setVisibility(View.GONE);
+                Log.e(TAG, "secondaryHeader is not a LinearLayout, cannot configure admin links.");
             }
-        }
-
-        if (manageProductsButton != null) {
-            manageProductsButton.setOnClickListener(v -> {
-                Intent intent = new Intent(this, AdminProductListActivity.class);
-                startActivity(intent);
-            });
-        }
-
-        if (manageCategoriesButton != null) {
-            manageCategoriesButton.setOnClickListener(v -> {
-                Intent intent = new Intent(this, CategoryListActivity.class);
-                startActivity(intent);
-            });
         }
     }
 }
