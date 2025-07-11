@@ -67,7 +67,7 @@ public class HomeActivity extends BaseActivity implements CategoryAdapter.OnCate
         categoriesRecyclerView.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));
         categoriesRecyclerView.setAdapter(categoryAdapter);
 
-        productAdapter = new ProductAdapter(productList, this);
+        productAdapter = new ProductAdapter(new ArrayList<>(), this);
         productsRecyclerView.setLayoutManager(new LinearLayoutManager(this));
         productsRecyclerView.setAdapter(productAdapter);
 
@@ -75,26 +75,14 @@ public class HomeActivity extends BaseActivity implements CategoryAdapter.OnCate
     }
 
     private void loadData() {
-        executorService.execute(() -> {
-            List<Category> categories = appDatabase.categoryDao().getAllCategories();
-            Category burgerCategory = appDatabase.categoryDao().getCategoryByName("Burgers");
-            List<ProductRoom> products = new ArrayList<>();
-            if (burgerCategory != null) {
-                products = appDatabase.productDao().getProductsByCategory(burgerCategory.getId());
-            }
-            Log.d("HomeActivity", "Products fetched: " + products.size());
+        appDatabase.categoryDao().getAllCategories().observe(this, categories -> {
+            categoryList.clear();
+            categoryList.addAll(categories);
+            categoryAdapter.notifyDataSetChanged();
+        });
 
-            List<ProductRoom> finalProducts = products;
-            runOnUiThread(() -> {
-                categoryList.clear();
-                categoryList.addAll(categories);
-                categoryAdapter.notifyDataSetChanged();
-
-                productList.clear();
-                productList.addAll(finalProducts);
-                Log.d("HomeActivity", "Product list size before notifying adapter: " + productList.size());
-                productAdapter.notifyDataSetChanged();
-            });
+        appDatabase.productDao().getProductsWithCategories().observe(this, products -> {
+            productAdapter.updateProducts(products);
         });
     }
 
@@ -108,7 +96,7 @@ public class HomeActivity extends BaseActivity implements CategoryAdapter.OnCate
     @Override
     public void onProductClick(ProductRoom product) {
         Intent intent = new Intent(this, ProductDetailActivity.class);
-        intent.putExtra(ProductDetailActivity.EXTRA_PRODUCT, product);
+        intent.putExtra(ProductDetailActivity.EXTRA_PRODUCT_ID, product.getId());
         startActivity(intent);
     }
 }

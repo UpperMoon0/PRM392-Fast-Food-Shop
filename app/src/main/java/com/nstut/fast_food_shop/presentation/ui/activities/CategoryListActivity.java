@@ -79,13 +79,10 @@ public class CategoryListActivity extends BaseActivity {
     }
 
     private void loadCategories() {
-        new Thread(() -> {
-            List<Category> categories = appDatabase.categoryDao().getAllCategories();
-            runOnUiThread(() -> {
-                categoryList.clear();
-                categoryList.addAll(categories);
-                categoryAdapter.notifyDataSetChanged();
-            });
-        }).start();
+        appDatabase.categoryDao().getAllCategories().observe(this, categories -> {
+            categoryList.clear();
+            categoryList.addAll(categories);
+            categoryAdapter.notifyDataSetChanged();
+        });
     }
 }

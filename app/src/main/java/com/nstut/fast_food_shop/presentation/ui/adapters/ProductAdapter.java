@@ -12,29 +12,39 @@ import android.widget.TextView;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.Glide;
 import com.nstut.fast_food_shop.R;
+import com.nstut.fast_food_shop.data.models.Category;
 import com.nstut.fast_food_shop.data.models.ProductRoom;
+import com.nstut.fast_food_shop.data.models.ProductWithCategories;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ViewHolder> {
-    private List<ProductRoom> products;
+    private List<ProductWithCategories> products;
     private Context context;
     private OnProductClickListener productClickListener;
     private OnAdminProductClickListener adminProductClickListener;
 
-    public ProductAdapter(List<ProductRoom> products, OnProductClickListener listener) {
+    public ProductAdapter(List<ProductWithCategories> products, Object listener) {
         this.products = products;
-        this.productClickListener = listener;
+        if (listener instanceof OnProductClickListener) {
+            this.productClickListener = (OnProductClickListener) listener;
+        }
+        if (listener instanceof OnAdminProductClickListener) {
+            this.adminProductClickListener = (OnAdminProductClickListener) listener;
+        }
     }
 
-    public ProductAdapter(List<ProductRoom> products, OnAdminProductClickListener listener) {
-        this.products = products;
-        this.adminProductClickListener = listener;
+    public void updateProducts(List<ProductWithCategories> newProducts) {
+        this.products.clear();
+        this.products.addAll(newProducts);
+        notifyDataSetChanged();
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder {
-        TextView txtName, txtPrice;
+        TextView txtName, txtPrice, txtCategories;
         ImageView imageView;
         View adminActions;
         Button btnEdit, btnDelete;
@@ -43,6 +53,7 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ViewHold
             super(view);
             txtName = view.findViewById(R.id.txtName);
             txtPrice = view.findViewById(R.id.txtPrice);
+            txtCategories = view.findViewById(R.id.txtCategories);
             imageView = view.findViewById(R.id.imageView);
             adminActions = view.findViewById(R.id.admin_action);
             btnEdit = view.findViewById(R.id.button_edit);
@@ -59,26 +70,30 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ViewHold
 
     @Override
     public void onBindViewHolder(ProductAdapter.ViewHolder holder, int position) {
-        ProductRoom p = products.get(position);
-        Log.d("ProductAdapter", "Binding view for position: " + position + ", product: " + p.getName());
-        holder.txtName.setText(p.getName());
-        holder.txtPrice.setText(String.valueOf(p.getPrice()));
-        Glide.with(context).load(p.getImageUrl()).into(holder.imageView);
+        ProductWithCategories p = products.get(position);
+        ProductRoom product = p.product;
+        Log.d("ProductAdapter", "Binding view for position: " + position + ", product: " + product.getName());
+        holder.txtName.setText(product.getName());
+        holder.txtPrice.setText(String.valueOf(product.getPrice()));
+        Glide.with(context).load(product.getImageUrl()).into(holder.imageView);
+
+        String categories = p.categories.stream().map(Category::getName).collect(Collectors.joining(", "));
+        holder.txtCategories.setText(categories);
 
         if (adminProductClickListener != null) {
             holder.adminActions.setVisibility(View.VISIBLE);
-            holder.btnEdit.setOnClickListener(v -> adminProductClickListener.onEditClick(p));
-            holder.btnDelete.setOnClickListener(v -> adminProductClickListener.onDeleteClick(p));
+            holder.btnEdit.setOnClickListener(v -> adminProductClickListener.onEditClick(product));
+            holder.btnDelete.setOnClickListener(v -> adminProductClickListener.onDeleteClick(product));
         } else if (productClickListener != null) {
             holder.adminActions.setVisibility(View.GONE);
-            holder.itemView.setOnClickListener(v -> productClickListener.onProductClick(p));
+            holder.itemView.setOnClickListener(v -> productClickListener.onProductClick(product));
         } else {
             holder.adminActions.setVisibility(View.GONE);
         }
 
 
         // Làm mờ item nếu không available
-        boolean available = p.isAvailable();
+        boolean available = product.isAvailable();
         float alpha = available ? 1.0f : 0.4f;
         holder.itemView.setAlpha(alpha);
         holder.txtName.setAlpha(alpha);

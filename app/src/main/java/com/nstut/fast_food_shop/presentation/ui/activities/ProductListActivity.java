@@ -12,6 +12,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.nstut.fast_food_shop.R;
 import com.nstut.fast_food_shop.data.local.db.AppDatabase;
 import com.nstut.fast_food_shop.data.models.ProductRoom;
+import com.nstut.fast_food_shop.data.models.ProductWithCategories;
 import com.nstut.fast_food_shop.presentation.ui.adapters.ProductAdapter;
 
 import java.util.ArrayList;
@@ -22,7 +23,7 @@ import java.util.concurrent.Executors;
 public class ProductListActivity extends BaseActivity implements ProductAdapter.OnProductClickListener {
     RecyclerView recyclerView;
     ProductAdapter adapter;
-    List<ProductRoom> products;
+    List<ProductWithCategories> products;
     private ExecutorService executorService;
     private AppDatabase appDatabase;
 
@@ -33,26 +34,23 @@ public class ProductListActivity extends BaseActivity implements ProductAdapter.
     }
 
     private void loadData() {
-        String categoryIdStr = getIntent().getStringExtra("category_id");
-        executorService.execute(() -> {
-            List<ProductRoom> newProducts;
-            if (categoryIdStr != null) {
-                try {
-                    int categoryId = Integer.parseInt(categoryIdStr);
-                    newProducts = appDatabase.productDao().getProductsByCategory(categoryId);
-                } catch (NumberFormatException e) {
-                    newProducts = appDatabase.productDao().getAllAvailable();
-                }
-            } else {
-                newProducts = appDatabase.productDao().getAllAvailable();
-            }
-
-            List<ProductRoom> finalNewProducts = newProducts;
-            runOnUiThread(() -> {
+        int categoryId = getIntent().getIntExtra("category_id", -1);
+        if (categoryId != -1) {
+            appDatabase.productDao().getProductsWithCategoriesByCategoryId(categoryId).observe(this, newProducts -> {
                 products.clear();
-                products.addAll(finalNewProducts);
+                products.addAll(newProducts);
                 adapter.notifyDataSetChanged();
             });
+        } else {
+            loadAllAvailableProducts();
+        }
+    }
+
+    private void loadAllAvailableProducts() {
+        appDatabase.productDao().getAvailableProductsWithCategories().observe(this, newProducts -> {
+            products.clear();
+            products.addAll(newProducts);
+            adapter.notifyDataSetChanged();
         });
     }
 
@@ -84,7 +82,7 @@ public class ProductListActivity extends BaseActivity implements ProductAdapter.
     @Override
     public void onProductClick(ProductRoom product) {
         Intent intent = new Intent(this, ProductDetailActivity.class);
-        intent.putExtra(ProductDetailActivity.EXTRA_PRODUCT, product);
+        intent.putExtra(ProductDetailActivity.EXTRA_PRODUCT_ID, product.getId());
         startActivity(intent);
     }
 }

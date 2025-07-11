@@ -14,6 +14,7 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.nstut.fast_food_shop.R;
 import com.nstut.fast_food_shop.data.local.db.AppDatabase;
 import com.nstut.fast_food_shop.data.models.ProductRoom;
+import com.nstut.fast_food_shop.data.models.ProductWithCategories;
 import com.nstut.fast_food_shop.data.models.User;
 import com.nstut.fast_food_shop.presentation.ui.adapters.ProductAdapter;
 
@@ -25,7 +26,7 @@ import java.util.concurrent.Executors;
 public class AdminProductListActivity extends BaseActivity implements ProductAdapter.OnAdminProductClickListener {
     RecyclerView recyclerView;
     ProductAdapter adapter;
-    List<ProductRoom> products;
+    List<ProductWithCategories> products;
     private ExecutorService executorService;
     private AppDatabase appDatabase;
 
@@ -37,13 +38,10 @@ public class AdminProductListActivity extends BaseActivity implements ProductAda
     }
 
     private void loadData() {
-        executorService.execute(() -> {
-            List<ProductRoom> newProducts = appDatabase.productDao().getAll();
-            runOnUiThread(() -> {
-                products.clear();
-                products.addAll(newProducts);
-                adapter.notifyDataSetChanged();
-            });
+        appDatabase.productDao().getProductsWithCategories().observe(this, newProducts -> {
+            products.clear();
+            products.addAll(newProducts);
+            adapter.notifyDataSetChanged();
         });
     }
 

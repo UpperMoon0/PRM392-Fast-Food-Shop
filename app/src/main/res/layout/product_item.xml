@@ -33,6 +33,14 @@
             android:layout_width="wrap_content"
             tools:text="Price"/>
 
+        <TextView
+            android:id="@+id/txtCategories"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:textSize="12sp"
+            tools:text="Category 1, Category 2"/>
+
     </LinearLayout>
 
     <LinearLayout

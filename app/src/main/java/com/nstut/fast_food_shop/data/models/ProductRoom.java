@@ -7,12 +7,7 @@ import androidx.room.Index;
 import androidx.room.PrimaryKey;
 import java.io.Serializable;
 
-@Entity(tableName = "products",
-        foreignKeys = @ForeignKey(entity = Category.class,
-                parentColumns = "id",
-                childColumns = "categoryId",
-                onDelete = ForeignKey.CASCADE),
-        indices = {@Index(value = "categoryId")})
+@Entity(tableName = "products")
 public class ProductRoom implements Serializable {
     @PrimaryKey(autoGenerate = true)
     public int productId;
@@ -20,19 +15,17 @@ public class ProductRoom implements Serializable {
     public String description;
     public double price;
     public String imageUrl;
-    public int categoryId;
     public boolean isAvailable;
     public String createdAt;
     public String updatedAt;
 
     @Ignore
-    public ProductRoom(int productId, String name, String description, double price, String imageUrl, int categoryId, boolean isAvailable, String createdAt, String updatedAt) {
+    public ProductRoom(int productId, String name, String description, double price, String imageUrl, boolean isAvailable, String createdAt, String updatedAt) {
         this.productId = productId;
         this.name = name;
         this.description = description;
         this.price = price;
         this.imageUrl = imageUrl;
-        this.categoryId = categoryId;
         this.isAvailable = isAvailable;
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
@@ -81,14 +74,6 @@ public class ProductRoom implements Serializable {
         this.imageUrl = imageUrl;
     }
 
-    public int getCategoryId() {
-        return categoryId;
-    }
-
-    public void setCategoryId(int categoryId) {
-        this.categoryId = categoryId;
-    }
-
     public boolean isAvailable() {
         return isAvailable;
     }
@@ -121,7 +106,6 @@ public class ProductRoom implements Serializable {
                 ", description='" + description + '\'' +
                 ", price=" + price +
                 ", imageUrl='" + imageUrl + '\'' +
-                ", categoryId='" + categoryId + '\'' +
                 ", isAvailable=" + isAvailable +
                 ", createdAt='" + createdAt + '\'' +
                 ", updatedAt='" + updatedAt + '\'' +

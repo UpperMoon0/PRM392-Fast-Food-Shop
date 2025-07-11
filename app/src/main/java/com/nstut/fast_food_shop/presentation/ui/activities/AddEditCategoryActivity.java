@@ -66,18 +66,16 @@ public class AddEditCategoryActivity extends BaseActivity {
     }
 
     private void loadCategory() {
-        new Thread(() -> {
-            currentCategory = appDatabase.categoryDao().getCategoryById(categoryId);
-            runOnUiThread(() -> {
-                if (currentCategory != null) {
-                    editTextName.setText(currentCategory.getName());
-                    editTextDescription.setText(currentCategory.getDescription());
-                    if (currentCategory.getImageUrl() != null && !currentCategory.getImageUrl().isEmpty()) {
-                        Glide.with(this).load(currentCategory.getImageUrl()).into(imageView);
-                    }
+        appDatabase.categoryDao().getCategoryById(categoryId).observe(this, category -> {
+            currentCategory = category;
+            if (currentCategory != null) {
+                editTextName.setText(currentCategory.getName());
+                editTextDescription.setText(currentCategory.getDescription());
+                if (currentCategory.getImageUrl() != null && !currentCategory.getImageUrl().isEmpty()) {
+                    Glide.with(this).load(currentCategory.getImageUrl()).into(imageView);
                 }
-            });
-        }).start();
+            }
+        });
     }
 
     @Override
