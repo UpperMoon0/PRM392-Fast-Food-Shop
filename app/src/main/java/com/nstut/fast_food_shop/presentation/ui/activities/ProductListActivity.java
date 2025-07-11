@@ -5,9 +5,6 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
-import android.widget.Button;
-import android.widget.TextView;
-
 import androidx.activity.EdgeToEdge;
 import androidx.core.app.ActivityCompat;
 import androidx.core.graphics.Insets;
@@ -28,11 +25,10 @@ import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-public class ProductListActivity extends BaseActivity implements ProductAdapter.OnProductClickListener {
+public class ProductListActivity extends BaseActivity implements ProductAdapter.OnProductClickListener, ProductAdapter.OnAdminProductClickListener {
     RecyclerView recyclerView;
     ProductAdapter adapter;
     List<ProductRoom> products;
-    Button loginLogoutButton;
     private ExecutorService executorService;
     private AppDatabase appDatabase;
     private User currentUser;
@@ -41,37 +37,27 @@ public class ProductListActivity extends BaseActivity implements ProductAdapter.
     protected void onResume() {
         super.onResume();
         loadData();
-        checkUserLoginStatus();
-    }
-
-    private void checkUserRole() {
-        FloatingActionButton fab = findViewById(R.id.fabAddProduct);
-        View secondaryHeader = findViewById(R.id.secondary_header);
-        SharedPreferences sharedPreferences = getSharedPreferences("user_prefs", MODE_PRIVATE);
-        String userRole = sharedPreferences.getString("user_role", null);
-        if (User.ROLE_ADMIN.equals(userRole)) {
-            fab.setVisibility(View.VISIBLE);
-            secondaryHeader.setVisibility(View.VISIBLE);
-        } else {
-            fab.setVisibility(View.GONE);
-            secondaryHeader.setVisibility(View.GONE);
-        }
     }
 
     private void loadData() {
         String categoryIdStr = getIntent().getStringExtra("category_id");
         executorService.execute(() -> {
             List<ProductRoom> newProducts;
-            if (categoryIdStr != null) {
-                try {
-                    int categoryId = Integer.parseInt(categoryIdStr);
-                    newProducts = appDatabase.productDao().getProductsByCategory(categoryId);
-                } catch (NumberFormatException e) {
+            if (currentUser != null && currentUser.getRole().equals("admin")) {
+                newProducts = appDatabase.productDao().getAll();
+            } else {
+                if (categoryIdStr != null) {
+                    try {
+                        int categoryId = Integer.parseInt(categoryIdStr);
+                        newProducts = appDatabase.productDao().getProductsByCategory(categoryId);
+                    } catch (NumberFormatException e) {
+                        newProducts = appDatabase.productDao().getAllAvailable();
+                    }
+                } else {
                     newProducts = appDatabase.productDao().getAllAvailable();
                 }
-            } else {
-                newProducts = appDatabase.productDao().getAllAvailable();
             }
+
             List<ProductRoom> finalNewProducts = newProducts;
             runOnUiThread(() -> {
                 products.clear();
@@ -88,6 +74,7 @@ public class ProductListActivity extends BaseActivity implements ProductAdapter.
 
         executorService = Executors.newSingleThreadExecutor();
         appDatabase = AppDatabase.getInstance(this);
+        currentUser = getCurrentUser();
 
         EdgeToEdge.enable(this);
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(android.R.id.content), (v, insets) -> {
@@ -106,41 +93,18 @@ public class ProductListActivity extends BaseActivity implements ProductAdapter.
         });
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         products = new ArrayList<>();
-        adapter = new ProductAdapter(products, this);
-        recyclerView.setAdapter(adapter);
 
-        loginLogoutButton = findViewById(R.id.login_logout_button);
-        loginLogoutButton.setOnClickListener(v -> {
-            SharedPreferences sharedPreferences = getSharedPreferences("user_prefs", MODE_PRIVATE);
-            if (sharedPreferences.getString("user_id", null) != null || sharedPreferences.getString("user_role", null) != null) {
-                SharedPreferences.Editor editor = sharedPreferences.edit();
-                editor.remove("user_id");
-                editor.remove("user_role");
-                editor.apply();
-                checkUserLoginStatus();
-            } else {
-                Intent intent = new Intent(this, LoginActivity.class);
+        if (currentUser != null && currentUser.getRole().equals("admin")) {
+            findViewById(R.id.secondary_header).setVisibility(View.VISIBLE);
+            findViewById(R.id.button_manage_categories).setOnClickListener(v -> {
+                Intent intent = new Intent(this, CategoryListActivity.class);
                 startActivity(intent);
-            }
-        });
-
-        Button btnCategoryList = findViewById(R.id.btn_category_list);
-        btnCategoryList.setOnClickListener(v -> {
-            Intent intent = new Intent(this, CategoryListActivity.class);
-            startActivity(intent);
-        });
-    }
-
-    private void checkUserLoginStatus() {
-        SharedPreferences sharedPreferences = getSharedPreferences("user_prefs", MODE_PRIVATE);
-        if (sharedPreferences.getString("user_id", null) != null || User.ROLE_ADMIN.equals(sharedPreferences.getString("user_role", null))) {
-            loginLogoutButton.setText("Logout");
-            loginLogoutButton.setBackgroundColor(ActivityCompat.getColor(this, R.color.red));
+            });
+            adapter = new ProductAdapter(products, (ProductAdapter.OnAdminProductClickListener) this);
         } else {
-            loginLogoutButton.setText("Login");
-            loginLogoutButton.setBackgroundColor(ActivityCompat.getColor(this, R.color.blue));
+            adapter = new ProductAdapter(products, (ProductAdapter.OnProductClickListener) this);
         }
-        checkUserRole();
+        recyclerView.setAdapter(adapter);
     }
 
     @Override
@@ -148,5 +112,20 @@ public class ProductListActivity extends BaseActivity implements ProductAdapter.
         Intent intent = new Intent(this, ProductDetailActivity.class);
         intent.putExtra(ProductDetailActivity.EXTRA_PRODUCT, product);
         startActivity(intent);
+    }
+
+    @Override
+    public void onEditClick(ProductRoom product) {
+        Intent intent = new Intent(this, AddEditProductActivity.class);
+        intent.putExtra("product_id", product.getId());
+        startActivity(intent);
+    }
+
+    @Override
+    public void onDeleteClick(ProductRoom product) {
+        executorService.execute(() -> {
+            appDatabase.productDao().delete(product);
+            loadData();
+        });
     }
 }

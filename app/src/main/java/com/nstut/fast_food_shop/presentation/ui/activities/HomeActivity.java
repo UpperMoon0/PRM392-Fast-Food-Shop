@@ -1,5 +1,6 @@
 package com.nstut.fast_food_shop.presentation.ui.activities;
 
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
 import android.content.Intent;
@@ -15,6 +16,7 @@ import com.nstut.fast_food_shop.R;
 import com.nstut.fast_food_shop.data.local.db.AppDatabase;
 import com.nstut.fast_food_shop.data.models.Category;
 import com.nstut.fast_food_shop.data.models.ProductRoom;
+import com.nstut.fast_food_shop.data.models.User;
 import com.nstut.fast_food_shop.presentation.ui.adapters.CategoryAdapter;
 import com.nstut.fast_food_shop.presentation.ui.adapters.ProductAdapter;
 
@@ -40,6 +42,16 @@ public class HomeActivity extends BaseActivity implements CategoryAdapter.OnCate
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
+
+        SharedPreferences sharedPreferences = getSharedPreferences("user_prefs", MODE_PRIVATE);
+        boolean isLoggedIn = sharedPreferences.getBoolean("is_logged_in", false);
+        String role = sharedPreferences.getString("role", User.ROLE_USER);
+
+        if (isLoggedIn && User.ROLE_ADMIN.equals(role)) {
+            startActivity(new Intent(this, ProductListActivity.class));
+            finish();
+            return;
+        }
 
         appDatabase = AppDatabase.getInstance(this);
 

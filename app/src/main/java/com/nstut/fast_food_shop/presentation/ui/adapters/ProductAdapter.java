@@ -25,21 +25,32 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ViewHold
     private List<ProductRoom> products;
     private Context context;
     private OnProductClickListener onProductClickListener;
+    private OnAdminProductClickListener onAdminProductClickListener;
 
     public ProductAdapter(List<ProductRoom> products, OnProductClickListener onProductClickListener) {
         this.products = products;
         this.onProductClickListener = onProductClickListener;
     }
 
+    public ProductAdapter(List<ProductRoom> products, OnAdminProductClickListener onAdminProductClickListener) {
+        this.products = products;
+        this.onAdminProductClickListener = onAdminProductClickListener;
+    }
+
     public class ViewHolder extends RecyclerView.ViewHolder {
         TextView txtName, txtPrice;
         ImageView imageView;
+        View adminActions;
+        Button btnEdit, btnDelete;
 
         public ViewHolder(View view) {
             super(view);
             txtName = view.findViewById(R.id.txtName);
             txtPrice = view.findViewById(R.id.txtPrice);
             imageView = view.findViewById(R.id.imageView);
+            adminActions = view.findViewById(R.id.admin_action);
+            btnEdit = view.findViewById(R.id.button_edit);
+            btnDelete = view.findViewById(R.id.button_delete);
         }
     }
 
@@ -58,11 +69,19 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ViewHold
         holder.txtPrice.setText(String.valueOf(p.getPrice()));
         Glide.with(context).load(p.getImageUrl()).into(holder.imageView);
 
-        holder.itemView.setOnClickListener(v -> {
-            if (onProductClickListener != null) {
-                onProductClickListener.onProductClick(p);
-            }
-        });
+        if (onAdminProductClickListener != null) {
+            holder.adminActions.setVisibility(View.VISIBLE);
+            holder.btnEdit.setOnClickListener(v -> onAdminProductClickListener.onEditClick(p));
+            holder.btnDelete.setOnClickListener(v -> onAdminProductClickListener.onDeleteClick(p));
+        } else {
+            holder.adminActions.setVisibility(View.GONE);
+            holder.itemView.setOnClickListener(v -> {
+                if (onProductClickListener != null) {
+                    onProductClickListener.onProductClick(p);
+                }
+            });
+        }
+
 
         // Làm mờ item nếu không available
         boolean available = p.isAvailable();
@@ -82,5 +101,10 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ViewHold
 
     public interface OnProductClickListener {
         void onProductClick(ProductRoom product);
+    }
+
+    public interface OnAdminProductClickListener {
+        void onEditClick(ProductRoom product);
+        void onDeleteClick(ProductRoom product);
     }
 }

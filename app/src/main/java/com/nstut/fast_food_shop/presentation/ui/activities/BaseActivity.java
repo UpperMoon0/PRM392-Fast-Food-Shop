@@ -11,7 +11,9 @@ import android.widget.TextView;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.google.gson.Gson;
 import com.nstut.fast_food_shop.R;
+import com.nstut.fast_food_shop.data.models.User;
 
 public class BaseActivity extends AppCompatActivity {
 
@@ -21,12 +23,22 @@ public class BaseActivity extends AppCompatActivity {
         setupHeader();
     }
 
+    public User getCurrentUser() {
+        SharedPreferences sharedPreferences = getSharedPreferences("user_prefs", MODE_PRIVATE);
+        String userJson = sharedPreferences.getString("user", null);
+        if (userJson != null) {
+            return new Gson().fromJson(userJson, User.class);
+        }
+        return null;
+    }
+
     public void setupHeader() {
         TextView appName = findViewById(R.id.app_name);
         Button loginLogoutButton = findViewById(R.id.login_logout_button);
         LinearLayout adminNavLinks = findViewById(R.id.admin_nav_links);
         Button manageProductsButton = findViewById(R.id.button_manage_products);
         Button manageCategoriesButton = findViewById(R.id.button_manage_categories);
+        View secondaryHeader = findViewById(R.id.secondary_header);
 
         SharedPreferences sharedPreferences = getSharedPreferences("user_prefs", MODE_PRIVATE);
         boolean isLoggedIn = sharedPreferences.getBoolean("is_logged_in", false);
@@ -35,7 +47,7 @@ public class BaseActivity extends AppCompatActivity {
         if (appName != null) {
             appName.setOnClickListener(v -> {
                 Intent intent;
-                if (isLoggedIn && "admin".equals(role)) {
+                if (isLoggedIn && "admin".equalsIgnoreCase(role)) {
                     intent = new Intent(this, ProductListActivity.class);
                 } else {
                     intent = new Intent(this, HomeActivity.class);
@@ -57,19 +69,6 @@ public class BaseActivity extends AppCompatActivity {
                     intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                     startActivity(intent);
                 });
-
-                if ("admin".equals(role) && adminNavLinks != null && manageProductsButton != null && manageCategoriesButton != null) {
-                    adminNavLinks.setVisibility(View.VISIBLE);
-                    manageProductsButton.setOnClickListener(v -> {
-                        Intent intent = new Intent(this, ProductListActivity.class);
-                        startActivity(intent);
-                    });
-                    manageCategoriesButton.setOnClickListener(v -> {
-                        Intent intent = new Intent(this, CategoryListActivity.class);
-                        startActivity(intent);
-                    });
-                }
-
             } else {
                 loginLogoutButton.setText("Login");
                 loginLogoutButton.setActivated(false);
@@ -78,6 +77,28 @@ public class BaseActivity extends AppCompatActivity {
                     startActivity(intent);
                 });
             }
+        }
+
+        if (adminNavLinks != null) {
+            if ("admin".equalsIgnoreCase(role)) {
+                adminNavLinks.setVisibility(View.VISIBLE);
+            } else {
+                adminNavLinks.setVisibility(View.GONE);
+            }
+        }
+
+        if (manageProductsButton != null) {
+            manageProductsButton.setOnClickListener(v -> {
+                Intent intent = new Intent(this, ProductListActivity.class);
+                startActivity(intent);
+            });
+        }
+
+        if (manageCategoriesButton != null) {
+            manageCategoriesButton.setOnClickListener(v -> {
+                Intent intent = new Intent(this, CategoryListActivity.class);
+                startActivity(intent);
+            });
         }
     }
 }

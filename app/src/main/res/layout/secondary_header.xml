@@ -1,21 +1,23 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/admin_nav_links"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    android:gravity="center"
     android:orientation="horizontal"
-    android:gravity="center">
+    android:visibility="gone">
 
     <Button
-        android:id="@+id/btn_product_list"
+        android:id="@+id/button_manage_products"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_weight="1"
-        android:text="Product List" />
+        android:text="Manage Products" />
 
     <Button
-        android:id="@+id/btn_category_list"
+        android:id="@+id/button_manage_categories"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_weight="1"
-        android:text="Category List" />
+        android:text="Manage Categories" />
 </LinearLayout>

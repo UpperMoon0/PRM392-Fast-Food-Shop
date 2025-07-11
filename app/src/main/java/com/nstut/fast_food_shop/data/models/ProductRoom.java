@@ -41,7 +41,7 @@ public class ProductRoom implements Serializable {
     public ProductRoom() {
     }
 
-    public int getProductId() {
+    public int getId() {
         return productId;
     }
 

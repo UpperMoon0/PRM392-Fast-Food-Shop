@@ -13,6 +13,7 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.nstut.fast_food_shop.R;
 import com.nstut.fast_food_shop.data.local.db.AppDatabase;
 import com.nstut.fast_food_shop.data.models.Category;
+import com.nstut.fast_food_shop.data.models.User;
 import com.nstut.fast_food_shop.presentation.ui.adapters.CategoryAdapter;
 
 import java.util.ArrayList;
@@ -24,6 +25,7 @@ public class CategoryListActivity extends BaseActivity {
     private CategoryAdapter categoryAdapter;
     private List<Category> categoryList = new ArrayList<>();
     private AppDatabase appDatabase;
+    private User currentUser;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -35,22 +37,37 @@ public class CategoryListActivity extends BaseActivity {
         recyclerView = findViewById(R.id.category_recycler_view);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
 
-        categoryAdapter = new CategoryAdapter(categoryList, new CategoryAdapter.OnItemClickListener() {
-            @Override
-            public void onEditClick(Category category) {
-                Intent intent = new Intent(CategoryListActivity.this, AddEditCategoryActivity.class);
-                intent.putExtra("category_id", category.getId());
+        if (currentUser != null && currentUser.getRole().equals("admin")) {
+            findViewById(R.id.secondary_header).setVisibility(View.VISIBLE);
+            findViewById(R.id.button_manage_products).setOnClickListener(v -> {
+                Intent intent = new Intent(this, ProductListActivity.class);
                 startActivity(intent);
-            }
+            });
+            categoryAdapter = new CategoryAdapter(categoryList, new CategoryAdapter.OnItemClickListener() {
+                @Override
+                public void onEditClick(Category category) {
+                    Intent intent = new Intent(CategoryListActivity.this, AddEditCategoryActivity.class);
+                    intent.putExtra("category_id", category.getId());
+                    startActivity(intent);
+                }
 
-            @Override
-            public void onDeleteClick(Category category) {
-                new Thread(() -> {
-                    appDatabase.categoryDao().delete(category);
-                    loadCategories();
-                }).start();
-            }
-        });
+                @Override
+                public void onDeleteClick(Category category) {
+                    new Thread(() -> {
+                        appDatabase.categoryDao().delete(category);
+                        loadCategories();
+                    }).start();
+                }
+            });
+        } else {
+            categoryAdapter = new CategoryAdapter(categoryList, (CategoryAdapter.OnCategoryClickListener) category -> {
+                Intent intent = new Intent(CategoryListActivity.this, ProductListActivity.class);
+                intent.putExtra("category_id", String.valueOf(category.getId()));
+                startActivity(intent);
+            });
+        }
+
+
         recyclerView.setAdapter(categoryAdapter);
 
         FloatingActionButton fab = findViewById(R.id.fab_add_category);
@@ -61,11 +78,6 @@ public class CategoryListActivity extends BaseActivity {
             }
         });
 
-        Button btnProductList = findViewById(R.id.btn_product_list);
-        btnProductList.setOnClickListener(v -> {
-            Intent intent = new Intent(this, ProductListActivity.class);
-            startActivity(intent);
-        });
     }
 
     @Override
