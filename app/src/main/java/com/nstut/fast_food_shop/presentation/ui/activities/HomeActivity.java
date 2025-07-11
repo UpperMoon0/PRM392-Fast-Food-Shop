@@ -63,7 +63,7 @@ public class HomeActivity extends BaseActivity implements CategoryAdapter.OnCate
         categoryList = new ArrayList<>();
         productList = new ArrayList<>();
 
-        categoryAdapter = new CategoryAdapter(categoryList, (CategoryAdapter.OnCategoryClickListener) this);
+        categoryAdapter = new CategoryAdapter(categoryList, this);
         categoriesRecyclerView.setAdapter(categoryAdapter);
 
         productAdapter = new ProductAdapter(productList, this);
@@ -75,18 +75,6 @@ public class HomeActivity extends BaseActivity implements CategoryAdapter.OnCate
 
     private void loadData() {
         executorService.execute(() -> {
-            // Add sample categories if none exist
-            if (appDatabase.categoryDao().getAllCategories().isEmpty()) {
-                appDatabase.categoryDao().insert(new Category("Burgers", "Delicious burgers", ""));
-                appDatabase.categoryDao().insert(new Category("Pizzas", "Cheesy pizzas", ""));
-                appDatabase.categoryDao().insert(new Category("Drinks", "Refreshing drinks", ""));
-            }
-            if (appDatabase.productDao().getAll().isEmpty()) {
-                appDatabase.productDao().insert(new ProductRoom(0, "Hamburger", "A classic hamburger", 5.99, "https://www.foodandwine.com/thmb/DI29Houjc_ccAtFKly0BbVsusHc=/1500x0/filters:no_upscale():max_bytes(150000):strip_icc()/crispy-comte-cheesburgers-FT-RECIPE0921-6166c6552b7148e8a8561f77657f590b.jpg", 1, true, "", ""));
-                appDatabase.productDao().insert(new ProductRoom(0, "Cheeseburger", "A cheeseburger", 6.99, "https://www.foodandwine.com/thmb/DI29Houjc_ccAtFKly0BbVsusHc=/1500x0/filters:no_upscale():max_bytes(150000):strip_icc()/crispy-comte-cheesburgers-FT-RECIPE0921-6166c6552b7148e8a8561f77657f590b.jpg", 1, true, "", ""));
-                appDatabase.productDao().insert(new ProductRoom(0, "Pizza", "A pizza", 8.99, "https://www.foodandwine.com/thmb/DI29Houjc_ccAtFKly0BbVsusHc=/1500x0/filters:no_upscale():max_bytes(150000):strip_icc()/crispy-comte-cheesburgers-FT-RECIPE0921-6166c6552b7148e8a8561f77657f590b.jpg", 2, true, "", ""));
-                appDatabase.productDao().insert(new ProductRoom(0, "Coke", "A coke", 1.99, "https://www.foodandwine.com/thmb/DI29Houjc_ccAtFKly0BbVsusHc=/1500x0/filters:no_upscale():max_bytes(150000):strip_icc()/crispy-comte-cheesburgers-FT-RECIPE0921-6166c6552b7148e8a8561f77657f590b.jpg", 3, true, "", ""));
-            }
             List<Category> categories = appDatabase.categoryDao().getAllCategories();
             List<ProductRoom> products = appDatabase.productDao().getAllAvailable();
             Log.d("HomeActivity", "Products fetched: " + products.size());

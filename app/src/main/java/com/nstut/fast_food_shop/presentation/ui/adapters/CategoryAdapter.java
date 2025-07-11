@@ -61,8 +61,10 @@ public class CategoryAdapter extends RecyclerView.Adapter<CategoryAdapter.Catego
             holder.itemView.findViewById(R.id.button_delete).setOnClickListener(v -> listener.onDeleteClick(category));
         } else if (categoryClickListener != null) {
             holder.itemView.setOnClickListener(v -> categoryClickListener.onCategoryClick(category));
-            holder.itemView.findViewById(R.id.button_edit).setVisibility(View.GONE);
-            holder.itemView.findViewById(R.id.button_delete).setVisibility(View.GONE);
+            if(holder.itemView.findViewById(R.id.button_edit) != null) {
+                holder.itemView.findViewById(R.id.button_edit).setVisibility(View.GONE);
+                holder.itemView.findViewById(R.id.button_delete).setVisibility(View.GONE);
+            }
         }
     }
 
