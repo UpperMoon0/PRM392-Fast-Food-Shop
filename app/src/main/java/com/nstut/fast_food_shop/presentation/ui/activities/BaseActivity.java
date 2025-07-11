@@ -48,7 +48,7 @@ public class BaseActivity extends AppCompatActivity {
             appName.setOnClickListener(v -> {
                 Intent intent;
                 if (isLoggedIn && "admin".equalsIgnoreCase(role)) {
-                    intent = new Intent(this, ProductListActivity.class);
+                    intent = new Intent(this, AdminProductListActivity.class);
                 } else {
                     intent = new Intent(this, HomeActivity.class);
                 }
@@ -89,7 +89,7 @@ public class BaseActivity extends AppCompatActivity {
 
         if (manageProductsButton != null) {
             manageProductsButton.setOnClickListener(v -> {
-                Intent intent = new Intent(this, ProductListActivity.class);
+                Intent intent = new Intent(this, AdminProductListActivity.class);
                 startActivity(intent);
             });
         }

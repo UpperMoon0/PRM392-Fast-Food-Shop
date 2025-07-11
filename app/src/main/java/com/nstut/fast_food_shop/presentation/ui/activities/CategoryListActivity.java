@@ -33,6 +33,7 @@ public class CategoryListActivity extends BaseActivity {
         setContentView(R.layout.activity_category_list);
 
         appDatabase = AppDatabase.getInstance(this);
+        currentUser = getCurrentUser();
 
         recyclerView = findViewById(R.id.category_recycler_view);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
@@ -40,7 +41,7 @@ public class CategoryListActivity extends BaseActivity {
         if (currentUser != null && currentUser.getRole().equals("admin")) {
             findViewById(R.id.secondary_header).setVisibility(View.VISIBLE);
             findViewById(R.id.button_manage_products).setOnClickListener(v -> {
-                Intent intent = new Intent(this, ProductListActivity.class);
+                Intent intent = new Intent(this, AdminProductListActivity.class);
                 startActivity(intent);
             });
             categoryAdapter = new CategoryAdapter(categoryList, new CategoryAdapter.OnItemClickListener() {
