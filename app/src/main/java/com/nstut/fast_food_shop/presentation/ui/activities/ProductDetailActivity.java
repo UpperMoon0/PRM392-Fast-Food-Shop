@@ -7,13 +7,12 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
+import com.google.android.material.chip.Chip;
+import com.google.android.material.chip.ChipGroup;
 import com.nstut.fast_food_shop.R;
 import com.nstut.fast_food_shop.data.local.db.AppDatabase;
 import com.nstut.fast_food_shop.data.models.Category;
-import com.nstut.fast_food_shop.data.models.ProductWithCategories;
 import com.nstut.fast_food_shop.data.models.ProductRoom;
-
-import java.util.stream.Collectors;
 
 public class ProductDetailActivity extends BaseActivity {
 
@@ -28,7 +27,7 @@ public class ProductDetailActivity extends BaseActivity {
         TextView productNameTextView = findViewById(R.id.product_name_text_view);
         TextView productDescriptionTextView = findViewById(R.id.product_description_text_view);
         TextView productPriceTextView = findViewById(R.id.product_price_text_view);
-        TextView productCategoriesTextView = findViewById(R.id.product_categories_text_view);
+        com.google.android.material.chip.ChipGroup categoryChipGroup = findViewById(R.id.category_chip_group);
         Button addToCartButton = findViewById(R.id.add_to_cart_button);
         ImageView backButton = findViewById(R.id.back_button);
 
@@ -45,8 +44,12 @@ public class ProductDetailActivity extends BaseActivity {
                     productDescriptionTextView.setText(product.getDescription());
                     productPriceTextView.setText(String.format("$%.2f", product.getPrice()));
 
-                    String categories = productWithCategories.categories.stream().map(Category::getName).collect(Collectors.joining(", "));
-                    productCategoriesTextView.setText(categories);
+                    categoryChipGroup.removeAllViews();
+                    for (Category category : productWithCategories.categories) {
+                        com.google.android.material.chip.Chip chip = new com.google.android.material.chip.Chip(this);
+                        chip.setText(category.getName());
+                        categoryChipGroup.addView(chip);
+                    }
                 }
             });
         }

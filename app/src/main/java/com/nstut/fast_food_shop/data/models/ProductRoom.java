@@ -6,6 +6,7 @@ import androidx.room.Ignore;
 import androidx.room.Index;
 import androidx.room.PrimaryKey;
 import java.io.Serializable;
+import java.util.List;
 
 @Entity(tableName = "products")
 public class ProductRoom implements Serializable {
@@ -18,7 +19,8 @@ public class ProductRoom implements Serializable {
     public boolean isAvailable;
     public String createdAt;
     public String updatedAt;
-
+    public List<String> categoryIds;
+ 
     @Ignore
     public ProductRoom(int productId, String name, String description, double price, String imageUrl, boolean isAvailable, String createdAt, String updatedAt) {
         this.productId = productId;
@@ -98,6 +100,14 @@ public class ProductRoom implements Serializable {
         this.updatedAt = updatedAt;
     }
 
+    public List<String> getCategoryIds() {
+        return categoryIds;
+    }
+
+    public void setCategoryIds(List<String> categoryIds) {
+        this.categoryIds = categoryIds;
+    }
+ 
     @Override
     public String toString() {
         return "ProductRoom{" +
@@ -109,6 +119,7 @@ public class ProductRoom implements Serializable {
                 ", isAvailable=" + isAvailable +
                 ", createdAt='" + createdAt + '\'' +
                 ", updatedAt='" + updatedAt + '\'' +
+                ", categoryIds=" + categoryIds +
                 '}';
     }
 }
