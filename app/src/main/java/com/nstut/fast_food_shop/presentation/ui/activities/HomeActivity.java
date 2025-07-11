@@ -48,7 +48,7 @@ public class HomeActivity extends BaseActivity implements CategoryAdapter.OnCate
         String role = sharedPreferences.getString("role", User.ROLE_USER);
 
         if (isLoggedIn && User.ROLE_ADMIN.equals(role)) {
-            startActivity(new Intent(this, ProductListActivity.class));
+            startActivity(new Intent(this, AdminProductListActivity.class));
             finish();
             return;
         }

@@ -1,8 +1,6 @@
 package com.nstut.fast_food_shop.presentation.ui.adapters;
 
-import android.app.Activity;
 import android.content.Context;
-import android.content.Intent;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -15,26 +13,24 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
 import com.nstut.fast_food_shop.R;
-import com.nstut.fast_food_shop.data.local.db.AppDatabase;
 import com.nstut.fast_food_shop.data.models.ProductRoom;
-import com.nstut.fast_food_shop.presentation.ui.activities.AddEditProductActivity;
 
 import java.util.List;
 
 public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ViewHolder> {
     private List<ProductRoom> products;
     private Context context;
-    private OnProductClickListener onProductClickListener;
-    private OnAdminProductClickListener onAdminProductClickListener;
+    private OnProductClickListener productClickListener;
+    private OnAdminProductClickListener adminProductClickListener;
 
-    public ProductAdapter(List<ProductRoom> products, OnProductClickListener onProductClickListener) {
+    public ProductAdapter(List<ProductRoom> products, OnProductClickListener listener) {
         this.products = products;
-        this.onProductClickListener = onProductClickListener;
+        this.productClickListener = listener;
     }
 
-    public ProductAdapter(List<ProductRoom> products, OnAdminProductClickListener onAdminProductClickListener) {
+    public ProductAdapter(List<ProductRoom> products, OnAdminProductClickListener listener) {
         this.products = products;
-        this.onAdminProductClickListener = onAdminProductClickListener;
+        this.adminProductClickListener = listener;
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder {
@@ -69,17 +65,15 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ViewHold
         holder.txtPrice.setText(String.valueOf(p.getPrice()));
         Glide.with(context).load(p.getImageUrl()).into(holder.imageView);
 
-        if (onAdminProductClickListener != null) {
+        if (adminProductClickListener != null) {
             holder.adminActions.setVisibility(View.VISIBLE);
-            holder.btnEdit.setOnClickListener(v -> onAdminProductClickListener.onEditClick(p));
-            holder.btnDelete.setOnClickListener(v -> onAdminProductClickListener.onDeleteClick(p));
+            holder.btnEdit.setOnClickListener(v -> adminProductClickListener.onEditClick(p));
+            holder.btnDelete.setOnClickListener(v -> adminProductClickListener.onDeleteClick(p));
+        } else if (productClickListener != null) {
+            holder.adminActions.setVisibility(View.GONE);
+            holder.itemView.setOnClickListener(v -> productClickListener.onProductClick(p));
         } else {
             holder.adminActions.setVisibility(View.GONE);
-            holder.itemView.setOnClickListener(v -> {
-                if (onProductClickListener != null) {
-                    onProductClickListener.onProductClick(p);
-                }
-            });
         }
 
 

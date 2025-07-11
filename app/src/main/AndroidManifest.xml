@@ -19,6 +19,7 @@
         <activity android:name=".presentation.ui.activities.RegisterActivity"/>
         <activity android:name=".presentation.ui.activities.AddEditProductActivity"/>
         <activity android:name=".presentation.ui.activities.ProductListActivity"/>
+        <activity android:name=".presentation.ui.activities.AdminProductListActivity"/>
         <activity android:name=".presentation.ui.activities.HomeActivity"
             android:exported="true">
             <intent-filter>
