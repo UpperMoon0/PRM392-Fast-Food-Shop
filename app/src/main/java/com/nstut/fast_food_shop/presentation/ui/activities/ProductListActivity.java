@@ -2,6 +2,9 @@ package com.nstut.fast_food_shop.presentation.ui.activities;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.View;
+import android.widget.ImageView;
+
 import androidx.activity.EdgeToEdge;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
@@ -26,6 +29,7 @@ public class ProductListActivity extends BaseActivity implements ProductAdapter.
     List<ProductWithCategories> products;
     private ExecutorService executorService;
     private AppDatabase appDatabase;
+    private ImageView backButton;
 
     @Override
     protected void onResume() {
@@ -37,9 +41,7 @@ public class ProductListActivity extends BaseActivity implements ProductAdapter.
         int categoryId = getIntent().getIntExtra("category_id", -1);
         if (categoryId != -1) {
             appDatabase.productDao().getProductsWithCategoriesByCategoryId(categoryId).observe(this, newProducts -> {
-                products.clear();
-                products.addAll(newProducts);
-                adapter.notifyDataSetChanged();
+                adapter.updateProducts(newProducts);
             });
         } else {
             loadAllAvailableProducts();
@@ -48,9 +50,7 @@ public class ProductListActivity extends BaseActivity implements ProductAdapter.
 
     private void loadAllAvailableProducts() {
         appDatabase.productDao().getAvailableProductsWithCategories().observe(this, newProducts -> {
-            products.clear();
-            products.addAll(newProducts);
-            adapter.notifyDataSetChanged();
+            adapter.updateProducts(newProducts);
         });
     }
 
@@ -77,6 +77,11 @@ public class ProductListActivity extends BaseActivity implements ProductAdapter.
 
         adapter = new ProductAdapter(products, this);
         recyclerView.setAdapter(adapter);
+
+        backButton = findViewById(R.id.back_button);
+        backButton.setOnClickListener(v -> {
+            onBackPressed();
+        });
     }
 
     @Override

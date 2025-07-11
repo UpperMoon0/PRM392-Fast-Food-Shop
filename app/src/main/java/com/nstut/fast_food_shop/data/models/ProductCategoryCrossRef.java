@@ -19,4 +19,9 @@ import androidx.room.Index;
 public class ProductCategoryCrossRef {
     public int productId;
     public int categoryId;
+
+    public ProductCategoryCrossRef(int productId, int categoryId) {
+        this.productId = productId;
+        this.categoryId = categoryId;
+    }
 }

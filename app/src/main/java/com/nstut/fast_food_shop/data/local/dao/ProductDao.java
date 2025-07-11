@@ -66,9 +66,7 @@ public interface ProductDao {
     public default void insertProductWithCategories(ProductRoom product, List<Integer> categoryIds) {
         long productId = insert(product);
         for (Integer categoryId : categoryIds) {
-            ProductCategoryCrossRef crossRef = new ProductCategoryCrossRef();
-            crossRef.productId = (int) productId;
-            crossRef.categoryId = categoryId;
+            ProductCategoryCrossRef crossRef = new ProductCategoryCrossRef((int) productId, categoryId);
             insertProductCategoryCrossRef(crossRef);
         }
     }
@@ -78,9 +76,7 @@ public interface ProductDao {
         update(product);
         deleteProductCategoryCrossRef(product.getId());
         for (Integer categoryId : categoryIds) {
-            ProductCategoryCrossRef crossRef = new ProductCategoryCrossRef();
-            crossRef.productId = product.getId();
-            crossRef.categoryId = categoryId;
+            ProductCategoryCrossRef crossRef = new ProductCategoryCrossRef(product.getId(), categoryId);
             insertProductCategoryCrossRef(crossRef);
         }
     }
