@@ -76,16 +76,21 @@ public class HomeActivity extends BaseActivity implements CategoryAdapter.OnCate
     private void loadData() {
         executorService.execute(() -> {
             List<Category> categories = appDatabase.categoryDao().getAllCategories();
-            List<ProductRoom> products = appDatabase.productDao().getAllAvailable();
+            Category burgerCategory = appDatabase.categoryDao().getCategoryByName("Burgers");
+            List<ProductRoom> products = new ArrayList<>();
+            if (burgerCategory != null) {
+                products = appDatabase.productDao().getProductsByCategory(burgerCategory.getId());
+            }
             Log.d("HomeActivity", "Products fetched: " + products.size());
 
+            List<ProductRoom> finalProducts = products;
             runOnUiThread(() -> {
                 categoryList.clear();
                 categoryList.addAll(categories);
                 categoryAdapter.notifyDataSetChanged();
 
                 productList.clear();
-                productList.addAll(products);
+                productList.addAll(finalProducts);
                 Log.d("HomeActivity", "Product list size before notifying adapter: " + productList.size());
                 productAdapter.notifyDataSetChanged();
             });

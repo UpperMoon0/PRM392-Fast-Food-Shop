@@ -1,6 +1,7 @@
 package com.nstut.fast_food_shop.data.local.db;
 
 import android.content.Context;
+import android.util.Log;
 
 import androidx.room.Database;
 import androidx.room.Room;
@@ -17,7 +18,7 @@ import com.nstut.fast_food_shop.data.models.User;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-@Database(entities = {ProductRoom.class, User.class, Category.class}, version = 6, exportSchema = false)
+@Database(entities = {ProductRoom.class, User.class, Category.class}, version = 9, exportSchema = false)
 public abstract class AppDatabase extends RoomDatabase {
     private static volatile AppDatabase INSTANCE;
     private static final int NUMBER_OF_THREADS = 4;
@@ -29,34 +30,55 @@ public abstract class AppDatabase extends RoomDatabase {
     public abstract CategoryDao categoryDao();
 
     public static AppDatabase getInstance(Context context) {
+        Log.d("DB_INIT", "getInstance called.");
         if (INSTANCE == null) {
+            Log.d("DB_INIT", "INSTANCE is null, entering synchronized block.");
             synchronized (AppDatabase.class) {
+                Log.d("DB_INIT", "Inside synchronized block.");
                 if (INSTANCE == null) {
+                    Log.d("DB_INIT", "INSTANCE is still null, building new database.");
                     INSTANCE = Room.databaseBuilder(context.getApplicationContext(),
                                     AppDatabase.class, "product_db")
                             .fallbackToDestructiveMigration()
                             .addCallback(sRoomDatabaseCallback)
                             .build();
+                    Log.d("DB_INIT", "Database instance created.");
+                } else {
+                    Log.d("DB_INIT", "INSTANCE was created by another thread.");
                 }
             }
+        } else {
+            Log.d("DB_INIT", "Returning existing INSTANCE.");
         }
         return INSTANCE;
     }
 
     private static RoomDatabase.Callback sRoomDatabaseCallback = new RoomDatabase.Callback() {
         @Override
+        public void onOpen(SupportSQLiteDatabase db) {
+            super.onOpen(db);
+            Log.d("DB_INIT", "Database opened.");
+        }
+        
+        @Override
         public void onCreate(SupportSQLiteDatabase db) {
             super.onCreate(db);
             databaseWriteExecutor.execute(() -> {
+                Log.d("DB_INIT", "Database creation callback triggered.");
                 CategoryDao categoryDao = INSTANCE.categoryDao();
                 ProductDao productDao = INSTANCE.productDao();
                 Category category = categoryDao.getCategoryByName("Burgers");
                 if (category == null) {
-                    categoryDao.insert(new Category("Burgers", "Juicy burgers", "https://cmx.weightwatchers.com/assets-proxy/weight-watchers/image/upload/v1594406683/visitor-site/prod/ca/burgers_mobile_my18jv"));
-                    category = categoryDao.getCategoryByName("Burgers");
+                    Log.d("DB_INIT", "'Burgers' category not found. Creating it.");
+                    long categoryId = categoryDao.insert(new Category("Burgers", "Juicy burgers", "https://cmx.weightwatchers.com/assets-proxy/weight-watchers/image/upload/v1594406683/visitor-site/prod/ca/burgers_mobile_my18jv"));
+                    category = categoryDao.getCategoryById((int) categoryId);
+                    Log.d("DB_INIT", "Category created with ID: " + categoryId);
+                } else {
+                    Log.d("DB_INIT", "'Burgers' category found with ID: " + category.getId());
                 }
 
-                if (productDao.getProductsByCategory(category.getId()).isEmpty()) {
+                if (category != null && productDao.getProductsByCategory(category.getId()).isEmpty()) {
+                    Log.d("DB_INIT", "No products found for 'Burgers' category. Seeding products.");
                     ProductRoom fishBurger = new ProductRoom();
                     fishBurger.name = "Fish Burger";
                     fishBurger.description = "A delicious fish burger.";
@@ -83,6 +105,13 @@ public abstract class AppDatabase extends RoomDatabase {
                     chickenBurger.categoryId = category.getId();
                     chickenBurger.isAvailable = true;
                     productDao.insert(chickenBurger);
+                    Log.d("DB_INIT", "Finished seeding products.");
+                } else {
+                    if (category == null) {
+                        Log.e("DB_INIT", "Category is null, cannot seed products.");
+                    } else {
+                        Log.d("DB_INIT", "Products for 'Burgers' category already exist.");
+                    }
                 }
             });
         }

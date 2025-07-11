@@ -14,7 +14,7 @@ import java.util.List;
 @Dao
 public interface CategoryDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    void insert(Category category);
+    long insert(Category category);
 
     @Update
     void update(Category category);
