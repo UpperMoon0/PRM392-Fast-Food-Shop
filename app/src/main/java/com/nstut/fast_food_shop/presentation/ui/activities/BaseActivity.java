@@ -16,12 +16,12 @@ import com.nstut.fast_food_shop.R;
 public class BaseActivity extends AppCompatActivity {
 
     @Override
-    public void setContentView(int layoutResID) {
-        super.setContentView(layoutResID);
+    protected void onResume() {
+        super.onResume();
         setupHeader();
     }
 
-    protected void setupHeader() {
+    public void setupHeader() {
         TextView appName = findViewById(R.id.app_name);
         Button loginLogoutButton = findViewById(R.id.login_logout_button);
         LinearLayout adminNavLinks = findViewById(R.id.admin_nav_links);
@@ -48,6 +48,7 @@ public class BaseActivity extends AppCompatActivity {
         if (loginLogoutButton != null) {
             if (isLoggedIn) {
                 loginLogoutButton.setText("Logout");
+                loginLogoutButton.setActivated(true);
                 loginLogoutButton.setOnClickListener(v -> {
                     SharedPreferences.Editor editor = sharedPreferences.edit();
                     editor.clear();
@@ -64,13 +65,14 @@ public class BaseActivity extends AppCompatActivity {
                         startActivity(intent);
                     });
                     manageCategoriesButton.setOnClickListener(v -> {
-                        Intent intent = new Intent(this, ManageCategoryActivity.class);
+                        Intent intent = new Intent(this, CategoryListActivity.class);
                         startActivity(intent);
                     });
                 }
 
             } else {
                 loginLogoutButton.setText("Login");
+                loginLogoutButton.setActivated(false);
                 loginLogoutButton.setOnClickListener(v -> {
                     Intent intent = new Intent(this, LoginActivity.class);
                     startActivity(intent);

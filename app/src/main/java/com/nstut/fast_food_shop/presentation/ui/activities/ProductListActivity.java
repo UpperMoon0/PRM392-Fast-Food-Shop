@@ -126,7 +126,7 @@ public class ProductListActivity extends BaseActivity implements ProductAdapter.
 
         Button btnCategoryList = findViewById(R.id.btn_category_list);
         btnCategoryList.setOnClickListener(v -> {
-            Intent intent = new Intent(this, ManageCategoryActivity.class);
+            Intent intent = new Intent(this, CategoryListActivity.class);
             startActivity(intent);
         });
     }

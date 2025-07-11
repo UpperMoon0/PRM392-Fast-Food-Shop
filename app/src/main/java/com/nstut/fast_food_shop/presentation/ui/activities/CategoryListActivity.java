@@ -18,7 +18,7 @@ import com.nstut.fast_food_shop.presentation.ui.adapters.CategoryAdapter;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ManageCategoryActivity extends BaseActivity {
+public class CategoryListActivity extends BaseActivity {
 
     private RecyclerView recyclerView;
     private CategoryAdapter categoryAdapter;
@@ -28,7 +28,7 @@ public class ManageCategoryActivity extends BaseActivity {
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_manage_category);
+        setContentView(R.layout.activity_category_list);
 
         appDatabase = AppDatabase.getInstance(this);
 
@@ -38,7 +38,7 @@ public class ManageCategoryActivity extends BaseActivity {
         categoryAdapter = new CategoryAdapter(categoryList, new CategoryAdapter.OnItemClickListener() {
             @Override
             public void onEditClick(Category category) {
-                Intent intent = new Intent(ManageCategoryActivity.this, AddEditCategoryActivity.class);
+                Intent intent = new Intent(CategoryListActivity.this, AddEditCategoryActivity.class);
                 intent.putExtra("category_id", category.getId());
                 startActivity(intent);
             }
@@ -57,7 +57,7 @@ public class ManageCategoryActivity extends BaseActivity {
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                startActivity(new Intent(ManageCategoryActivity.this, AddEditCategoryActivity.class));
+                startActivity(new Intent(CategoryListActivity.this, AddEditCategoryActivity.class));
             }
         });
 

@@ -58,11 +58,6 @@ public class HomeActivity extends BaseActivity implements CategoryAdapter.OnCate
         productsRecyclerView.setLayoutManager(new LinearLayoutManager(this));
         productsRecyclerView.setAdapter(productAdapter);
 
-        loginLogoutButton.setOnClickListener(v -> {
-            Intent intent = new Intent(HomeActivity.this, LoginActivity.class);
-            startActivity(intent);
-        });
-
         loadData();
     }
 

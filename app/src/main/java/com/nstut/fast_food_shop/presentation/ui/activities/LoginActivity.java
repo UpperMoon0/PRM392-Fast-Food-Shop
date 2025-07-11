@@ -28,12 +28,6 @@ public class LoginActivity extends BaseActivity {
     private Button loginLogoutButton;
 
     @Override
-    protected void onResume() {
-        super.onResume();
-        checkUserLoginStatus();
-    }
-
-    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
@@ -63,18 +57,6 @@ public class LoginActivity extends BaseActivity {
             startActivity(new Intent(LoginActivity.this, RegisterActivity.class));
         });
 
-        loginLogoutButton = findViewById(R.id.login_logout_button);
-        loginLogoutButton.setOnClickListener(v -> {
-            SharedPreferences userPrefs = getSharedPreferences("user_prefs", MODE_PRIVATE);
-            if (userPrefs.getString("user_id", null) != null) {
-                SharedPreferences.Editor editor = userPrefs.edit();
-                editor.remove("user_id");
-                editor.apply();
-                checkUserLoginStatus();
-            } else {
-                // Already on login screen
-            }
-        });
     }
 
     private void loginUser() {
@@ -134,12 +116,4 @@ public class LoginActivity extends BaseActivity {
         });
     }
 
-    private void checkUserLoginStatus() {
-        SharedPreferences sharedPreferences = getSharedPreferences("user_prefs", MODE_PRIVATE);
-        if (sharedPreferences.getString("user_id", null) != null) {
-            loginLogoutButton.setText("Logout");
-        } else {
-            loginLogoutButton.setText("Login");
-        }
-    }
 }
