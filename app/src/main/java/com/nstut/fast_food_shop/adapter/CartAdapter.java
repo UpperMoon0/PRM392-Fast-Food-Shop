@@ -1,9 +1,12 @@
 package com.nstut.fast_food_shop.adapter;
 
+import android.text.Editable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -11,6 +14,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.nstut.fast_food_shop.R;
 import com.nstut.fast_food_shop.model.FoodItem;
+import com.nstut.fast_food_shop.util.Utils;
 
 import java.util.List;
 
@@ -39,12 +43,36 @@ public class CartAdapter extends RecyclerView.Adapter<CartAdapter.ViewHolder> {
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         FoodItem item = cartItems.get(position);
         holder.name.setText(item.getName());
-        holder.price.setText(item.getPrice() * item.getQuantity() + "đ");
+        holder.img.setImageResource(item.getImageResId());
+        holder.price.setText(Utils.formatCurrency(item.getPrice() * item.getQuantity()));
+
+        // Gỡ bỏ TextWatcher cũ nếu có
+        if (holder.textWatcher != null) {
+            holder.quantity.removeTextChangedListener(holder.textWatcher);
+        }
+
+        // Đặt giá trị số lượng
         holder.quantity.setText(String.valueOf(item.getQuantity()));
 
+        // Gắn TextWatcher mới
+        holder.textWatcher = new SimpleTextWatcher() {
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                try {
+                    int qty = Integer.parseInt(s.toString());
+                    if (qty < 1) qty = 1;
+                    item.setQuantity(qty);
+                    holder.price.setText(Utils.formatCurrency(item.getPrice() * qty));
+                    listener.onChanged();
+                } catch (NumberFormatException ignored) {}
+            }
+        };
+        holder.quantity.addTextChangedListener(holder.textWatcher);
+
         holder.btnMinus.setOnClickListener(v -> {
-            if (item.getQuantity() > 1) {
-                item.setQuantity(item.getQuantity() - 1);
+            int qty = item.getQuantity();
+            if (qty > 1) {
+                item.setQuantity(qty - 1);
                 notifyItemChanged(position);
                 listener.onChanged();
             }
@@ -57,22 +85,34 @@ public class CartAdapter extends RecyclerView.Adapter<CartAdapter.ViewHolder> {
         });
     }
 
+
     @Override
     public int getItemCount() {
         return cartItems.size();
     }
 
     static class ViewHolder extends RecyclerView.ViewHolder {
-        TextView name, price, quantity;
+        TextView name, price;
+        EditText quantity;
         Button btnPlus, btnMinus;
+        ImageView img;
+        SimpleTextWatcher textWatcher;
 
         ViewHolder(View v) {
             super(v);
             name = v.findViewById(R.id.tvName);
+            img = v.findViewById(R.id.imgFood);
             price = v.findViewById(R.id.tvPrice);
             quantity = v.findViewById(R.id.tvQuantity);
             btnPlus = v.findViewById(R.id.btnPlus);
             btnMinus = v.findViewById(R.id.btnMinus);
         }
     }
+}
+
+// Định nghĩa SimpleTextWatcher ngay trong file
+abstract class SimpleTextWatcher implements android.text.TextWatcher {
+    @Override public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+    @Override public void afterTextChanged(Editable s) {}
+    @Override public abstract void onTextChanged(CharSequence s, int start, int before, int count);
 }

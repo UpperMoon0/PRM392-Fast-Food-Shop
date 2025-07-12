@@ -1,5 +1,6 @@
 package com.nstut.fast_food_shop;
 
+import android.content.Intent;
 import android.os.Bundle;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -29,6 +30,21 @@ public class CartActivity extends AppCompatActivity {
         binding.rvCart.setAdapter(adapter);
 
         updateTotal();
+        binding.btnBack.setOnClickListener(v -> finish());
+
+        binding.btnCheckout.setOnClickListener(v -> {
+            Intent i = new Intent(this, PaymentActivity.class);
+            i.putParcelableArrayListExtra("cart", cart);
+            startActivity(i);
+        });
+        binding.btnCheckout.setOnClickListener(v -> {
+            if (cart.isEmpty()) return; // không có món thì không cho đi tiếp
+
+            Intent i = new Intent(this, PaymentActivity.class);
+            i.putParcelableArrayListExtra("cart", new ArrayList<>(cart));
+            startActivity(i);
+        });
+
     }
 
     private void updateTotal() {

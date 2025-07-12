@@ -1,5 +1,7 @@
 package com.nstut.fast_food_shop.adapter;
 
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
 import androidx.annotation.NonNull;
@@ -34,12 +36,38 @@ public class OrderAdapter extends RecyclerView.Adapter<OrderAdapter.ViewHolder> 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder h, int pos) {
         FoodItem item = data.get(pos);
+
         h.binding.tvFoodName.setText(item.getName());
         h.binding.tvFoodPrice.setText(Utils.formatCurrency(item.getPrice()));
         h.binding.imgFood.setImageResource(item.getImageResId());
 
+        // 🚫 Bỏ TextWatcher cũ nếu có (tránh lặp lại)
+        if (h.currentWatcher != null) {
+            h.binding.tvQuantity.removeTextChangedListener(h.currentWatcher);
+        }
+
         h.binding.tvQuantity.setText(String.valueOf(item.getQuantity()));
 
+        // ✅ Gán lại TextWatcher mới
+        TextWatcher watcher = new TextWatcher() {
+            @Override public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+            @Override public void onTextChanged(CharSequence s, int start, int before, int count) {}
+            @Override public void afterTextChanged(Editable s) {
+                try {
+                    int qty = Integer.parseInt(s.toString());
+                    if (qty > 0) {
+                        item.setQuantity(qty);
+                        listener.onAdd(item); // cập nhật giỏ
+                    }
+                } catch (NumberFormatException ignored) {
+                    // nếu chưa nhập gì thì bỏ qua
+                }
+            }
+        };
+        h.binding.tvQuantity.addTextChangedListener(watcher);
+        h.currentWatcher = watcher;
+
+        // Các nút + -
         h.binding.btnAdd.setOnClickListener(v -> {
             item.setQuantity(item.getQuantity() + 1);
             notifyItemChanged(pos);
@@ -55,11 +83,14 @@ public class OrderAdapter extends RecyclerView.Adapter<OrderAdapter.ViewHolder> 
         });
     }
 
+
     @Override
     public int getItemCount() { return data.size(); }
 
     static class ViewHolder extends RecyclerView.ViewHolder {
         final ItemFoodBinding binding;
+        TextWatcher currentWatcher;
+
         ViewHolder(ItemFoodBinding b) {
             super(b.getRoot());
             this.binding = b;
