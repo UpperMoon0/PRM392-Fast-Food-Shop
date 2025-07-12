@@ -97,6 +97,44 @@ public abstract class AppDatabase extends RoomDatabase {
                         productDao.insertProductCategoryCrossRef(new ProductCategoryCrossRef((int) chickenBurgerId, category.getId()));
                     }
                 }
+
+                Category drinksCategory = categoryDao.getCategoryByName("Drinks");
+                if (drinksCategory == null) {
+                    Category newDrinks = new Category("Drinks", "Refreshing beverages", "https://images.unsplash.com/photo-1504674900247-0877df9cc836");
+                    long drinksCategoryId = categoryDao.insert(newDrinks);
+                    drinksCategory = categoryDao.getCategoryByName("Drinks");
+                }
+
+                if (drinksCategory != null) {
+                    if (productDao.getProductsByCategory(drinksCategory.getId()).isEmpty()) {
+                        ProductRoom cola = new ProductRoom();
+                        cola.name = "Cola";
+                        cola.description = "Classic cola drink.";
+                        cola.price = 1.99;
+                        cola.imageUrl = "https://www.coca-cola.com/content/dam/onexp/us/en/brands/coca-cola-original/en_coca-cola-original-taste-20-oz_750x750_v1.jpg/width1338.jpg";
+                        cola.isAvailable = true;
+                        long colaId = productDao.insert(cola);
+                        productDao.insertProductCategoryCrossRef(new ProductCategoryCrossRef((int) colaId, drinksCategory.getId()));
+
+                        ProductRoom orangeJuice = new ProductRoom();
+                        orangeJuice.name = "Orange Juice";
+                        orangeJuice.description = "Freshly squeezed orange juice.";
+                        orangeJuice.price = 2.49;
+                        orangeJuice.imageUrl = "https://upload.wikimedia.org/wikipedia/commons/thumb/0/05/Orangejuice.jpg/1200px-Orangejuice.jpg";
+                        orangeJuice.isAvailable = true;
+                        long ojId = productDao.insert(orangeJuice);
+                        productDao.insertProductCategoryCrossRef(new ProductCategoryCrossRef((int) ojId, drinksCategory.getId()));
+
+                        ProductRoom lemonade = new ProductRoom();
+                        lemonade.name = "Lemonade";
+                        lemonade.description = "Cool and tangy lemonade.";
+                        lemonade.price = 2.29;
+                        lemonade.imageUrl = "https://assets.tmecosys.com/image/upload/t_web_rdp_recipe_584x480/img/recipe/ras/Assets/713FF3F9-C3C9-4213-96D6-403FAD1E94C2/Derivates/33352ab5-d113-41a0-ab33-2e3d8467a145.jpg";
+                        lemonade.isAvailable = true;
+                        long lemonadeId = productDao.insert(lemonade);
+                        productDao.insertProductCategoryCrossRef(new ProductCategoryCrossRef((int) lemonadeId, drinksCategory.getId()));
+                    }
+                }
             });
         }
     };

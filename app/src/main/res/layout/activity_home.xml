@@ -13,7 +13,7 @@
         android:id="@+id/banner_image"
         android:layout_width="match_parent"
         android:layout_height="200dp"
-        android:src="@drawable/banner"
+        android:src="@drawable/fast_food_banner"
         android:scaleType="centerCrop"
         android:layout_marginBottom="16dp"/>
 
