@@ -4,7 +4,6 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageButton;
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import com.google.ai.client.generativeai.java.GenerativeModelFutures;
@@ -25,7 +24,7 @@ import java.util.List;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 
-public class ChatActivity extends AppCompatActivity {
+public class ChatActivity extends BaseActivity {
 
     private RecyclerView chatRecyclerView;
     private ChatAdapter chatAdapter;
@@ -44,6 +43,11 @@ public class ChatActivity extends AppCompatActivity {
         chatRecyclerView = findViewById(R.id.chat_recycler_view);
         messageInput = findViewById(R.id.message_input);
         sendButton = findViewById(R.id.send_button);
+
+        ImageButton chatButton = findViewById(R.id.chat_button);
+        if (chatButton != null) {
+            chatButton.setVisibility(View.GONE);
+        }
 
         geminiPro = new GenerativeModel();
         mainExecutor = Executors.newSingleThreadExecutor();
