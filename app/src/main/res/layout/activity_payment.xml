@@ -20,13 +20,11 @@
 
         <TextView
             android:id="@+id/tvAddress"
-            android:text="70 Trịnh Quang Nghị, P.4, Tân An"
             android:layout_width="match_parent"
             android:layout_height="wrap_content" />
 
         <TextView
             android:id="@+id/tvPhone"
-            android:text="Tuấn Khang - 84849135986"
             android:layout_marginBottom="12dp"
             android:layout_width="match_parent"
             android:layout_height="wrap_content" />
@@ -37,7 +35,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content" />
 
-        <!-- Tổng tiền -->
+        <!-- Chi tiết thanh toán -->
         <TextView
             android:text="Chi tiết thanh toán"
             android:textStyle="bold"
@@ -48,25 +46,21 @@
 
         <TextView
             android:id="@+id/tvItemTotal"
-            android:text="Tổng giá món: 30.000đ"
             android:layout_width="match_parent"
             android:layout_height="wrap_content" />
 
         <TextView
             android:id="@+id/tvShippingFee"
-            android:text="Phí giao hàng: 15.000đ"
             android:layout_width="match_parent"
             android:layout_height="wrap_content" />
 
         <TextView
             android:id="@+id/tvOtherFee"
-            android:text="Phí khác: 6.000đ"
             android:layout_width="match_parent"
             android:layout_height="wrap_content" />
 
         <TextView
             android:id="@+id/tvTotalPrice"
-            android:text="Tổng thanh toán: 51.000đ"
             android:textSize="18sp"
             android:textColor="@android:color/holo_red_dark"
             android:textStyle="bold"
@@ -75,10 +69,37 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content" />
 
-        <!-- Nút đặt hàng -->
+        <!-- Chọn phương thức thanh toán -->
+        <TextView
+            android:text="Phương thức thanh toán"
+            android:textStyle="bold"
+            android:textSize="16sp"
+            android:layout_marginBottom="4dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+
+        <RadioGroup
+            android:id="@+id/radioGroupPayment"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <RadioButton
+                android:id="@+id/radioCod"
+                android:checked="true"
+                android:text="Thanh toán khi nhận hàng"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+
+            <RadioButton
+                android:id="@+id/radioVnpay"
+                android:text="Thanh toán bằng VNPAY"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+        </RadioGroup>
+
         <Button
             android:id="@+id/btnPlaceOrder"
-            android:text="Đặt đơn - 51.000đ"
+            android:text="Đặt hàng"
             android:textStyle="bold"
             android:backgroundTint="@color/purple_500"
             android:textColor="@android:color/white"

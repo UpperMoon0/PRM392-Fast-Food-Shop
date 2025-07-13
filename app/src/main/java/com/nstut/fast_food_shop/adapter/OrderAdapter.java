@@ -41,14 +41,12 @@ public class OrderAdapter extends RecyclerView.Adapter<OrderAdapter.ViewHolder> 
         h.binding.tvFoodPrice.setText(Utils.formatCurrency(item.getPrice()));
         h.binding.imgFood.setImageResource(item.getImageResId());
 
-        // 🚫 Bỏ TextWatcher cũ nếu có (tránh lặp lại)
         if (h.currentWatcher != null) {
             h.binding.tvQuantity.removeTextChangedListener(h.currentWatcher);
         }
 
         h.binding.tvQuantity.setText(String.valueOf(item.getQuantity()));
 
-        // ✅ Gán lại TextWatcher mới
         TextWatcher watcher = new TextWatcher() {
             @Override public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
             @Override public void onTextChanged(CharSequence s, int start, int before, int count) {}
@@ -57,10 +55,9 @@ public class OrderAdapter extends RecyclerView.Adapter<OrderAdapter.ViewHolder> 
                     int qty = Integer.parseInt(s.toString());
                     if (qty > 0) {
                         item.setQuantity(qty);
-                        listener.onAdd(item); // cập nhật giỏ
+                        listener.onAdd(item);
                     }
                 } catch (NumberFormatException ignored) {
-                    // nếu chưa nhập gì thì bỏ qua
                 }
             }
         };

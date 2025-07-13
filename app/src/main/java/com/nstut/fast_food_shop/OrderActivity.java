@@ -21,7 +21,6 @@
         private ActivityOrderBinding binding;
         private final List<FoodItem> cart = new ArrayList<>();
 
-        // ✅ Khai báo biến badge ở đây
         private TextView badge;
 
         @Override
@@ -30,10 +29,8 @@
             binding = ActivityOrderBinding.inflate(getLayoutInflater());
             setContentView(binding.getRoot());
 
-            // ✅ Gán view sau khi setContentView
-            badge = findViewById(R.id.cartBadge); // đảm bảo bạn đã có tvCartBadge trong XML
+            badge = findViewById(R.id.cartBadge);
 
-            // Fake data menu
             List<FoodItem> menu = List.of(
                     new FoodItem("Burger", 45000, R.drawable.ic_burger),
                     new FoodItem("Fries", 32000, R.drawable.ic_fries),
@@ -74,7 +71,6 @@
 
         }
 
-        // ✅ Giờ badge đã nhận ra ở đây
         private void updateCartBadge() {
             int totalQuantity = 0;
             for (FoodItem item : cart) {

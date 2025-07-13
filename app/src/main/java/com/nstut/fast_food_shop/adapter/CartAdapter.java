@@ -23,7 +23,6 @@ public class CartAdapter extends RecyclerView.Adapter<CartAdapter.ViewHolder> {
     public interface OnQuantityChanged {
         void onChanged();
     }
-
     private final List<FoodItem> cartItems;
     private final OnQuantityChanged listener;
 
@@ -46,15 +45,12 @@ public class CartAdapter extends RecyclerView.Adapter<CartAdapter.ViewHolder> {
         holder.img.setImageResource(item.getImageResId());
         holder.price.setText(Utils.formatCurrency(item.getPrice() * item.getQuantity()));
 
-        // Gỡ bỏ TextWatcher cũ nếu có
         if (holder.textWatcher != null) {
             holder.quantity.removeTextChangedListener(holder.textWatcher);
         }
 
-        // Đặt giá trị số lượng
         holder.quantity.setText(String.valueOf(item.getQuantity()));
 
-        // Gắn TextWatcher mới
         holder.textWatcher = new SimpleTextWatcher() {
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
@@ -110,7 +106,6 @@ public class CartAdapter extends RecyclerView.Adapter<CartAdapter.ViewHolder> {
     }
 }
 
-// Định nghĩa SimpleTextWatcher ngay trong file
 abstract class SimpleTextWatcher implements android.text.TextWatcher {
     @Override public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
     @Override public void afterTextChanged(Editable s) {}

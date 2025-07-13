@@ -8,10 +8,10 @@
             <InsightsFilterSettings>
               <option name="connection">
                 <ConnectionSetting>
-                  <option name="appId" value="PLACEHOLDER" />
-                  <option name="mobileSdkAppId" value="" />
-                  <option name="projectId" value="" />
-                  <option name="projectNumber" value="" />
+                  <option name="appId" value="com.nstut.fast_food_shop" />
+                  <option name="mobileSdkAppId" value="1:1052015208599:android:cc7714310ed84a45b021d2" />
+                  <option name="projectId" value="fast-food-shop-aabf7" />
+                  <option name="projectNumber" value="1052015208599" />
                 </ConnectionSetting>
               </option>
               <option name="signal" value="SIGNAL_UNSPECIFIED" />
