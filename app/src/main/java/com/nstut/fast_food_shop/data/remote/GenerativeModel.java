@@ -13,6 +13,7 @@ import java.util.Collections;
 public class GenerativeModel {
 
     private final GenerativeModelFutures generativeModel;
+    private final Content systemContent;
 
     public GenerativeModel() {
         String apiKey = BuildConfig.GEMINI_API_KEY;
@@ -22,7 +23,7 @@ public class GenerativeModel {
                 "dietary restrictions, or price range. Based on their answers, you should recommend " +
                 "specific menu items. Be polite and conversational.";
 
-        Content systemContent = new Content.Builder()
+        systemContent = new Content.Builder()
                 .addText(systemInstruction)
                 .build();
 
@@ -30,21 +31,17 @@ public class GenerativeModel {
                 "gemini-1.5-flash",
                 apiKey,
                 new GenerationConfig.Builder().build(),
-                Collections.emptyList(),
-                null,
-                null,
-                null,
-                systemContent
+                Collections.emptyList()
         );
         generativeModel = GenerativeModelFutures.from(gm);
     }
 
     public ListenableFuture<GenerateContentResponse> getResponse(String query, String menu) {
         String fullPrompt = menu + "\n\nBased on this menu, help the customer find something they'll like.\n\n" + query;
-        Content content = new Content.Builder()
+        Content userContent = new Content.Builder()
                 .addText(fullPrompt)
                 .build();
 
-        return generativeModel.generateContent(content);
+        return generativeModel.generateContent(systemContent, userContent);
     }
 }
