@@ -18,7 +18,7 @@ import com.nstut.fast_food_shop.data.local.dao.ProductDao;
 import com.nstut.fast_food_shop.data.local.db.AppDatabase;
 import com.nstut.fast_food_shop.data.models.ChatMessage;
 import com.nstut.fast_food_shop.data.models.ProductRoom;
-import com.nstut.fast_food_shop.data.remote.GeminiPro;
+import com.nstut.fast_food_shop.data.remote.GenerativeModel;
 import com.nstut.fast_food_shop.presentation.ui.adapters.ChatAdapter;
 import java.util.ArrayList;
 import java.util.List;
@@ -32,7 +32,7 @@ public class ChatActivity extends AppCompatActivity {
     private List<ChatMessage> chatMessages;
     private EditText messageInput;
     private ImageButton sendButton;
-    private GeminiPro geminiPro;
+    private GenerativeModel geminiPro;
     private Executor mainExecutor;
     private ProductDao productDao;
 
@@ -45,7 +45,7 @@ public class ChatActivity extends AppCompatActivity {
         messageInput = findViewById(R.id.message_input);
         sendButton = findViewById(R.id.send_button);
 
-        geminiPro = new GeminiPro();
+        geminiPro = new GenerativeModel();
         mainExecutor = Executors.newSingleThreadExecutor();
         productDao = AppDatabase.getInstance(this).productDao();
 
