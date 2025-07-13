@@ -6,6 +6,7 @@ import android.util.Log;
 import android.content.Intent;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 
 import androidx.appcompat.widget.SearchView;
@@ -42,6 +43,7 @@ public class HomeActivity extends BaseActivity implements CategoryAdapter.OnCate
     private ExecutorService executorService = Executors.newSingleThreadExecutor();
     private ImageView bannerImage;
     private Button loginLogoutButton;
+    private ImageButton chatButton;
     private SearchView searchView;
     private ChipGroup categoryChipGroup;
 
@@ -64,6 +66,7 @@ public class HomeActivity extends BaseActivity implements CategoryAdapter.OnCate
 
         bannerImage = findViewById(R.id.banner_image);
         loginLogoutButton = findViewById(R.id.login_logout_button);
+        chatButton = findViewById(R.id.chat_button);
         categoriesRecyclerView = findViewById(R.id.categories_recycler_view);
         productsRecyclerView = findViewById(R.id.products_recycler_view);
         searchView = findViewById(R.id.search_view);
@@ -84,6 +87,7 @@ public class HomeActivity extends BaseActivity implements CategoryAdapter.OnCate
         loadData();
         setupSearch();
         setupCategoryFilter();
+        setupChatButton();
     }
 
     private void loadData() {
@@ -146,6 +150,13 @@ public class HomeActivity extends BaseActivity implements CategoryAdapter.OnCate
             chip.setCheckable(true);
             categoryChipGroup.addView(chip);
         }
+    }
+
+    private void setupChatButton() {
+        chatButton.setOnClickListener(v -> {
+            Intent intent = new Intent(HomeActivity.this, ChatActivity.class);
+            startActivity(intent);
+        });
     }
 
     private void filterProducts() {

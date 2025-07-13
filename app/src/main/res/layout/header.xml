@@ -15,6 +15,16 @@
         android:layout_alignParentStart="true"
         android:layout_centerVertical="true"/>
 
+    <ImageButton
+        android:id="@+id/chat_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/ic_chat"
+        android:background="?attr/selectableItemBackgroundBorderless"
+        android:layout_toStartOf="@id/login_logout_button"
+        android:layout_centerVertical="true"
+        android:layout_marginEnd="16dp"/>
+
     <Button
         android:id="@+id/login_logout_button"
         android:layout_width="wrap_content"

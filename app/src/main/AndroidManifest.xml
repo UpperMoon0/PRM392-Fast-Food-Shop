@@ -30,6 +30,7 @@
         <activity android:name=".presentation.ui.activities.ProductDetailActivity"/>
         <activity android:name=".presentation.ui.activities.AddEditCategoryActivity"/>
         <activity android:name=".presentation.ui.activities.CategoryListActivity"/>
+        <activity android:name=".presentation.ui.activities.ChatActivity"/>
     </application>
 
 </manifest>
