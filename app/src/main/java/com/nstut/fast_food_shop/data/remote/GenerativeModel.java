@@ -1,6 +1,5 @@
 package com.nstut.fast_food_shop.data.remote;
 
-import com.google.ai.client.generativeai.GenerativeModel;
 import com.google.ai.client.generativeai.java.GenerativeModelFutures;
 import com.google.ai.client.generativeai.type.Content;
 import com.google.ai.client.generativeai.type.GenerateContentResponse;
@@ -27,13 +26,15 @@ public class GenerativeModel {
                 .addText(systemInstruction)
                 .build();
 
-        GenerativeModel gm = new GenerativeModel(
+        com.google.ai.client.generativeai.GenerativeModel gm = new com.google.ai.client.generativeai.GenerativeModel(
                 "gemini-1.5-flash",
                 apiKey,
                 new GenerationConfig.Builder().build(),
                 Collections.emptyList(),
-                systemContent,
-                Collections.emptyList()
+                null,
+                null,
+                null,
+                systemContent
         );
         generativeModel = GenerativeModelFutures.from(gm);
     }
