@@ -56,16 +56,13 @@ android {
 }
 
 dependencies {
-<<<<<<< HEAD
     coreLibraryDesugaring(libs.android.desugarJdkLibs)
-=======
     implementation("androidx.recyclerview:recyclerview:1.2.1")
     implementation("androidx.cardview:cardview:1.0.0")
     implementation("com.stripe:stripe-android:20.45.0")
     implementation(platform("com.google.firebase:firebase-bom:33.16.0"))
     implementation("com.google.firebase:firebase-analytics")
     implementation("com.android.volley:volley:1.2.1")
->>>>>>> origin/khang
     implementation(libs.appcompat)
     implementation(libs.material)
     implementation(libs.activity)
