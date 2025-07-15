@@ -14,6 +14,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.nstut.fast_food_shop.R;
 import com.nstut.fast_food_shop.data.local.db.AppDatabase;
 import com.nstut.fast_food_shop.data.models.User;
+import com.nstut.fast_food_shop.presentation.utils.HashUtils;
 
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -90,7 +91,7 @@ public class RegisterActivity extends AppCompatActivity {
             User user = new User();
             user.fullName = fullName;
             user.email = email;
-            user.passwordHash = password; // In a real app, use a proper hashing algorithm
+            user.passwordHash = HashUtils.hashPassword(password);
             user.phoneNumber = phoneNumber;
             user.role = User.ROLE_USER;
             user.createdAt = System.currentTimeMillis();

@@ -72,4 +72,7 @@ dependencies {
 
     // Gson
     implementation("com.google.code.gson:gson:2.10.1")
+
+    // BCrypt
+    implementation("at.favre.lib:bcrypt:0.9.0")
 }
