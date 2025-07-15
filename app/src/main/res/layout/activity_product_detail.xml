@@ -13,12 +13,16 @@
         <include layout="@layout/header" />
     </RelativeLayout>
 
-    <LinearLayout
+    <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:layout_below="@id/header_container"
-        android:padding="16dp">
+        android:layout_height="match_parent"
+        android:layout_below="@id/header_container">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="16dp">
 
         <ImageView
             android:id="@+id/back_button"
@@ -76,6 +80,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="24dp"
             android:text="Add to Cart" />
-    </LinearLayout>
+        </LinearLayout>
+    </androidx.core.widget.NestedScrollView>
 
 </RelativeLayout>

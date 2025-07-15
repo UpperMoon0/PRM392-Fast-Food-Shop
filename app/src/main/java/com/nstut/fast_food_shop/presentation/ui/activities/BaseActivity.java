@@ -5,6 +5,7 @@ import android.content.SharedPreferences;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
@@ -43,12 +44,25 @@ public class BaseActivity extends AppCompatActivity {
         Log.d(TAG, "setupHeader called in " + this.getClass().getSimpleName());
         TextView appName = findViewById(R.id.app_name);
         Button loginLogoutButton = findViewById(R.id.login_logout_button);
+        ImageButton chatButton = findViewById(R.id.chat_button);
         SharedPreferences sharedPreferences = getSharedPreferences("user_prefs", MODE_PRIVATE);
         boolean isLoggedIn = sharedPreferences.getBoolean("is_logged_in", false);
         String role = sharedPreferences.getString("role", "user");
         Log.d(TAG, "--- setupHeader in " + this.getClass().getSimpleName() + " ---");
         Log.d(TAG, "isLoggedIn from SharedPreferences: " + isLoggedIn);
         Log.d(TAG, "Role from SharedPreferences: " + role);
+
+        if (chatButton != null) {
+            if (isLoggedIn && !"admin".equalsIgnoreCase(role)) {
+                chatButton.setVisibility(View.VISIBLE);
+            } else {
+                chatButton.setVisibility(View.GONE);
+            }
+        }
+            chatButton.setOnClickListener(v -> {
+                Intent intent = new Intent(this, ChatActivity.class);
+                startActivity(intent);
+            });
 
         if (appName == null) {
             Log.e(TAG, "appName TextView not found. Header not fully initialized.");

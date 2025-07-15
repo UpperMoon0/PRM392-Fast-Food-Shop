@@ -13,6 +13,7 @@ if (localPropertiesFile.exists()) {
 }
 val cloudinaryApiKey = localProperties.getProperty("CLOUDINARY_API_KEY") ?: ""
 val cloudinaryApiSecret = localProperties.getProperty("CLOUDINARY_API_SECRET") ?: ""
+val geminiApiKey: String by rootProject.extra
 
 android {
     namespace = "com.nstut.fast_food_shop"
@@ -23,6 +24,7 @@ android {
 
     defaultConfig {
         buildConfigField("String", "CLOUDINARY_API_KEY", "\"$cloudinaryApiKey\"")
+        buildConfigField("String", "GEMINI_API_KEY", "\"$geminiApiKey\"")
         buildConfigField("String", "CLOUDINARY_API_SECRET", "\"$cloudinaryApiSecret\"")
         applicationId = "com.nstut.fast_food_shop"
         minSdk = 24
@@ -60,6 +62,8 @@ dependencies {
     implementation("com.cloudinary:cloudinary-android:2.4.0")
     implementation("com.github.bumptech.glide:glide:4.15.0")
     annotationProcessor("com.github.bumptech.glide:compiler:4.15.0")
+    implementation("com.google.ai.client.generativeai:generativeai:0.3.0")
+    implementation("com.google.guava:guava:32.0.1-android")
 
 
     //Room
@@ -68,4 +72,7 @@ dependencies {
 
     // Gson
     implementation("com.google.code.gson:gson:2.10.1")
+
+    // BCrypt
+    implementation("at.favre.lib:bcrypt:0.9.0")
 }

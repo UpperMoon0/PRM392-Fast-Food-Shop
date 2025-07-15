@@ -16,6 +16,7 @@ import com.google.gson.Gson;
 import com.nstut.fast_food_shop.R;
 import com.nstut.fast_food_shop.data.local.db.AppDatabase;
 import com.nstut.fast_food_shop.data.models.User;
+import com.nstut.fast_food_shop.presentation.utils.HashUtils;
 
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -72,15 +73,9 @@ public class LoginActivity extends BaseActivity {
 
         executorService.execute(() -> {
             User user = appDatabase.userDao().findByEmail(email);
-            if (email.equals("admin@gmail.com") && password.equals("123")) {
-                user = new User();
-                user.email = email;
-                user.role = User.ROLE_ADMIN;
-            }
 
-            User finalUser = user;
             runOnUiThread(() -> {
-                if (finalUser != null && (password.equals("123") || finalUser.passwordHash.equals(password))) { // In a real app, use a proper hashing algorithm
+                if (user != null && HashUtils.verifyPassword(password, user.passwordHash)) {
                     if (cbRememberMe.isChecked()) {
                         sharedPreferences.edit()
                                 .putBoolean("remember_me", true)
@@ -92,14 +87,14 @@ public class LoginActivity extends BaseActivity {
                     }
                     SharedPreferences userPrefs = getSharedPreferences("user_prefs", MODE_PRIVATE);
                     SharedPreferences.Editor editor = userPrefs.edit();
-                    Log.d("LoginActivity", "Saving user data. Role: " + finalUser.role);
-                    editor.putString("user", new Gson().toJson(finalUser));
-                    editor.putString("role", finalUser.role);
+                    Log.d("LoginActivity", "Saving user data. Role: " + user.role);
+                    editor.putString("user", new Gson().toJson(user));
+                    editor.putString("role", user.role);
                     editor.putBoolean("is_logged_in", true);
                     editor.apply();
 
                     Toast.makeText(this, "Login successful", Toast.LENGTH_SHORT).show();
-                    if (User.ROLE_ADMIN.equals(finalUser.role)) {
+                    if (User.ROLE_ADMIN.equals(user.role)) {
                         startActivity(new Intent(LoginActivity.this, AdminProductListActivity.class));
                     } else {
                         startActivity(new Intent(LoginActivity.this, HomeActivity.class));
