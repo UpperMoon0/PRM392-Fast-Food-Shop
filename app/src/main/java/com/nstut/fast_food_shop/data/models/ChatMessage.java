@@ -1,10 +1,12 @@
 package com.nstut.fast_food_shop.data.models;
 
+import java.util.List;
+
 public class ChatMessage {
     private String message;
     private boolean isSentByUser;
     private boolean isRecommendation;
-    private ProductRoom product;
+    private List<ProductRoom> products;
 
     public ChatMessage(String message, boolean isSentByUser) {
         this.message = message;
@@ -12,11 +14,18 @@ public class ChatMessage {
         this.isRecommendation = false;
     }
 
-    public ChatMessage(ProductRoom product) {
-        this.product = product;
+    public ChatMessage(List<ProductRoom> products) {
+        this.products = products;
         this.isSentByUser = false;
         this.isRecommendation = true;
-        this.message = "Here is a recommendation for you";
+        this.message = "Here are some recommendations for you";
+    }
+
+    public ChatMessage(String message, List<ProductRoom> products) {
+        this.message = message;
+        this.products = products;
+        this.isSentByUser = false;
+        this.isRecommendation = true;
     }
 
     public String getMessage() {
@@ -31,7 +40,7 @@ public class ChatMessage {
         return isRecommendation;
     }
 
-    public ProductRoom getProduct() {
-        return product;
+    public List<ProductRoom> getProducts() {
+        return products;
     }
 }

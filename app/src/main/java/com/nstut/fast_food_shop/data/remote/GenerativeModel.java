@@ -8,7 +8,9 @@ import com.google.ai.client.generativeai.type.SafetySetting;
 import com.google.common.util.concurrent.ListenableFuture;
 import com.nstut.fast_food_shop.BuildConfig;
 
+import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
 
 public class GenerativeModel {
 
@@ -22,7 +24,7 @@ public class GenerativeModel {
                 "You can ask clarifying questions to understand their preferences, such as taste, " +
                 "dietary restrictions, or price range. Based on their answers, you should recommend " +
                 "specific menu items. When you recommend a product, you should respond with a JSON object " +
-                "containing the product's name, for example: {\"product_name\": \"Cheeseburger\"}. " +
+                "containing the product's name, for example: {\"products\": [{\"product_name\": \"Cheeseburger\"}, {\"product_name\": \"Fries\"}]}. " +
                 "Be polite and conversational.";
 
         systemContent = new Content.Builder()
@@ -38,12 +40,16 @@ public class GenerativeModel {
         generativeModel = GenerativeModelFutures.from(gm);
     }
 
-    public ListenableFuture<GenerateContentResponse> getResponse(String query, String menu) {
+    public ListenableFuture<GenerateContentResponse> getResponse(String query, String menu, List<Content> history) {
         String fullPrompt = menu + "\n\nBased on this menu, help the customer find something they'll like.\n\n" + query;
         Content userContent = new Content.Builder()
                 .addText(fullPrompt)
                 .build();
+        List<Content> contents = new ArrayList<>();
+        contents.add(systemContent);
+        contents.addAll(history);
+        contents.add(userContent);
 
-        return generativeModel.generateContent(systemContent, userContent);
+        return generativeModel.generateContent(contents.toArray(new Content[0]));
     }
 }

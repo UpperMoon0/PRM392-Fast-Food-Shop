@@ -10,6 +10,7 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
+import androidx.recyclerview.widget.LinearLayoutManager;
 import com.nstut.fast_food_shop.R;
 import com.nstut.fast_food_shop.data.models.ChatMessage;
 import com.nstut.fast_food_shop.data.models.ProductRoom;
@@ -65,10 +66,12 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     @Override
     public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
         ChatMessage message = messages.get(position);
-        if (holder.getItemViewType() == VIEW_TYPE_SENT || holder.getItemViewType() == VIEW_TYPE_RECEIVED) {
+        if (holder.getItemViewType() == VIEW_TYPE_SENT) {
+            ((ChatViewHolder) holder).messageText.setText(message.getMessage());
+        } else if (holder.getItemViewType() == VIEW_TYPE_RECEIVED) {
             ((ChatViewHolder) holder).messageText.setText(message.getMessage());
         } else {
-            ((RecommendationViewHolder) holder).bind(message.getProduct(), onProductClickListener);
+            ((RecommendationViewHolder) holder).bind(message, onProductClickListener);
         }
     }
 
@@ -87,25 +90,26 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     }
 
     static class RecommendationViewHolder extends RecyclerView.ViewHolder {
-        ImageView productImage;
-        TextView productName;
-        TextView productDescription;
-        TextView productPrice;
+        TextView messageText;
+        RecyclerView productsRecyclerView;
+        ProductAdapter productAdapter;
 
         RecommendationViewHolder(@NonNull View itemView) {
             super(itemView);
-            productImage = itemView.findViewById(R.id.product_image);
-            productName = itemView.findViewById(R.id.product_name);
-            productDescription = itemView.findViewById(R.id.product_description);
-            productPrice = itemView.findViewById(R.id.product_price);
+            messageText = itemView.findViewById(R.id.message_text);
+            productsRecyclerView = itemView.findViewById(R.id.products_recycler_view);
         }
 
-        void bind(final ProductRoom product, final OnProductClickListener listener) {
-            productName.setText(product.getName());
-            productDescription.setText(product.getDescription());
-            productPrice.setText(String.format("$%.2f", product.getPrice()));
-            Glide.with(itemView.getContext()).load(product.getImageUrl()).into(productImage);
-            itemView.setOnClickListener(v -> listener.onProductClick(product));
+        void bind(final ChatMessage message, final OnProductClickListener listener) {
+            messageText.setText(message.getMessage());
+            if (message.getProducts() != null && !message.getProducts().isEmpty()) {
+                productsRecyclerView.setVisibility(View.VISIBLE);
+                productAdapter = new ProductAdapter(message.getProducts(), product -> listener.onProductClick(product));
+                productsRecyclerView.setLayoutManager(new LinearLayoutManager(itemView.getContext(), LinearLayoutManager.HORIZONTAL, false));
+                productsRecyclerView.setAdapter(productAdapter);
+            } else {
+                productsRecyclerView.setVisibility(View.GONE);
+            }
         }
     }
 }

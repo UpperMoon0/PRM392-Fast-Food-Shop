@@ -7,6 +7,7 @@ import android.widget.EditText;
 import android.widget.ImageButton;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import com.google.ai.client.generativeai.type.Content;
 import com.google.ai.client.generativeai.type.GenerateContentResponse;
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
@@ -19,6 +20,7 @@ import com.nstut.fast_food_shop.data.models.ChatMessage;
 import com.nstut.fast_food_shop.data.models.ProductRoom;
 import com.nstut.fast_food_shop.data.remote.GenerativeModel;
 import com.nstut.fast_food_shop.presentation.ui.adapters.ChatAdapter;
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import java.util.ArrayList;
@@ -31,6 +33,7 @@ public class ChatActivity extends BaseActivity implements ChatAdapter.OnProductC
     private RecyclerView chatRecyclerView;
     private ChatAdapter chatAdapter;
     private List<ChatMessage> chatMessages;
+    private List<Content> chatHistory;
     private EditText messageInput;
     private ImageButton sendButton;
     private GenerativeModel geminiPro;
@@ -56,6 +59,7 @@ public class ChatActivity extends BaseActivity implements ChatAdapter.OnProductC
         productDao = AppDatabase.getInstance(this).productDao();
 
         chatMessages = new ArrayList<>();
+        chatHistory = new ArrayList<>();
         chatAdapter = new ChatAdapter(chatMessages, this);
 
         LinearLayoutManager layoutManager = new LinearLayoutManager(this);
@@ -65,9 +69,7 @@ public class ChatActivity extends BaseActivity implements ChatAdapter.OnProductC
         sendButton.setOnClickListener(v -> {
             String messageText = messageInput.getText().toString().trim();
             if (!messageText.isEmpty()) {
-                chatMessages.add(new ChatMessage(messageText, true));
-                chatAdapter.notifyItemInserted(chatMessages.size() - 1);
-                chatRecyclerView.scrollToPosition(chatMessages.size() - 1);
+                addMessageToHistory(messageText, true);
                 messageInput.setText("");
 
                 ListenableFuture<List<ProductRoom>> productsFuture = JdkFutureAdapters.listenInPoolThread(AppDatabase.databaseWriteExecutor.submit(() -> productDao.getAllProductsList()));
@@ -75,7 +77,7 @@ public class ChatActivity extends BaseActivity implements ChatAdapter.OnProductC
                     @Override
                     public void onSuccess(List<ProductRoom> products) {
                         String menu = formatMenu(products);
-                        ListenableFuture<GenerateContentResponse> responseFuture = geminiPro.getResponse(messageText, menu);
+                        ListenableFuture<GenerateContentResponse> responseFuture = geminiPro.getResponse(messageText, menu, getHistory());
                         Futures.addCallback(responseFuture, new FutureCallback<GenerateContentResponse>() {
                             @Override
                             public void onSuccess(GenerateContentResponse result) {
@@ -85,21 +87,27 @@ public class ChatActivity extends BaseActivity implements ChatAdapter.OnProductC
                                     if (jsonString != null) {
                                         try {
                                             JSONObject jsonObject = new JSONObject(jsonString);
-                                            String productName = jsonObject.getString("product_name");
-                                            ProductRoom recommendedProduct = findProductByName(products, productName);
-                                            if (recommendedProduct != null) {
-                                                chatMessages.add(new ChatMessage(recommendedProduct));
+                                            JSONArray productArray = jsonObject.getJSONArray("products");
+                                            List<ProductRoom> recommendedProducts = new ArrayList<>();
+                                            for (int i = 0; i < productArray.length(); i++) {
+                                                JSONObject productObject = productArray.getJSONObject(i);
+                                                String productName = productObject.getString("product_name");
+                                                ProductRoom recommendedProduct = findProductByName(products, productName);
+                                                if (recommendedProduct != null) {
+                                                    recommendedProducts.add(recommendedProduct);
+                                                }
+                                            }
+                                            if (!recommendedProducts.isEmpty()) {
+                                                addMessageToHistory(new ChatMessage(botResponse, recommendedProducts));
                                             } else {
-                                                chatMessages.add(new ChatMessage("Sorry, I couldn't find that product.", false));
+                                                addMessageToHistory(new ChatMessage("Sorry, I couldn't find any matching products.", false));
                                             }
                                         } catch (JSONException e) {
-                                            chatMessages.add(new ChatMessage(botResponse, false));
+                                            addMessageToHistory(new ChatMessage(botResponse, false));
                                         }
                                     } else {
-                                        chatMessages.add(new ChatMessage(botResponse, false));
+                                        addMessageToHistory(new ChatMessage(botResponse, false));
                                     }
-                                    chatAdapter.notifyItemInserted(chatMessages.size() - 1);
-                                    chatRecyclerView.scrollToPosition(chatMessages.size() - 1);
                                 });
                             }
 
@@ -122,6 +130,32 @@ public class ChatActivity extends BaseActivity implements ChatAdapter.OnProductC
                 }, mainExecutor);
             }
         });
+    }
+
+    private void addMessageToHistory(String text, boolean isUser) {
+        addMessageToHistory(new ChatMessage(text, isUser));
+    }
+
+    private void addMessageToHistory(ChatMessage chatMessage) {
+        chatMessages.add(chatMessage);
+        chatAdapter.notifyItemInserted(chatMessages.size() - 1);
+        chatRecyclerView.scrollToPosition(chatMessages.size() - 1);
+        if (!chatMessage.isRecommendation()) {
+            Content.Builder contentBuilder = new Content.Builder().addText(chatMessage.getMessage());
+            if (chatMessage.isSentByUser()) {
+                contentBuilder.setRole("user");
+            } else {
+                contentBuilder.setRole("model");
+            }
+            chatHistory.add(contentBuilder.build());
+            if (chatHistory.size() > 10) {
+                chatHistory.remove(0);
+            }
+        }
+    }
+
+    private List<Content> getHistory() {
+        return new ArrayList<>(chatHistory);
     }
 
     private String formatMenu(List<ProductRoom> products) {
