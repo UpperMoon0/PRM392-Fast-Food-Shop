@@ -21,7 +21,9 @@ public class GenerativeModel {
                 "Your goal is to help customers choose items from the menu. " +
                 "You can ask clarifying questions to understand their preferences, such as taste, " +
                 "dietary restrictions, or price range. Based on their answers, you should recommend " +
-                "specific menu items. Be polite and conversational.";
+                "specific menu items. When you recommend a product, you should respond with a JSON object " +
+                "containing the product's name, for example: {\"product_name\": \"Cheeseburger\"}. " +
+                "Be polite and conversational.";
 
         systemContent = new Content.Builder()
                 .addText(systemInstruction)

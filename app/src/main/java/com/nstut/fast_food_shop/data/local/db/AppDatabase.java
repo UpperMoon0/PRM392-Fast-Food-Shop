@@ -100,7 +100,7 @@ public abstract class AppDatabase extends RoomDatabase {
 
                 Category drinksCategory = categoryDao.getCategoryByName("Drinks");
                 if (drinksCategory == null) {
-                    Category newDrinks = new Category("Drinks", "Refreshing beverages", "https://images.unsplash.com/photo-1504674900247-0877df9cc836");
+                    Category newDrinks = new Category("Drinks", "Refreshing beverages", "https://th.bing.com/th/id/R.07b5da6c4a6feef0faecde10979c4549?rik=pvfT%2b2%2fkQHq8gg&riu=http%3a%2f%2fwww.magazinediscover.com%2fwp-content%2fuploads%2f2018%2f01%2fbatidas.jpg&ehk=nm4nUnqdxzDB7HaveYXazcXRvCcqev1aK9Nw%2fdwEPIg%3d&risl=&pid=ImgRaw&r=0");
                     long drinksCategoryId = categoryDao.insert(newDrinks);
                     drinksCategory = categoryDao.getCategoryByName("Drinks");
                 }
