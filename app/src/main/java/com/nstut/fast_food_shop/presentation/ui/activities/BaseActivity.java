@@ -8,10 +8,12 @@ import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
+import android.widget.PopupMenu;
 import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.gson.Gson;
 import com.nstut.fast_food_shop.CartActivity;
 import com.nstut.fast_food_shop.R;
@@ -58,9 +60,7 @@ public class BaseActivity extends AppCompatActivity {
         Log.d(TAG, "setupHeader called in " + this.getClass().getSimpleName());
         TextView appName = findViewById(R.id.app_name);
         Button loginLogoutButton = findViewById(R.id.login_logout_button);
-        ImageButton chatButton = findViewById(R.id.chat_button);
-        FrameLayout cartIconContainer = findViewById(R.id.cart_icon_container);
-        ImageButton cartButton = findViewById(R.id.cart_button);
+        ImageButton userMenuButton = findViewById(R.id.user_menu_button);
         ImageButton backButton = findViewById(R.id.back_button);
 
         if (backButton != null) {
@@ -81,24 +81,25 @@ public class BaseActivity extends AppCompatActivity {
         Log.d(TAG, "isLoggedIn from SharedPreferences: " + isLoggedIn);
         Log.d(TAG, "Role from SharedPreferences: " + role);
 
-        if (chatButton != null) {
-            if (isLoggedIn && !"admin".equalsIgnoreCase(role)) {
-                chatButton.setVisibility(View.VISIBLE);
-                cartIconContainer.setVisibility(View.VISIBLE);
+        if (isLoggedIn && !"admin".equalsIgnoreCase(role)) {
+            loginLogoutButton.setVisibility(View.GONE);
+            userMenuButton.setVisibility(View.VISIBLE);
+            userMenuButton.setOnClickListener(this::showUserMenu);
+        } else {
+            userMenuButton.setVisibility(View.GONE);
+            if (isLoggedIn) {
+                loginLogoutButton.setText("Logout");
+                loginLogoutButton.setOnClickListener(v -> {
+                    logout();
+                });
             } else {
-                chatButton.setVisibility(View.GONE);
-                cartIconContainer.setVisibility(View.GONE);
+                loginLogoutButton.setText("Login");
+                loginLogoutButton.setOnClickListener(v -> {
+                    Intent intent = new Intent(this, LoginActivity.class);
+                    startActivity(intent);
+                });
             }
         }
-            chatButton.setOnClickListener(v -> {
-                Intent intent = new Intent(this, ChatActivity.class);
-                startActivity(intent);
-            });
-
-        cartButton.setOnClickListener(v -> {
-            Intent intent = new Intent(this, CartActivity.class);
-            startActivity(intent);
-        });
 
         if (appName == null) {
             Log.e(TAG, "appName TextView not found. Header not fully initialized.");
@@ -117,31 +118,6 @@ public class BaseActivity extends AppCompatActivity {
                 intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
                 startActivity(intent);
             });
-        }
-
-        if (loginLogoutButton == null) {
-            Log.e(TAG, "loginLogoutButton not found. Header not fully initialized.");
-        } else {
-            if (isLoggedIn) {
-                loginLogoutButton.setText("Logout");
-                loginLogoutButton.setActivated(true);
-                loginLogoutButton.setOnClickListener(v -> {
-                    Log.d(TAG, "Logout button clicked. Clearing user_prefs.");
-                    SharedPreferences.Editor editor = sharedPreferences.edit();
-                    editor.clear();
-                    editor.apply();
-                    Intent intent = new Intent(this, LoginActivity.class);
-                    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                    startActivity(intent);
-                });
-            } else {
-                loginLogoutButton.setText("Login");
-                loginLogoutButton.setActivated(false);
-                loginLogoutButton.setOnClickListener(v -> {
-                    Intent intent = new Intent(this, LoginActivity.class);
-                    startActivity(intent);
-                });
-            }
         }
 
         if (secondaryHeader == null) {
@@ -182,20 +158,41 @@ public class BaseActivity extends AppCompatActivity {
     }
 
     public void updateCartBadge() {
-        TextView cartBadge = findViewById(R.id.cart_badge);
-        if (cartBadge != null) {
-            List<CartItem> cartItems = cartRepository.getCartItems();
-            int totalQuantity = 0;
-            for (CartItem item : cartItems) {
-                totalQuantity += item.getQuantity();
-            }
+        // This method is now obsolete as the cart badge is no longer directly in the header.
+        // The cart count can be managed within the menu if needed in the future.
+    }
 
-            if (totalQuantity == 0) {
-                cartBadge.setVisibility(View.GONE);
-            } else {
-                cartBadge.setVisibility(View.VISIBLE);
-                cartBadge.setText(String.valueOf(totalQuantity));
+    private void showUserMenu(View view) {
+        PopupMenu popupMenu = new PopupMenu(this, view);
+        popupMenu.getMenuInflater().inflate(R.menu.user_menu, popupMenu.getMenu());
+        popupMenu.setOnMenuItemClickListener(item -> {
+            int itemId = item.getItemId();
+            if (itemId == R.id.menu_cart) {
+                startActivity(new Intent(this, CartActivity.class));
+                return true;
+            } else if (itemId == R.id.menu_chat) {
+                startActivity(new Intent(this, ChatActivity.class));
+                return true;
+            } else if (itemId == R.id.menu_transaction_history) {
+                startActivity(new Intent(this, TransactionHistoryActivity.class));
+                return true;
+            } else if (itemId == R.id.menu_logout) {
+                logout();
+                return true;
             }
-        }
+            return false;
+        });
+        popupMenu.show();
+    }
+
+    private void logout() {
+        FirebaseAuth.getInstance().signOut();
+        SharedPreferences sharedPreferences = getSharedPreferences("user_prefs", MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.clear();
+        editor.apply();
+        Intent intent = new Intent(this, LoginActivity.class);
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        startActivity(intent);
     }
 }

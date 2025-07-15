@@ -52,11 +52,6 @@ public class ChatActivity extends BaseActivity implements ChatAdapter.OnProductC
         messageInput = findViewById(R.id.message_input);
         sendButton = findViewById(R.id.send_button);
 
-        ImageButton chatButton = findViewById(R.id.chat_button);
-        if (chatButton != null) {
-            chatButton.setVisibility(View.GONE);
-        }
-
         geminiPro = new GenerativeModel();
         mainExecutor = Executors.newSingleThreadExecutor();
         productDao = AppDatabase.getInstance(this).productDao();

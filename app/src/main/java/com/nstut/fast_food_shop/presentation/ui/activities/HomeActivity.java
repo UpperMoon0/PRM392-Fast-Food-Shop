@@ -8,6 +8,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.PopupMenu;
 
 import androidx.appcompat.widget.SearchView;
 import androidx.appcompat.app.AppCompatActivity;
@@ -42,9 +43,6 @@ public class HomeActivity extends BaseActivity implements CategoryAdapter.OnCate
     private AppDatabase appDatabase;
     private ExecutorService executorService = Executors.newSingleThreadExecutor();
     private ImageView bannerImage;
-    private Button loginLogoutButton;
-    private ImageButton chatButton;
-    
     private SearchView searchView;
     private ChipGroup categoryChipGroup;
 
@@ -66,9 +64,6 @@ public class HomeActivity extends BaseActivity implements CategoryAdapter.OnCate
         appDatabase = AppDatabase.getInstance(this);
 
         bannerImage = findViewById(R.id.banner_image);
-        loginLogoutButton = findViewById(R.id.login_logout_button);
-        chatButton = findViewById(R.id.chat_button);
-        
         productsRecyclerView = findViewById(R.id.products_recycler_view);
         categoryRecyclerView = findViewById(R.id.category_recycler_view);
         searchView = findViewById(R.id.search_view);

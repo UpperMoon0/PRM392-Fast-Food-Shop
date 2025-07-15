@@ -36,6 +36,7 @@
         <activity android:name=".PaymentActivity"/>
         <activity android:name=".OrderActivity"/>
         <activity android:name=".VnpayWebViewActivity"/>
+        <activity android:name=".presentation.ui.activities.TransactionHistoryActivity"/>
     </application>
 
 </manifest>

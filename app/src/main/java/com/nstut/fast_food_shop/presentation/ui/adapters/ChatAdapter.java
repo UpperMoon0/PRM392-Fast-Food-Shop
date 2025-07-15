@@ -72,11 +72,9 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     @Override
     public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
         ChatMessage message = messages.get(position);
-        if (holder.getItemViewType() == VIEW_TYPE_SENT) {
+        if (holder.getItemViewType() == VIEW_TYPE_SENT || holder.getItemViewType() == VIEW_TYPE_RECEIVED) {
             ((ChatViewHolder) holder).messageText.setText(message.getMessage());
-        } else if (holder.getItemViewType() == VIEW_TYPE_RECEIVED) {
-            ((ChatViewHolder) holder).messageText.setText(message.getMessage());
-        } else {
+        } else if (holder.getItemViewType() == VIEW_TYPE_RECOMMENDATION) {
             ((RecommendationViewHolder) holder).bind(message, onProductClickListener, onAddToCartClickListener);
         }
     }
@@ -84,6 +82,11 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     @Override
     public int getItemCount() {
         return messages.size();
+    }
+
+    public void addMessage(ChatMessage message) {
+        messages.add(message);
+        notifyItemInserted(messages.size() - 1);
     }
 
     static class ChatViewHolder extends RecyclerView.ViewHolder {

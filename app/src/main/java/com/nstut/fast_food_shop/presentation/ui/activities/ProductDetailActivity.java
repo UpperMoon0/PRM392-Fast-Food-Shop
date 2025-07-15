@@ -41,7 +41,6 @@ public class ProductDetailActivity extends BaseActivity {
         Button addToCartButton = findViewById(R.id.add_to_cart_button);
         
         ImageView backButton = findViewById(R.id.back_button);
-        ImageButton chatButton = findViewById(R.id.chat_button);
 
         int productId = getIntent().getIntExtra(EXTRA_PRODUCT_ID, -1);
 
@@ -85,10 +84,6 @@ public class ProductDetailActivity extends BaseActivity {
         });
 
         backButton.setOnClickListener(v -> onBackPressed());
-        chatButton.setOnClickListener(v -> {
-            Intent intent = new Intent(ProductDetailActivity.this, ChatActivity.class);
-            startActivity(intent);
-        });
     }
 
     @Override

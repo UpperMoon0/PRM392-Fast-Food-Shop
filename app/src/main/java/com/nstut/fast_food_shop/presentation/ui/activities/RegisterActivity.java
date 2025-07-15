@@ -82,25 +82,27 @@ public class RegisterActivity extends AppCompatActivity {
         }
 
         executorService.execute(() -> {
-            User existingUser = appDatabase.userDao().findByEmail(email);
-            if (existingUser != null) {
-                runOnUiThread(() -> Toast.makeText(this, "User already exists", Toast.LENGTH_SHORT).show());
-                return;
-            }
+            executorService.execute(() -> {
+                User existingUser = appDatabase.userDao().findByEmail(email);
+                if (existingUser != null) {
+                    runOnUiThread(() -> Toast.makeText(this, "User already exists", Toast.LENGTH_SHORT).show());
+                    return;
+                }
 
-            User user = new User();
-            user.fullName = fullName;
-            user.email = email;
-            user.passwordHash = HashUtils.hashPassword(password);
-            user.phoneNumber = phoneNumber;
-            user.role = User.ROLE_USER;
-            user.createdAt = System.currentTimeMillis();
-            user.updatedAt = System.currentTimeMillis();
+                User user = new User();
+                user.fullName = fullName;
+                user.email = email;
+                user.passwordHash = HashUtils.hashPassword(password);
+                user.phoneNumber = phoneNumber;
+                user.role = User.ROLE_USER;
+                user.createdAt = System.currentTimeMillis();
+                user.updatedAt = System.currentTimeMillis();
 
-            appDatabase.userDao().insert(user);
-            runOnUiThread(() -> {
-                Toast.makeText(this, "Registration successful", Toast.LENGTH_SHORT).show();
-                finish();
+                appDatabase.userDao().insert(user);
+                runOnUiThread(() -> {
+                    Toast.makeText(this, "Registration successful", Toast.LENGTH_SHORT).show();
+                    finish();
+                });
             });
         });
     }
