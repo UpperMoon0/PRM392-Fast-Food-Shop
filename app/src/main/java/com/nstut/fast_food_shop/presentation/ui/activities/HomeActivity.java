@@ -32,7 +32,6 @@ import java.util.concurrent.Executors;
 
 public class HomeActivity extends BaseActivity implements CategoryAdapter.OnCategoryClickListener, ProductAdapter.OnProductClickListener {
 
-    private RecyclerView categoriesRecyclerView;
     private RecyclerView productsRecyclerView;
     private CategoryAdapter categoryAdapter;
     private ProductAdapter productAdapter;
@@ -67,7 +66,6 @@ public class HomeActivity extends BaseActivity implements CategoryAdapter.OnCate
         bannerImage = findViewById(R.id.banner_image);
         loginLogoutButton = findViewById(R.id.login_logout_button);
         chatButton = findViewById(R.id.chat_button);
-        categoriesRecyclerView = findViewById(R.id.categories_recycler_view);
         productsRecyclerView = findViewById(R.id.products_recycler_view);
         searchView = findViewById(R.id.search_view);
         categoryChipGroup = findViewById(R.id.category_chip_group);
@@ -77,8 +75,6 @@ public class HomeActivity extends BaseActivity implements CategoryAdapter.OnCate
         filteredProductList = new ArrayList<>();
 
         categoryAdapter = new CategoryAdapter(categoryList, this);
-        categoriesRecyclerView.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));
-        categoriesRecyclerView.setAdapter(categoryAdapter);
 
         productAdapter = new ProductAdapter(new ArrayList<>(), this);
         productsRecyclerView.setLayoutManager(new LinearLayoutManager(this));
@@ -107,9 +103,13 @@ public class HomeActivity extends BaseActivity implements CategoryAdapter.OnCate
 
     @Override
     public void onCategoryClick(Category category) {
-        Intent intent = new Intent(this, ProductListActivity.class);
-        intent.putExtra("category_id", category.getId());
-        startActivity(intent);
+        for (int i = 0; i < categoryChipGroup.getChildCount(); i++) {
+            Chip chip = (Chip) categoryChipGroup.getChildAt(i);
+            if (chip.getTag().equals(category.getId())) {
+                chip.setChecked(true);
+                break;
+            }
+        }
     }
 
     @Override
@@ -143,6 +143,14 @@ public class HomeActivity extends BaseActivity implements CategoryAdapter.OnCate
 
     private void updateCategoryChips(List<Category> categories) {
         categoryChipGroup.removeAllViews();
+
+        Chip allChip = new Chip(this);
+        allChip.setText("All");
+        allChip.setTag(-1);
+        allChip.setCheckable(true);
+        allChip.setChecked(true);
+        categoryChipGroup.addView(allChip);
+
         for (Category category : categories) {
             Chip chip = new Chip(this);
             chip.setText(category.getName());
@@ -164,9 +172,12 @@ public class HomeActivity extends BaseActivity implements CategoryAdapter.OnCate
         int selectedCategoryId = -1;
         int checkedChipId = categoryChipGroup.getCheckedChipId();
         if (checkedChipId != View.NO_ID) {
-            Chip selectedChip = findViewById(checkedChipId);
+            Chip selectedChip = categoryChipGroup.findViewById(checkedChipId);
             if (selectedChip != null) {
-                selectedCategoryId = (int) selectedChip.getTag();
+                Object tag = selectedChip.getTag();
+                if (tag != null) {
+                    selectedCategoryId = (int) tag;
+                }
             }
         }
         final int finalSelectedCategoryId = selectedCategoryId;
@@ -174,7 +185,8 @@ public class HomeActivity extends BaseActivity implements CategoryAdapter.OnCate
         filteredProductList.clear();
         for (ProductWithCategories productWithCategories : productList) {
             ProductRoom product = productWithCategories.product;
-            boolean matchesCategory = finalSelectedCategoryId == -1 || productWithCategories.categories.stream().anyMatch(c -> c.getId() == finalSelectedCategoryId);
+            boolean matchesCategory = finalSelectedCategoryId == -1 ||
+                    productWithCategories.categories.stream().anyMatch(c -> c.getId() == finalSelectedCategoryId);
             boolean matchesSearch = query.isEmpty() || product.getName().toLowerCase().contains(query);
 
             if (matchesCategory && matchesSearch) {
