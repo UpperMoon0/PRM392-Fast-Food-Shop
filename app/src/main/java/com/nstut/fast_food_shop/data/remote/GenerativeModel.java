@@ -28,7 +28,7 @@ public class GenerativeModel {
                 .build();
 
         com.google.ai.client.generativeai.GenerativeModel gm = new com.google.ai.client.generativeai.GenerativeModel(
-                "gemini-1.5-flash",
+                "gemini-2.5-flash",
                 apiKey,
                 new GenerationConfig.Builder().build(),
                 Collections.emptyList()
