@@ -5,19 +5,24 @@
     android:layout_height="wrap_content"
     android:gravity="center"
     android:orientation="horizontal"
-    android:visibility="gone">
+    android:visibility="gone"
+    android:background="?attr/colorPrimary">
 
     <Button
         android:id="@+id/button_manage_products"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_weight="1"
-        android:text="Manage Products" />
+        android:text="Manage Products"
+        style="?android:attr/borderlessButtonStyle"
+        android:textColor="@android:color/white"/>
 
     <Button
         android:id="@+id/button_manage_categories"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_weight="1"
-        android:text="Manage Categories" />
+        android:text="Manage Categories"
+        style="?android:attr/borderlessButtonStyle"
+        android:textColor="@android:color/white"/>
 </LinearLayout>
