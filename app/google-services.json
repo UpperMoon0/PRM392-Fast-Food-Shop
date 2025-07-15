@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "1052015208599",
+    "project_id": "fast-food-shop-aabf7",
+    "storage_bucket": "fast-food-shop-aabf7.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1052015208599:android:cc7714310ed84a45b021d2",
+        "android_client_info": {
+          "package_name": "com.nstut.fast_food_shop"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDmsgdhE3MifuSOdi9nIAsc8e0nMUbxSdQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
