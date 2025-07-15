@@ -39,7 +39,6 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content" />
 
-        <!-- Payment Details -->
         <TextView
             android:text="Payment Details"
             android:textStyle="bold"
@@ -95,10 +94,11 @@
                 android:layout_height="wrap_content" />
 
             <RadioButton
-                android:id="@+id/radioVnpay"
-                android:text="Pay with VNPAY"
+                android:id="@+id/radioStripe"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content" />
+                android:layout_height="wrap_content"
+                android:text="Pay with Stripe"/>
+
         </RadioGroup>
 
             <Button
