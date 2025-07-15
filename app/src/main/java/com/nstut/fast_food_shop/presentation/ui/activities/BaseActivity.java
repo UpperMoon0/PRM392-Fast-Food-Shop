@@ -53,7 +53,7 @@ public class BaseActivity extends AppCompatActivity {
         Log.d(TAG, "Role from SharedPreferences: " + role);
 
         if (chatButton != null) {
-            if (isLoggedIn) {
+            if (isLoggedIn && !"admin".equalsIgnoreCase(role)) {
                 chatButton.setVisibility(View.VISIBLE);
             } else {
                 chatButton.setVisibility(View.GONE);

@@ -9,17 +9,17 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Toast;
-import java.io.File;
-import java.io.IOException;
-
 import androidx.annotation.Nullable;
-
 import com.bumptech.glide.Glide;
 import com.nstut.fast_food_shop.R;
 import com.nstut.fast_food_shop.data.local.db.AppDatabase;
 import com.nstut.fast_food_shop.data.models.Category;
 import com.nstut.fast_food_shop.presentation.utils.CloudinaryManager;
 import com.nstut.fast_food_shop.presentation.utils.FileUtil;
+import java.io.File;
+import java.io.IOException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 public class AddEditCategoryActivity extends BaseActivity {
 
@@ -32,6 +32,7 @@ public class AddEditCategoryActivity extends BaseActivity {
     private AppDatabase appDatabase;
     private Category currentCategory;
     private int categoryId = -1;
+    private ExecutorService executorService;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -39,6 +40,7 @@ public class AddEditCategoryActivity extends BaseActivity {
         setContentView(R.layout.activity_add_edit_category);
 
         appDatabase = AppDatabase.getInstance(this);
+        executorService = Executors.newSingleThreadExecutor();
 
         editTextName = findViewById(R.id.edit_text_category_name);
         editTextDescription = findViewById(R.id.edit_text_category_description);
@@ -49,6 +51,7 @@ public class AddEditCategoryActivity extends BaseActivity {
         if (getIntent().hasExtra("category_id")) {
             categoryId = getIntent().getIntExtra("category_id", -1);
             loadCategory();
+            buttonSave.setText("Save Changes");
         }
 
         buttonSelectImage.setOnClickListener(v -> {
@@ -103,7 +106,7 @@ public class AddEditCategoryActivity extends BaseActivity {
                     if (imageUrl != null && !imageUrl.isEmpty()) {
                         saveCategoryToDb(name, description, imageUrl);
                     } else {
-                        Toast.makeText(AddEditCategoryActivity.this, "Image upload failed", Toast.LENGTH_SHORT).show();
+                        runOnUiThread(() -> Toast.makeText(AddEditCategoryActivity.this, "Image upload failed", Toast.LENGTH_SHORT).show());
                     }
                 });
             } catch (IOException e) {
@@ -118,7 +121,7 @@ public class AddEditCategoryActivity extends BaseActivity {
     }
 
     private void saveCategoryToDb(String name, String description, String imageUrl) {
-        new Thread(() -> {
+        executorService.execute(() -> {
             if (currentCategory == null) {
                 currentCategory = new Category(name, description, imageUrl);
                 appDatabase.categoryDao().insert(currentCategory);
@@ -131,6 +134,6 @@ public class AddEditCategoryActivity extends BaseActivity {
                 Toast.makeText(this, "Category saved", Toast.LENGTH_SHORT).show();
                 finish();
             });
-        }).start();
+        });
     }
 }

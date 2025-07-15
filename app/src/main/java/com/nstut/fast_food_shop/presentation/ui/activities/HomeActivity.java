@@ -85,7 +85,6 @@ public class HomeActivity extends BaseActivity implements CategoryAdapter.OnCate
         loadData();
         setupSearch();
         setupCategoryFilter();
-        setupChatButton();
     }
 
     private void loadData() {
@@ -160,13 +159,6 @@ public class HomeActivity extends BaseActivity implements CategoryAdapter.OnCate
             chip.setCheckable(true);
             categoryChipGroup.addView(chip);
         }
-    }
-
-    private void setupChatButton() {
-        chatButton.setOnClickListener(v -> {
-            Intent intent = new Intent(HomeActivity.this, ChatActivity.class);
-            startActivity(intent);
-        });
     }
 
     private void filterProducts() {
