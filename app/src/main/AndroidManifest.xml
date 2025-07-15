@@ -20,7 +20,14 @@
             android:exported="true" />
         <activity
             android:name=".OrderActivity"
-            android:exported="true" />
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data android:scheme="fastfoodshop" />
+            </intent-filter>
+        </activity>
         <activity android:name=".VnpayWebViewActivity" />
 
     </application>

@@ -35,7 +35,6 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content" />
 
-        <!-- Chi tiết thanh toán -->
         <TextView
             android:text="Chi tiết thanh toán"
             android:textStyle="bold"
@@ -90,11 +89,17 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content" />
 
+<!--            <RadioButton-->
+<!--                android:id="@+id/radioVnpay"-->
+<!--                android:text="Thanh toán bằng VNPAY"-->
+<!--                android:layout_width="wrap_content"-->
+<!--                android:layout_height="wrap_content" />-->
             <RadioButton
-                android:id="@+id/radioVnpay"
-                android:text="Thanh toán bằng VNPAY"
+                android:id="@+id/radioStripe"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content" />
+                android:layout_height="wrap_content"
+                android:text="Thanh toán bằng Stripe"/>
+
         </RadioGroup>
 
         <Button
