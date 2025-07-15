@@ -7,7 +7,9 @@ import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import com.nstut.fast_food_shop.adapter.CartAdapter;
+import com.nstut.fast_food_shop.data.models.ProductRoom;
 import com.nstut.fast_food_shop.databinding.ActivityPaymentBinding;
+import com.nstut.fast_food_shop.model.CartItem;
 import com.nstut.fast_food_shop.model.FoodItem;
 import com.nstut.fast_food_shop.util.Utils;
 
@@ -47,7 +49,20 @@ public class PaymentActivity extends AppCompatActivity {
         cart = getIntent().getParcelableArrayListExtra("cart");
         if (cart == null) cart = new ArrayList<>();
 
-        CartAdapter adapter = new CartAdapter(cart, this::updateTotal);
+        List<CartItem> cartItems = new ArrayList<>();
+        for (FoodItem foodItem : cart) {
+            ProductRoom product = new ProductRoom();
+            product.setName(foodItem.getName());
+            product.setPrice(foodItem.getPrice());
+            // Note: FoodItem uses imageResId (int), ProductRoom uses imageUrl (String).
+            // This might require a more sophisticated conversion if you use URLs.
+            // For now, we'll leave imageUrl null or handle it as needed.
+            // product.setImageUrl(String.valueOf(foodItem.getImageResId()));
+            
+            cartItems.add(new CartItem(product, foodItem.getQuantity()));
+        }
+
+        CartAdapter adapter = new CartAdapter(cartItems, this::updateTotal);
         binding.rvOrderList.setLayoutManager(new LinearLayoutManager(this));
         binding.rvOrderList.setAdapter(adapter);
 

@@ -5,6 +5,7 @@ import android.content.SharedPreferences;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -12,16 +13,24 @@ import android.widget.TextView;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.gson.Gson;
+import com.nstut.fast_food_shop.CartActivity;
 import com.nstut.fast_food_shop.R;
 import com.nstut.fast_food_shop.data.models.User;
+import com.nstut.fast_food_shop.model.CartItem;
+import com.nstut.fast_food_shop.repository.CartRepository;
+
+import java.util.List;
 
 public class BaseActivity extends AppCompatActivity {
     private static final String TAG = "BaseActivity";
+    private CartRepository cartRepository;
 
     @Override
     protected void onResume() {
         super.onResume();
+        cartRepository = new CartRepository(this);
         setupHeader();
+        updateCartBadge();
     }
 
     public User getCurrentUser() {
@@ -45,6 +54,9 @@ public class BaseActivity extends AppCompatActivity {
         TextView appName = findViewById(R.id.app_name);
         Button loginLogoutButton = findViewById(R.id.login_logout_button);
         ImageButton chatButton = findViewById(R.id.chat_button);
+        FrameLayout cartIconContainer = findViewById(R.id.cart_icon_container);
+        ImageButton cartButton = findViewById(R.id.cart_button);
+
         SharedPreferences sharedPreferences = getSharedPreferences("user_prefs", MODE_PRIVATE);
         boolean isLoggedIn = sharedPreferences.getBoolean("is_logged_in", false);
         String role = sharedPreferences.getString("role", "user");
@@ -55,14 +67,21 @@ public class BaseActivity extends AppCompatActivity {
         if (chatButton != null) {
             if (isLoggedIn && !"admin".equalsIgnoreCase(role)) {
                 chatButton.setVisibility(View.VISIBLE);
+                cartIconContainer.setVisibility(View.VISIBLE);
             } else {
                 chatButton.setVisibility(View.GONE);
+                cartIconContainer.setVisibility(View.GONE);
             }
         }
             chatButton.setOnClickListener(v -> {
                 Intent intent = new Intent(this, ChatActivity.class);
                 startActivity(intent);
             });
+
+        cartButton.setOnClickListener(v -> {
+            Intent intent = new Intent(this, CartActivity.class);
+            startActivity(intent);
+        });
 
         if (appName == null) {
             Log.e(TAG, "appName TextView not found. Header not fully initialized.");
@@ -141,6 +160,19 @@ public class BaseActivity extends AppCompatActivity {
                 }
             } else {
                 Log.e(TAG, "secondaryHeader is not a LinearLayout, cannot configure admin links.");
+            }
+        }
+    }
+
+    private void updateCartBadge() {
+        TextView cartBadge = findViewById(R.id.cart_badge);
+        if (cartBadge != null) {
+            List<CartItem> cartItems = cartRepository.getCartItems();
+            if (cartItems.isEmpty()) {
+                cartBadge.setVisibility(View.GONE);
+            } else {
+                cartBadge.setVisibility(View.VISIBLE);
+                cartBadge.setText(String.valueOf(cartItems.size()));
             }
         }
     }

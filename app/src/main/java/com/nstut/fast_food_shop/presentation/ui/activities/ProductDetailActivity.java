@@ -18,15 +18,20 @@ import com.nstut.fast_food_shop.R;
 import com.nstut.fast_food_shop.data.local.db.AppDatabase;
 import com.nstut.fast_food_shop.data.models.Category;
 import com.nstut.fast_food_shop.data.models.ProductRoom;
+import com.nstut.fast_food_shop.repository.CartRepository;
 
 public class ProductDetailActivity extends BaseActivity {
 
     public static final String EXTRA_PRODUCT_ID = "extra_product_id";
+    private CartRepository cartRepository;
+    private ProductRoom currentProduct;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_product_detail);
+
+        cartRepository = new CartRepository(this);
 
         ImageView productImageView = findViewById(R.id.product_image_view);
         TextView productNameTextView = findViewById(R.id.product_name_text_view);
@@ -43,13 +48,13 @@ public class ProductDetailActivity extends BaseActivity {
         if (productId != -1) {
             AppDatabase.getInstance(this).productDao().getProductWithCategories(productId).observe(this, productWithCategories -> {
                 if (productWithCategories != null) {
-                    ProductRoom product = productWithCategories.product;
+                    currentProduct = productWithCategories.product;
                     TextView appName = findViewById(R.id.app_name);
-                    appName.setText(product.getName());
-                    Glide.with(this).load(product.getImageUrl()).into(productImageView);
-                    productNameTextView.setText(product.getName());
-                    productDescriptionTextView.setText(product.getDescription());
-                    productPriceTextView.setText(String.format("$%.2f", product.getPrice()));
+                    appName.setText(currentProduct.getName());
+                    Glide.with(this).load(currentProduct.getImageUrl()).into(productImageView);
+                    productNameTextView.setText(currentProduct.getName());
+                    productDescriptionTextView.setText(currentProduct.getDescription());
+                    productPriceTextView.setText(String.format("$%.2f", currentProduct.getPrice()));
 
                     categoryChipGroup.removeAllViews();
                     for (Category category : productWithCategories.categories) {
@@ -72,7 +77,10 @@ public class ProductDetailActivity extends BaseActivity {
         }
 
         addToCartButton.setOnClickListener(v -> {
-            Toast.makeText(this, "Add to cart clicked", Toast.LENGTH_SHORT).show();
+            if (currentProduct != null) {
+                cartRepository.addItemToCart(currentProduct, 1);
+                Toast.makeText(this, "Added to cart", Toast.LENGTH_SHORT).show();
+            }
         });
 
         backButton.setOnClickListener(v -> onBackPressed());

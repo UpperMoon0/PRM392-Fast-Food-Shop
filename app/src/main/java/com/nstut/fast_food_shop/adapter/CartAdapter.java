@@ -12,8 +12,9 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.bumptech.glide.Glide;
 import com.nstut.fast_food_shop.R;
-import com.nstut.fast_food_shop.model.FoodItem;
+import com.nstut.fast_food_shop.model.CartItem;
 import com.nstut.fast_food_shop.util.Utils;
 
 import java.util.List;
@@ -23,10 +24,10 @@ public class CartAdapter extends RecyclerView.Adapter<CartAdapter.ViewHolder> {
     public interface OnQuantityChanged {
         void onChanged();
     }
-    private final List<FoodItem> cartItems;
+    private final List<CartItem> cartItems;
     private final OnQuantityChanged listener;
 
-    public CartAdapter(List<FoodItem> items, OnQuantityChanged listener) {
+    public CartAdapter(List<CartItem> items, OnQuantityChanged listener) {
         this.cartItems = items;
         this.listener = listener;
     }
@@ -40,10 +41,10 @@ public class CartAdapter extends RecyclerView.Adapter<CartAdapter.ViewHolder> {
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
-        FoodItem item = cartItems.get(position);
-        holder.name.setText(item.getName());
-        holder.img.setImageResource(item.getImageResId());
-        holder.price.setText(Utils.formatCurrency(item.getPrice() * item.getQuantity()));
+        CartItem item = cartItems.get(position);
+        holder.name.setText(item.getProduct().getName());
+        Glide.with(holder.itemView.getContext()).load(item.getProduct().getImageUrl()).into(holder.img);
+        holder.price.setText(Utils.formatCurrency(item.getProduct().getPrice() * item.getQuantity()));
 
         if (holder.textWatcher != null) {
             holder.quantity.removeTextChangedListener(holder.textWatcher);
@@ -58,7 +59,7 @@ public class CartAdapter extends RecyclerView.Adapter<CartAdapter.ViewHolder> {
                     int qty = Integer.parseInt(s.toString());
                     if (qty < 1) qty = 1;
                     item.setQuantity(qty);
-                    holder.price.setText(Utils.formatCurrency(item.getPrice() * qty));
+                    holder.price.setText(Utils.formatCurrency(item.getProduct().getPrice() * qty));
                     listener.onChanged();
                 } catch (NumberFormatException ignored) {}
             }
@@ -70,6 +71,11 @@ public class CartAdapter extends RecyclerView.Adapter<CartAdapter.ViewHolder> {
             if (qty > 1) {
                 item.setQuantity(qty - 1);
                 notifyItemChanged(holder.getAdapterPosition());
+                listener.onChanged();
+            } else {
+                cartItems.remove(position);
+                notifyItemRemoved(position);
+                notifyItemRangeChanged(position, cartItems.size());
                 listener.onChanged();
             }
         });

@@ -19,16 +19,49 @@
         android:layout_alignParentStart="true"
         android:layout_centerVertical="true"/>
 
-    <ImageButton
-        android:id="@+id/chat_button"
+    <FrameLayout
+        android:id="@+id/cart_icon_container"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_toStartOf="@id/chat_button"
+        android:layout_centerVertical="true"
+        android:layout_marginEnd="8dp">
+
+        <ImageButton
+            android:id="@+id/cart_button"
+            android:layout_width="28dp"
+            android:layout_height="28dp"
+            android:src="@drawable/ic_shopping_cart"
+            android:scaleType="fitCenter"
+            android:padding="0dp"
+            app:tint="@android:color/white"
+            android:background="?attr/selectableItemBackgroundBorderless" />
+
+        <TextView
+            android:id="@+id/cart_badge"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/bg_badge_red"
+            android:textColor="@android:color/white"
+            android:textSize="10sp"
+            android:textStyle="bold"
+            android:gravity="center"
+            android:layout_gravity="top|end"
+            android:visibility="gone" />
+    </FrameLayout>
+
+    <ImageButton
+        android:id="@+id/chat_button"
+        android:layout_width="28dp"
+        android:layout_height="28dp"
         android:src="@drawable/ic_chat"
+        android:scaleType="fitCenter"
+        android:padding="0dp"
         app:tint="@android:color/white"
         android:background="?attr/selectableItemBackgroundBorderless"
         android:layout_toStartOf="@id/login_logout_button"
         android:layout_centerVertical="true"
-        android:layout_marginEnd="16dp"/>
+        android:layout_marginEnd="8dp"/>
 
     <Button
         android:id="@+id/login_logout_button"
