@@ -35,5 +35,14 @@
             android:layout_marginTop="4dp"
             android:textAppearance="?attr/textAppearanceBody1"
             android:textColor="?attr/colorPrimary" />
-    </LinearLayout>
+
+       <Button
+           android:id="@+id/add_to_cart_button"
+           android:layout_width="match_parent"
+           android:layout_height="wrap_content"
+           android:layout_marginTop="8dp"
+           android:background="@drawable/button_background_yellow"
+           android:textColor="@android:color/white"
+           android:text="Add to Cart" />
+   </LinearLayout>
 </androidx.cardview.widget.CardView>

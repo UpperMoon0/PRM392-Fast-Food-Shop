@@ -20,6 +20,8 @@ import com.nstut.fast_food_shop.data.models.ChatMessage;
 import com.nstut.fast_food_shop.data.models.ProductRoom;
 import com.nstut.fast_food_shop.data.remote.GenerativeModel;
 import com.nstut.fast_food_shop.presentation.ui.adapters.ChatAdapter;
+import com.nstut.fast_food_shop.repository.CartRepository;
+import android.widget.Toast;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -28,7 +30,7 @@ import java.util.List;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 
-public class ChatActivity extends BaseActivity implements ChatAdapter.OnProductClickListener {
+public class ChatActivity extends BaseActivity implements ChatAdapter.OnProductClickListener, ChatAdapter.OnAddToCartClickListener {
 
     private RecyclerView chatRecyclerView;
     private ChatAdapter chatAdapter;
@@ -39,6 +41,7 @@ public class ChatActivity extends BaseActivity implements ChatAdapter.OnProductC
     private GenerativeModel geminiPro;
     private Executor mainExecutor;
     private ProductDao productDao;
+    private CartRepository cartRepository;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -57,10 +60,11 @@ public class ChatActivity extends BaseActivity implements ChatAdapter.OnProductC
         geminiPro = new GenerativeModel();
         mainExecutor = Executors.newSingleThreadExecutor();
         productDao = AppDatabase.getInstance(this).productDao();
+        cartRepository = new CartRepository(this);
 
         chatMessages = new ArrayList<>();
         chatHistory = new ArrayList<>();
-        chatAdapter = new ChatAdapter(chatMessages, this);
+        chatAdapter = new ChatAdapter(chatMessages, this, this);
 
         LinearLayoutManager layoutManager = new LinearLayoutManager(this);
         chatRecyclerView.setLayoutManager(layoutManager);
@@ -196,5 +200,12 @@ public class ChatActivity extends BaseActivity implements ChatAdapter.OnProductC
         Intent intent = new Intent(this, ProductDetailActivity.class);
         intent.putExtra(ProductDetailActivity.EXTRA_PRODUCT_ID, product.getId());
         startActivity(intent);
+    }
+
+    @Override
+    public void onAddToCartClick(ProductRoom product) {
+        cartRepository.addItemToCart(product, 1);
+        Toast.makeText(this, "Added " + product.getName() + " to cart", Toast.LENGTH_SHORT).show();
+        updateCartBadge();
     }
 }

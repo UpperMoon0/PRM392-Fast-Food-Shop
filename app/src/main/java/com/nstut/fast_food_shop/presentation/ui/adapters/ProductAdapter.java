@@ -28,6 +28,7 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ViewHold
     private Context context;
     private OnProductClickListener productClickListener;
     private OnAdminProductClickListener adminProductClickListener;
+    private OnAddToCartClickListener addToCartClickListener;
 
     public ProductAdapter(List<ProductWithCategories> products, Object listener) {
         this.products = products;
@@ -44,6 +45,12 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ViewHold
         this.productClickListener = listener;
     }
 
+    public ProductAdapter(List<ProductRoom> productRooms, OnProductClickListener productClickListener, OnAddToCartClickListener addToCartClickListener) {
+        this.productRooms = productRooms;
+        this.productClickListener = productClickListener;
+        this.addToCartClickListener = addToCartClickListener;
+    }
+
     public void updateProducts(List<ProductWithCategories> newProducts) {
         if (this.products != newProducts) {
             this.products.clear();
@@ -56,7 +63,7 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ViewHold
         TextView txtName, txtPrice, txtCategories;
         ImageView imageView;
         View adminActions;
-        Button btnEdit, btnDelete;
+        Button btnEdit, btnDelete, btnAddToCart;
 
         public ViewHolder(View view) {
             super(view);
@@ -64,6 +71,7 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ViewHold
                 txtName = view.findViewById(R.id.product_name);
                 txtPrice = view.findViewById(R.id.product_price);
                 imageView = view.findViewById(R.id.product_image);
+                btnAddToCart = view.findViewById(R.id.add_to_cart_button);
             } else {
                 txtName = view.findViewById(R.id.txtName);
                 txtPrice = view.findViewById(R.id.txtPrice);
@@ -126,6 +134,9 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ViewHold
             holder.txtPrice.setText("$" + product.getPrice());
             Glide.with(context).load(product.getImageUrl()).into(holder.imageView);
             holder.itemView.setOnClickListener(v -> productClickListener.onProductClick(product));
+            if (holder.btnAddToCart != null && addToCartClickListener != null) {
+                holder.btnAddToCart.setOnClickListener(v -> addToCartClickListener.onAddToCartClick(product));
+            }
         }
     }
 
@@ -145,5 +156,9 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ViewHold
     public interface OnAdminProductClickListener {
         void onEditClick(ProductRoom product);
         void onDeleteClick(ProductRoom product);
+    }
+
+    public interface OnAddToCartClickListener {
+        void onAddToCartClick(ProductRoom product);
     }
 }

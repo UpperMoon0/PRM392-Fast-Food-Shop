@@ -181,15 +181,20 @@ public class BaseActivity extends AppCompatActivity {
         }
     }
 
-    private void updateCartBadge() {
+    public void updateCartBadge() {
         TextView cartBadge = findViewById(R.id.cart_badge);
         if (cartBadge != null) {
             List<CartItem> cartItems = cartRepository.getCartItems();
-            if (cartItems.isEmpty()) {
+            int totalQuantity = 0;
+            for (CartItem item : cartItems) {
+                totalQuantity += item.getQuantity();
+            }
+
+            if (totalQuantity == 0) {
                 cartBadge.setVisibility(View.GONE);
             } else {
                 cartBadge.setVisibility(View.VISIBLE);
-                cartBadge.setText(String.valueOf(cartItems.size()));
+                cartBadge.setText(String.valueOf(totalQuantity));
             }
         }
     }

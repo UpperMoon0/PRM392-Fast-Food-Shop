@@ -40,7 +40,9 @@
         android:layout_height="wrap_content"
         android:layout_toStartOf="@id/chat_button"
         android:layout_centerVertical="true"
-        android:layout_marginEnd="8dp">
+        android:layout_marginEnd="8dp"
+        android:clipChildren="false"
+        android:clipToPadding="false">
 
         <ImageButton
             android:id="@+id/cart_button"
@@ -62,6 +64,8 @@
             android:textStyle="bold"
             android:gravity="center"
             android:layout_gravity="top|end"
+            android:translationX="6dp"
+            android:translationY="-6dp"
             android:visibility="gone" />
     </FrameLayout>
 

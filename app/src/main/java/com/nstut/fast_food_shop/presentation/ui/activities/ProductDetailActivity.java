@@ -80,6 +80,7 @@ public class ProductDetailActivity extends BaseActivity {
             if (currentProduct != null) {
                 cartRepository.addItemToCart(currentProduct, 1);
                 Toast.makeText(this, "Added to cart", Toast.LENGTH_SHORT).show();
+                updateCartBadge();
             }
         });
 
