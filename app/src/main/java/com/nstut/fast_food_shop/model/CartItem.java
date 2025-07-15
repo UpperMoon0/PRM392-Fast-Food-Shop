@@ -8,6 +8,9 @@ public class CartItem implements Parcelable {
     private ProductRoom product;
     private int quantity;
 
+    public CartItem() {
+    }
+
     public CartItem(ProductRoom product, int quantity) {
         this.product = product;
         this.quantity = quantity;

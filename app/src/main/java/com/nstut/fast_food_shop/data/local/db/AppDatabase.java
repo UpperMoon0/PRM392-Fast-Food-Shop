@@ -10,17 +10,19 @@ import androidx.room.TypeConverters;
 import androidx.sqlite.db.SupportSQLiteDatabase;
 
 import com.nstut.fast_food_shop.data.local.dao.CategoryDao;
+import com.nstut.fast_food_shop.data.local.dao.OrderDao;
 import com.nstut.fast_food_shop.data.local.dao.ProductDao;
 import com.nstut.fast_food_shop.data.local.dao.UserDao;
 import com.nstut.fast_food_shop.data.models.Category;
 import com.nstut.fast_food_shop.data.models.ProductCategoryCrossRef;
 import com.nstut.fast_food_shop.data.models.ProductRoom;
 import com.nstut.fast_food_shop.data.models.User;
+import com.nstut.fast_food_shop.model.Order;
 
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-@Database(entities = {ProductRoom.class, User.class, Category.class, ProductCategoryCrossRef.class}, version = 12, exportSchema = false)
+@Database(entities = {ProductRoom.class, User.class, Category.class, ProductCategoryCrossRef.class, Order.class}, version = 13, exportSchema = false)
 @TypeConverters({Converters.class})
 public abstract class AppDatabase extends RoomDatabase {
     private static volatile AppDatabase INSTANCE;
@@ -31,6 +33,7 @@ public abstract class AppDatabase extends RoomDatabase {
     public abstract ProductDao productDao();
     public abstract UserDao userDao();
     public abstract CategoryDao categoryDao();
+    public abstract OrderDao orderDao();
 
     public static AppDatabase getInstance(Context context) {
         if (INSTANCE == null) {

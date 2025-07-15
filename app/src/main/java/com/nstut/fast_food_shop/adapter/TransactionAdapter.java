@@ -36,7 +36,7 @@ public class TransactionAdapter extends RecyclerView.Adapter<TransactionAdapter.
         holder.orderId.setText("Order ID: " + order.getOrderId());
         SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy HH:mm", Locale.getDefault());
         holder.orderDate.setText("Date: " + sdf.format(order.getOrderDate()));
-        holder.totalAmount.setText("Total: " + String.format(Locale.getDefault(), "%,.0f", order.getTotalAmount()) + " VND");
+        holder.totalAmount.setText("Total: $" + String.format(Locale.getDefault(), "%,.2f", order.getTotalAmount()));
     }
 
     @Override

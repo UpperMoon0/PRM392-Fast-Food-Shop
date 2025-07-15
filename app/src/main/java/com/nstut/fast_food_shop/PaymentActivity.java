@@ -1,16 +1,26 @@
 package com.nstut.fast_food_shop;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
 import android.widget.Toast;
+
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.recyclerview.widget.LinearLayoutManager;
+
+import com.google.gson.Gson;
 import com.nstut.fast_food_shop.adapter.CartAdapter;
-import com.nstut.fast_food_shop.data.models.ProductRoom;
+import com.nstut.fast_food_shop.data.local.db.AppDatabase;
+import com.nstut.fast_food_shop.data.models.User;
 import com.nstut.fast_food_shop.databinding.ActivityPaymentBinding;
 import com.nstut.fast_food_shop.model.CartItem;
-import com.nstut.fast_food_shop.model.FoodItem;
+import com.nstut.fast_food_shop.model.Order;
 import com.nstut.fast_food_shop.presentation.ui.activities.BaseActivity;
+import com.nstut.fast_food_shop.presentation.ui.activities.HomeActivity;
+import com.nstut.fast_food_shop.repository.CartRepository;
 import com.nstut.fast_food_shop.util.Utils;
 
 import java.net.Inet4Address;
@@ -29,10 +39,11 @@ public class PaymentActivity extends BaseActivity {
 
     private ActivityPaymentBinding binding;
     private List<CartItem> cartItems;
+    private AppDatabase db;
+    private ActivityResultLauncher<Intent> vnpayLauncher;
 
-    private static final int SHIPPING_FEE = 15000;
-    private static final int OTHER_FEE = 6000;
-    private int finalTotal = 0;
+
+    private double finalTotal = 0;
 
     private static final String VNP_TMNCODE = "BY7EO884";
     private static final String VNP_HASHSECRET = "SFHP2M5E244J9KU4STDIJ2K3UH6OMICE";
@@ -46,6 +57,19 @@ public class PaymentActivity extends BaseActivity {
         binding = ActivityPaymentBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
         setupHeader(true);
+
+        db = AppDatabase.getInstance(this);
+
+        vnpayLauncher = registerForActivityResult(
+                new ActivityResultContracts.StartActivityForResult(),
+                result -> {
+                    if (result.getResultCode() == RESULT_OK) {
+                        createOrder("Paid");
+                    } else {
+                        Toast.makeText(this, "Payment failed or cancelled.", Toast.LENGTH_SHORT).show();
+                    }
+                }
+        );
 
         cartItems = getIntent().getParcelableArrayListExtra("cart");
         if (cartItems == null) cartItems = new ArrayList<>();
@@ -62,12 +86,12 @@ public class PaymentActivity extends BaseActivity {
         for (CartItem item : cartItems) {
             itemTotal += item.getProduct().getPrice() * item.getQuantity();
         }
-        finalTotal = (int) (itemTotal + SHIPPING_FEE + OTHER_FEE);
+        finalTotal = itemTotal;
 
-        binding.tvItemTotal.setText("Item Total: " + Utils.formatCurrency(itemTotal));
-        binding.tvShippingFee.setText("Shipping Fee: " + Utils.formatCurrency(SHIPPING_FEE));
-        binding.tvOtherFee.setText("Other Fee: " + Utils.formatCurrency(OTHER_FEE));
-        binding.tvTotalPrice.setText("Total Price: " + Utils.formatCurrency(finalTotal));
+        binding.tvItemTotal.setVisibility(View.GONE);
+        binding.tvShippingFee.setVisibility(View.GONE);
+        binding.tvOtherFee.setVisibility(View.GONE);
+        binding.tvTotalPrice.setText("Total Price: $" + String.format(Locale.getDefault(), "%,.2f", finalTotal));
 
         binding.btnPlaceOrder.setOnClickListener(v -> {
             String address = binding.edtAddress.getText().toString().trim();
@@ -78,15 +102,14 @@ public class PaymentActivity extends BaseActivity {
 
             int selectedId = binding.radioGroupPayment.getCheckedRadioButtonId();
             if (selectedId == R.id.radioCod) {
-                Toast.makeText(this, "Order placed successfully (COD)!", Toast.LENGTH_SHORT).show();
-                finish();
+                createOrder("Unpaid");
             } else if (selectedId == R.id.radioVnpay) {
                 startVnpayPayment(finalTotal);
             }
         });
     }
 
-    private void startVnpayPayment(int amount) {
+    private void startVnpayPayment(double amount) {
         try {
             String vnp_TxnRef = String.valueOf(System.currentTimeMillis());
             String vnp_CreateDate = new SimpleDateFormat("yyyyMMddHHmmss", Locale.getDefault()).format(new Date());
@@ -136,7 +159,7 @@ public class PaymentActivity extends BaseActivity {
             Log.d("VNPAY_DEBUG", "RawData to hash: " + rawData.toString());
             Intent intent = new Intent(this, VnpayWebViewActivity.class);
             intent.putExtra("paymentUrl", paymentUrl);
-            startActivity(intent);
+            vnpayLauncher.launch(intent);
         } catch (Exception e) {
             Log.e("VNPAY_ERROR", "Error creating payment URL", e);
             Toast.makeText(this, "Error creating payment URL: " + e.getMessage(), Toast.LENGTH_SHORT).show();
@@ -189,5 +212,31 @@ public class PaymentActivity extends BaseActivity {
         for (Map.Entry<String, String> entry : params.entrySet()) {
             Log.d("VNPAY_PARAMS", entry.getKey() + " = " + entry.getValue());
         }
+    }
+
+    private void createOrder(String status) {
+        SharedPreferences sharedPreferences = getSharedPreferences("user_prefs", MODE_PRIVATE);
+        String userJson = sharedPreferences.getString("user", null);
+        if (userJson == null) {
+            Toast.makeText(this, "User not logged in.", Toast.LENGTH_SHORT).show();
+            return;
+        }
+        User user = new Gson().fromJson(userJson, User.class);
+        String userId = String.valueOf(user.userId);
+
+        String orderId = "ORDER_" + System.currentTimeMillis();
+        Order order = new Order(orderId, userId, cartItems, finalTotal, new Date(), status);
+
+        AppDatabase.databaseWriteExecutor.execute(() -> {
+            db.orderDao().insertOrder(order);
+            runOnUiThread(() -> {
+                Toast.makeText(PaymentActivity.this, "Order placed successfully!", Toast.LENGTH_SHORT).show();
+                new CartRepository(this).clearCart();
+                Intent intent = new Intent(PaymentActivity.this, HomeActivity.class);
+                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
+                startActivity(intent);
+                finish();
+            });
+        });
     }
 }

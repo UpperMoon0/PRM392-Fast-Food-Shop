@@ -1,5 +1,6 @@
 package com.nstut.fast_food_shop;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
@@ -21,13 +22,15 @@ public class VnpayWebViewActivity extends AppCompatActivity {
         webView.setWebViewClient(new WebViewClient() {
             @Override
             public boolean shouldOverrideUrlLoading(WebView view, String url) {
-                if (url.startsWith("https://webhook.site/")) {
+                if (url.startsWith("https://49f7ae33d5e6.ngrok-free.app/vnpay-return")) {
+                    Intent resultIntent = new Intent();
                     if (url.contains("vnp_ResponseCode=00")) {
                         Toast.makeText(VnpayWebViewActivity.this, "Thanh toán thành công!", Toast.LENGTH_SHORT).show();
+                        setResult(RESULT_OK, resultIntent);
                     } else {
                         Toast.makeText(VnpayWebViewActivity.this, "Thanh toán thất bại hoặc bị huỷ!", Toast.LENGTH_SHORT).show();
+                        setResult(RESULT_CANCELED, resultIntent);
                     }
-
                     finish();
                     return true;
                 }

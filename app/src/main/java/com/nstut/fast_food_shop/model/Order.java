@@ -1,13 +1,25 @@
 package com.nstut.fast_food_shop.model;
 
+import androidx.annotation.NonNull;
+import androidx.room.Entity;
+import androidx.room.PrimaryKey;
+import androidx.room.TypeConverters;
+
+import com.nstut.fast_food_shop.data.local.db.Converters;
+
 import java.util.Date;
 import java.util.List;
 
+@Entity(tableName = "orders")
 public class Order {
+    @PrimaryKey
+    @NonNull
     private String orderId;
     private String userId;
+    @TypeConverters(Converters.class)
     private List<CartItem> items;
     private double totalAmount;
+    @TypeConverters(Converters.class)
     private Date orderDate;
     private String status;
 
