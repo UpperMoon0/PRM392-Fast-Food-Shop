@@ -1,7 +1,12 @@
 package com.nstut.fast_food_shop.presentation.ui.activities;
 
+import android.content.Intent;
+
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.view.View;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -29,7 +34,9 @@ public class ProductDetailActivity extends BaseActivity {
         TextView productPriceTextView = findViewById(R.id.product_price_text_view);
         com.google.android.material.chip.ChipGroup categoryChipGroup = findViewById(R.id.category_chip_group);
         Button addToCartButton = findViewById(R.id.add_to_cart_button);
+        
         ImageView backButton = findViewById(R.id.back_button);
+        ImageButton chatButton = findViewById(R.id.chat_button);
 
         int productId = getIntent().getIntExtra(EXTRA_PRODUCT_ID, -1);
 
@@ -55,11 +62,24 @@ public class ProductDetailActivity extends BaseActivity {
         }
 
 
+        SharedPreferences sharedPreferences = getSharedPreferences("user_prefs", MODE_PRIVATE);
+        boolean isLoggedIn = sharedPreferences.getBoolean("is_logged_in", false);
+
+        if (isLoggedIn) {
+            addToCartButton.setVisibility(View.VISIBLE);
+        } else {
+            addToCartButton.setVisibility(View.GONE);
+        }
+
         addToCartButton.setOnClickListener(v -> {
             Toast.makeText(this, "Add to cart clicked", Toast.LENGTH_SHORT).show();
         });
 
         backButton.setOnClickListener(v -> onBackPressed());
+        chatButton.setOnClickListener(v -> {
+            Intent intent = new Intent(ProductDetailActivity.this, ChatActivity.class);
+            startActivity(intent);
+        });
     }
 
     @Override

@@ -194,7 +194,7 @@ public class ChatActivity extends BaseActivity implements ChatAdapter.OnProductC
     @Override
     public void onProductClick(ProductRoom product) {
         Intent intent = new Intent(this, ProductDetailActivity.class);
-        intent.putExtra("PRODUCT_ID", product.getId());
+        intent.putExtra(ProductDetailActivity.EXTRA_PRODUCT_ID, product.getId());
         startActivity(intent);
     }
 }

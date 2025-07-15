@@ -43,6 +43,7 @@ public class HomeActivity extends BaseActivity implements CategoryAdapter.OnCate
     private ImageView bannerImage;
     private Button loginLogoutButton;
     private ImageButton chatButton;
+    
     private SearchView searchView;
     private ChipGroup categoryChipGroup;
 
@@ -66,6 +67,7 @@ public class HomeActivity extends BaseActivity implements CategoryAdapter.OnCate
         bannerImage = findViewById(R.id.banner_image);
         loginLogoutButton = findViewById(R.id.login_logout_button);
         chatButton = findViewById(R.id.chat_button);
+        
         productsRecyclerView = findViewById(R.id.products_recycler_view);
         searchView = findViewById(R.id.search_view);
         categoryChipGroup = findViewById(R.id.category_chip_group);

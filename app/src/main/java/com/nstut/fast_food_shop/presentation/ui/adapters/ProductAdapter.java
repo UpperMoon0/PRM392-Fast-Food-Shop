@@ -93,7 +93,7 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ViewHold
             ProductRoom product = p.product;
             Log.d("ProductAdapter", "Binding view for position: " + position + ", product: " + product.getName());
             holder.txtName.setText(product.getName());
-            holder.txtPrice.setText(String.valueOf(product.getPrice()));
+            holder.txtPrice.setText("$" + product.getPrice());
             Glide.with(context).load(product.getImageUrl()).into(holder.imageView);
 
             String categories = p.categories.stream().map(Category::getName).collect(Collectors.joining(", "));
@@ -121,7 +121,7 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ViewHold
         } else {
             ProductRoom product = productRooms.get(position);
             holder.txtName.setText(product.getName());
-            holder.txtPrice.setText(String.valueOf(product.getPrice()));
+            holder.txtPrice.setText("$" + product.getPrice());
             Glide.with(context).load(product.getImageUrl()).into(holder.imageView);
             holder.itemView.setOnClickListener(v -> productClickListener.onProductClick(product));
         }

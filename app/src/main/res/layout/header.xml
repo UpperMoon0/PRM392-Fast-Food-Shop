@@ -20,6 +20,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:src="@drawable/ic_chat"
+        android:tint="@android:color/white"
         android:background="?attr/selectableItemBackgroundBorderless"
         android:layout_toStartOf="@id/login_logout_button"
         android:layout_centerVertical="true"
