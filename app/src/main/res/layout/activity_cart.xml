@@ -47,7 +47,7 @@
             android:id="@+id/tvTotal"
             android:text="Tổng tiền: 0đ"
             android:textSize="20sp"
-            android:textColor="@color/purple_500"
+            android:textColor="@color/red_500"
             android:layout_weight="1"
             android:layout_width="0dp"
             android:layout_height="wrap_content" />
@@ -59,7 +59,7 @@
             android:textStyle="bold"
             android:paddingHorizontal="20dp"
             android:paddingVertical="1dp"
-            android:backgroundTint="@color/purple_500"
+            android:backgroundTint="@color/red_500"
             android:textColor="@android:color/white"
             android:layout_width="wrap_content"
             android:layout_height="48dp"

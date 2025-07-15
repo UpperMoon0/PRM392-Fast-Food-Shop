@@ -108,7 +108,7 @@ public class HomeActivity extends BaseActivity implements CategoryAdapter.OnCate
 
     @Override
     public void onCategoryClick(Category category) {
-        Intent intent = new Intent(this, ProductListActivity.class);
+        Intent intent = new Intent(this, CategoryProductListActivity.class);
         intent.putExtra("category_id", category.getId());
         startActivity(intent);
     }

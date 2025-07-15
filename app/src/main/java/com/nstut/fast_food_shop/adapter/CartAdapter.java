@@ -69,14 +69,14 @@ public class CartAdapter extends RecyclerView.Adapter<CartAdapter.ViewHolder> {
             int qty = item.getQuantity();
             if (qty > 1) {
                 item.setQuantity(qty - 1);
-                notifyItemChanged(position);
+                notifyItemChanged(holder.getAdapterPosition());
                 listener.onChanged();
             }
         });
 
         holder.btnPlus.setOnClickListener(v -> {
             item.setQuantity(item.getQuantity() + 1);
-            notifyItemChanged(position);
+            notifyItemChanged(holder.getAdapterPosition());
             listener.onChanged();
         });
     }

@@ -24,7 +24,7 @@ import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-public class ProductListActivity extends BaseActivity implements ProductAdapter.OnProductClickListener {
+public class CategoryProductListActivity extends BaseActivity implements ProductAdapter.OnProductClickListener {
     RecyclerView recyclerView;
     ProductAdapter adapter;
     List<ProductWithCategories> products;
@@ -72,7 +72,7 @@ public class ProductListActivity extends BaseActivity implements ProductAdapter.
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_product_list);
+        setContentView(R.layout.activity_category_product_list);
 
         executorService = Executors.newSingleThreadExecutor();
         appDatabase = AppDatabase.getInstance(this);

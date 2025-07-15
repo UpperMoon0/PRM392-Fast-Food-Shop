@@ -67,14 +67,14 @@ public class OrderAdapter extends RecyclerView.Adapter<OrderAdapter.ViewHolder> 
         // Các nút + -
         h.binding.btnAdd.setOnClickListener(v -> {
             item.setQuantity(item.getQuantity() + 1);
-            notifyItemChanged(pos);
+            notifyItemChanged(h.getAdapterPosition());
             listener.onAdd(item);
         });
 
         h.binding.btnMinus.setOnClickListener(v -> {
             if (item.getQuantity() > 1) {
                 item.setQuantity(item.getQuantity() - 1);
-                notifyItemChanged(pos);
+                notifyItemChanged(h.getAdapterPosition());
                 listener.onAdd(item);
             }
         });

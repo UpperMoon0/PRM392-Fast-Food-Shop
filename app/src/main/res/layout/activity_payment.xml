@@ -101,7 +101,7 @@
             android:id="@+id/btnPlaceOrder"
             android:text="Đặt hàng"
             android:textStyle="bold"
-            android:backgroundTint="@color/purple_500"
+            android:backgroundTint="@color/red_500"
             android:textColor="@android:color/white"
             android:layout_width="match_parent"
             android:layout_height="48dp" />

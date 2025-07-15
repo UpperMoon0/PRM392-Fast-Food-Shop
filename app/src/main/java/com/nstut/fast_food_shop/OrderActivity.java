@@ -32,9 +32,9 @@
             badge = findViewById(R.id.cartBadge);
 
             List<FoodItem> menu = List.of(
-                    new FoodItem("Burger", 45000, R.drawable.ic_burger),
-                    new FoodItem("Fries", 32000, R.drawable.ic_fries),
-                    new FoodItem("Coke", 15000, R.drawable.ic_coke)
+                    new FoodItem("Burger", 45000, R.drawable.ic_food),
+                    new FoodItem("Fries", 32000, R.drawable.ic_food),
+                    new FoodItem("Coke", 15000, R.drawable.ic_food)
             );
 
             OrderAdapter adapter = new OrderAdapter(menu, item -> {
