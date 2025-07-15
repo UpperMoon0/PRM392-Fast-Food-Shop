@@ -16,4 +16,7 @@ public interface OrderDao {
 
     @Query("SELECT * FROM orders WHERE userId = :userId ORDER BY orderDate DESC")
     List<Order> getOrdersByUserId(String userId);
+
+    @Query("SELECT * FROM orders ORDER BY orderDate DESC")
+    List<Order> getAllOrders();
 }

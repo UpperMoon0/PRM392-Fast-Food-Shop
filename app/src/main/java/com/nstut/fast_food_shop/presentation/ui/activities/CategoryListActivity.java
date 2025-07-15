@@ -76,6 +76,7 @@ public class CategoryListActivity extends BaseActivity {
         super.onResume();
         setupHeader(findViewById(R.id.secondary_header), true);
         loadCategories();
+        findViewById(R.id.button_manage_categories).setEnabled(false);
     }
 
     private void loadCategories() {

@@ -35,6 +35,7 @@ public class AdminProductListActivity extends BaseActivity implements ProductAda
         super.onResume();
         setupHeader(findViewById(R.id.secondary_header), false);
         loadData();
+        findViewById(R.id.button_manage_products).setEnabled(false);
     }
 
     private void loadData() {

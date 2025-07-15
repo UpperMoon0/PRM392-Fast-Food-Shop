@@ -111,7 +111,7 @@ public class BaseActivity extends AppCompatActivity {
                 String currentRole = currentPrefs.getString("role", "user");
                 Log.d(TAG, "App name clicked. Role: " + currentRole);
                 if (currentIsLoggedIn && "admin".equalsIgnoreCase(currentRole)) {
-                    intent = new Intent(this, AdminProductListActivity.class);
+                    intent = new Intent(this, FinanceActivity.class);
                 } else {
                     intent = new Intent(this, HomeActivity.class);
                 }
@@ -148,6 +148,15 @@ public class BaseActivity extends AppCompatActivity {
                     manageCategoriesButton.setOnClickListener(v -> {
                         Log.d(TAG, "Manage Categories button clicked.");
                         Intent intent = new Intent(this, CategoryListActivity.class);
+                        startActivity(intent);
+                    });
+                }
+
+                Button financeButton = adminNavLinks.findViewById(R.id.button_finance);
+                if (financeButton != null) {
+                    financeButton.setOnClickListener(v -> {
+                        Log.d(TAG, "Finance button clicked.");
+                        Intent intent = new Intent(this, FinanceActivity.class);
                         startActivity(intent);
                     });
                 }

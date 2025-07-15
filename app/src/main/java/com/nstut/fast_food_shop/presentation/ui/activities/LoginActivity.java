@@ -95,7 +95,7 @@ public class LoginActivity extends BaseActivity {
 
                     Toast.makeText(this, "Login successful", Toast.LENGTH_SHORT).show();
                     if (User.ROLE_ADMIN.equals(user.role)) {
-                        startActivity(new Intent(LoginActivity.this, AdminProductListActivity.class));
+                        startActivity(new Intent(LoginActivity.this, FinanceActivity.class));
                     } else {
                         startActivity(new Intent(LoginActivity.this, HomeActivity.class));
                     }

@@ -9,6 +9,15 @@
     android:background="?attr/colorPrimary">
 
     <Button
+        android:id="@+id/button_finance"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:text="Finance"
+        style="?android:attr/borderlessButtonStyle"
+        android:textColor="@android:color/white"/>
+
+    <Button
         android:id="@+id/button_manage_products"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
