@@ -86,6 +86,7 @@ public class ChatActivity extends BaseActivity implements ChatAdapter.OnProductC
                                     String jsonString = extractJson(botResponse);
                                     if (jsonString != null) {
                                         try {
+                                            String cleanBotResponse = botResponse.replace(jsonString, "").trim();
                                             JSONObject jsonObject = new JSONObject(jsonString);
                                             JSONArray productArray = jsonObject.getJSONArray("products");
                                             List<ProductRoom> recommendedProducts = new ArrayList<>();
@@ -98,9 +99,9 @@ public class ChatActivity extends BaseActivity implements ChatAdapter.OnProductC
                                                 }
                                             }
                                             if (!recommendedProducts.isEmpty()) {
-                                                addMessageToHistory(new ChatMessage(botResponse, recommendedProducts));
+                                                addMessageToHistory(new ChatMessage(cleanBotResponse, recommendedProducts));
                                             } else {
-                                                addMessageToHistory(new ChatMessage("Sorry, I couldn't find any matching products.", false));
+                                                addMessageToHistory(new ChatMessage(cleanBotResponse, false));
                                             }
                                         } catch (JSONException e) {
                                             addMessageToHistory(new ChatMessage(botResponse, false));
