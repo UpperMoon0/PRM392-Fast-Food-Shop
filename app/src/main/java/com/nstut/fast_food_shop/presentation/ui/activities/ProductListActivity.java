@@ -6,6 +6,7 @@ import android.view.View;
 import android.widget.ImageView;
 
 import androidx.activity.EdgeToEdge;
+import androidx.appcompat.widget.SearchView;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
@@ -27,21 +28,19 @@ public class ProductListActivity extends BaseActivity implements ProductAdapter.
     RecyclerView recyclerView;
     ProductAdapter adapter;
     List<ProductWithCategories> products;
+    private List<ProductWithCategories> filteredProducts;
     private ExecutorService executorService;
     private AppDatabase appDatabase;
     private ImageView backButton;
-
-    @Override
-    protected void onResume() {
-        super.onResume();
-        loadData();
-    }
+    private SearchView searchView;
 
     private void loadData() {
         int categoryId = getIntent().getIntExtra("category_id", -1);
         if (categoryId != -1) {
             appDatabase.productDao().getProductsWithCategoriesByCategoryId(categoryId).observe(this, newProducts -> {
-                adapter.updateProducts(newProducts);
+                products.clear();
+                products.addAll(newProducts);
+                filterProducts("");
             });
         } else {
             loadAllAvailableProducts();
@@ -50,8 +49,24 @@ public class ProductListActivity extends BaseActivity implements ProductAdapter.
 
     private void loadAllAvailableProducts() {
         appDatabase.productDao().getAvailableProductsWithCategories().observe(this, newProducts -> {
-            adapter.updateProducts(newProducts);
+            products.clear();
+            products.addAll(newProducts);
+            filterProducts("");
         });
+    }
+
+    private void filterProducts(String query) {
+        filteredProducts.clear();
+        if (query.isEmpty()) {
+            filteredProducts.addAll(products);
+        } else {
+            for (ProductWithCategories productWithCategories : products) {
+                if (productWithCategories.product.getName().toLowerCase().contains(query.toLowerCase())) {
+                    filteredProducts.add(productWithCategories);
+                }
+            }
+        }
+        adapter.updateProducts(filteredProducts);
     }
 
     @Override
@@ -74,14 +89,32 @@ public class ProductListActivity extends BaseActivity implements ProductAdapter.
         recyclerView = findViewById(R.id.recyclerView);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         products = new ArrayList<>();
+        filteredProducts = new ArrayList<>();
 
-        adapter = new ProductAdapter(products, this);
+        adapter = new ProductAdapter(filteredProducts, this);
         recyclerView.setAdapter(adapter);
 
         backButton = findViewById(R.id.back_button);
         backButton.setOnClickListener(v -> {
             onBackPressed();
         });
+
+        searchView = findViewById(R.id.search_view);
+        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                filterProducts(query);
+                return true;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String newText) {
+                filterProducts(newText);
+                return true;
+            }
+        });
+
+        loadData();
     }
 
     @Override

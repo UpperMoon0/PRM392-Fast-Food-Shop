@@ -45,8 +45,10 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ViewHold
     }
 
     public void updateProducts(List<ProductWithCategories> newProducts) {
-        this.products.clear();
-        this.products.addAll(newProducts);
+        if (this.products != newProducts) {
+            this.products.clear();
+            this.products.addAll(newProducts);
+        }
         notifyDataSetChanged();
     }
 

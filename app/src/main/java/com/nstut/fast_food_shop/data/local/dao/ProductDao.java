@@ -54,7 +54,7 @@ public interface ProductDao {
     List<ProductRoom> getProductsByCategory(int categoryId);
 
     @Transaction
-    @Query("SELECT p.* FROM products p INNER JOIN product_category_cross_ref ref ON p.productId = ref.productId WHERE ref.categoryId = :categoryId")
+    @Query("SELECT p.* FROM products p INNER JOIN product_category_cross_ref ref ON p.productId = ref.productId WHERE ref.categoryId = :categoryId AND p.isAvailable = 1")
     LiveData<List<ProductWithCategories>> getProductsWithCategoriesByCategoryId(int categoryId);
 
     @Transaction

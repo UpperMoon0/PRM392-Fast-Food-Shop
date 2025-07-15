@@ -33,6 +33,7 @@ import java.util.concurrent.Executors;
 public class HomeActivity extends BaseActivity implements CategoryAdapter.OnCategoryClickListener, ProductAdapter.OnProductClickListener {
 
     private RecyclerView productsRecyclerView;
+    private RecyclerView categoryRecyclerView;
     private CategoryAdapter categoryAdapter;
     private ProductAdapter productAdapter;
     private List<Category> categoryList;
@@ -69,6 +70,7 @@ public class HomeActivity extends BaseActivity implements CategoryAdapter.OnCate
         chatButton = findViewById(R.id.chat_button);
         
         productsRecyclerView = findViewById(R.id.products_recycler_view);
+        categoryRecyclerView = findViewById(R.id.category_recycler_view);
         searchView = findViewById(R.id.search_view);
         categoryChipGroup = findViewById(R.id.category_chip_group);
 
@@ -77,6 +79,8 @@ public class HomeActivity extends BaseActivity implements CategoryAdapter.OnCate
         filteredProductList = new ArrayList<>();
 
         categoryAdapter = new CategoryAdapter(categoryList, this);
+        categoryRecyclerView.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));
+        categoryRecyclerView.setAdapter(categoryAdapter);
 
         productAdapter = new ProductAdapter(new ArrayList<ProductWithCategories>(), this);
         productsRecyclerView.setLayoutManager(new LinearLayoutManager(this));
@@ -104,13 +108,9 @@ public class HomeActivity extends BaseActivity implements CategoryAdapter.OnCate
 
     @Override
     public void onCategoryClick(Category category) {
-        for (int i = 0; i < categoryChipGroup.getChildCount(); i++) {
-            Chip chip = (Chip) categoryChipGroup.getChildAt(i);
-            if (chip.getTag().equals(category.getId())) {
-                chip.setChecked(true);
-                break;
-            }
-        }
+        Intent intent = new Intent(this, ProductListActivity.class);
+        intent.putExtra("category_id", category.getId());
+        startActivity(intent);
     }
 
     @Override

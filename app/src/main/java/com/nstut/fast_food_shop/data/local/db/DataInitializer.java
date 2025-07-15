@@ -92,7 +92,7 @@ public class DataInitializer {
 
         Category drinksCategory = categoryDao.getCategoryByName("Drinks");
         if (drinksCategory == null) {
-            Category newDrinks = new Category("Drinks", "Quench your thirst with our wide selection of refreshing beverages.", "https://th.bing.com/th/id/R.07b5da6c4a6feef0faecde10979c4549?rik=pvfT%2b2%2fkQHq8gg&riu=http%3a%2f%2fwww.magazinediscover.com%2fwp-content%2fuploads%2f2018%2f01%2fbatidas.jpg&ehk=nm4nUnqdxzDB7HaveYXazcXRvCcqev1aK9Nw%2f%2fdwEPIg%3d&risl=&pid=ImgRaw&r=0");
+            Category newDrinks = new Category("Drinks", "Quench your thirst with our wide selection of refreshing beverages.", "https://tse2.mm.bing.net/th/id/OIP.ZQHlKHkpIUpiQIYKKuiWxgHaE8?r=0&rs=1&pid=ImgDetMain&o=7&rm=3");
             long drinksCategoryId = categoryDao.insert(newDrinks);
             drinksCategory = categoryDao.getCategoryByName("Drinks");
         }
