@@ -29,7 +29,7 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Explore your favorite category"
+                android:text="Explore your favorite Category"
                 android:gravity="center_horizontal"
                 android:layout_gravity="center_horizontal"
                 android:textSize="20sp"
@@ -52,7 +52,7 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Products"
+                android:text="Our Products"
                 android:gravity="center_horizontal"
                 android:layout_gravity="center_horizontal"
                 android:textSize="20sp"

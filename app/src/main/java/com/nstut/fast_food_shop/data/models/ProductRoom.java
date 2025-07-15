@@ -5,11 +5,13 @@ import androidx.room.ForeignKey;
 import androidx.room.Ignore;
 import androidx.room.Index;
 import androidx.room.PrimaryKey;
+import android.os.Parcel;
+import android.os.Parcelable;
 import java.io.Serializable;
 import java.util.List;
 
 @Entity(tableName = "products")
-public class ProductRoom implements Serializable {
+public class ProductRoom implements Serializable, Parcelable {
     @PrimaryKey(autoGenerate = true)
     public int productId;
     public String name;
@@ -35,6 +37,30 @@ public class ProductRoom implements Serializable {
 
     public ProductRoom() {
     }
+
+    protected ProductRoom(Parcel in) {
+        productId = in.readInt();
+        name = in.readString();
+        description = in.readString();
+        price = in.readDouble();
+        imageUrl = in.readString();
+        isAvailable = in.readByte() != 0;
+        createdAt = in.readString();
+        updatedAt = in.readString();
+        categoryIds = in.createStringArrayList();
+    }
+
+    public static final Creator<ProductRoom> CREATOR = new Creator<ProductRoom>() {
+        @Override
+        public ProductRoom createFromParcel(Parcel in) {
+            return new ProductRoom(in);
+        }
+
+        @Override
+        public ProductRoom[] newArray(int size) {
+            return new ProductRoom[size];
+        }
+    };
 
     public int getId() {
         return productId;
@@ -107,7 +133,25 @@ public class ProductRoom implements Serializable {
     public void setCategoryIds(List<String> categoryIds) {
         this.categoryIds = categoryIds;
     }
- 
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeInt(productId);
+        dest.writeString(name);
+        dest.writeString(description);
+        dest.writeDouble(price);
+        dest.writeString(imageUrl);
+        dest.writeByte((byte) (isAvailable ? 1 : 0));
+        dest.writeString(createdAt);
+        dest.writeString(updatedAt);
+        dest.writeStringList(categoryIds);
+    }
+  
     @Override
     public String toString() {
         return "ProductRoom{" +

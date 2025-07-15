@@ -77,7 +77,7 @@ public class AddEditProductActivity extends BaseActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        setupHeader(findViewById(R.id.secondary_header));
+        setupHeader(findViewById(R.id.secondary_header), true);
     }
 
     private void setupRecyclerView() {

@@ -1,69 +1,52 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="vertical"
-    android:padding="12dp"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <!-- Top bar: back + title -->
+    <include layout="@layout/header" />
+
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:gravity="center_vertical">
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:padding="12dp">
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/rvCart"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1" />
 
-        <ImageView
-            android:id="@+id/btnBack"
-            android:src="@drawable/ic_arrow_back"
-            android:layout_width="24dp"
-            android:layout_height="24dp" />
+        <!-- Tổng + nút Giao hàng -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:paddingTop="8dp">
 
-        <TextView
-            android:id="@+id/tvCartTitle"
-            android:text="Giỏ hàng của bạn"
-            android:textSize="20sp"
-            android:textStyle="bold"
-            android:layout_marginStart="12dp"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
-    </LinearLayout>
+            <TextView
+                android:id="@+id/tvTotal"
+                android:text="Total: $0"
+                android:textSize="20sp"
+                android:textColor="@color/red_500"
+                android:layout_weight="1"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content" />
 
-    <!-- Danh sách món -->
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/rvCart"
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1" />
-
-    <!-- Tổng + nút Giao hàng -->
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:gravity="center_vertical"
-        android:paddingTop="8dp">
-
-        <TextView
-            android:id="@+id/tvTotal"
-            android:text="Tổng tiền: 0đ"
-            android:textSize="20sp"
-            android:textColor="@color/red_500"
-            android:layout_weight="1"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content" />
-
-        <Button
-            android:id="@+id/btnCheckout"
-            android:text="Giao hàng"
-            android:textSize="16sp"
-            android:textStyle="bold"
-            android:paddingHorizontal="20dp"
-            android:paddingVertical="1dp"
-            android:backgroundTint="@color/red_500"
-            android:textColor="@android:color/white"
-            android:layout_width="wrap_content"
-            android:layout_height="48dp"
-            android:minWidth="120dp"
-            android:layout_marginStart="8dp" />
+            <Button
+                android:id="@+id/btnCheckout"
+                android:text="Proceed to checkout"
+                android:textSize="16sp"
+                android:textStyle="bold"
+                android:paddingHorizontal="20dp"
+                android:paddingVertical="1dp"
+                android:backgroundTint="@color/red_500"
+                android:textColor="@android:color/white"
+                android:layout_width="wrap_content"
+                android:layout_height="48dp"
+                android:minWidth="120dp"
+                android:layout_marginStart="8dp" />
+        </LinearLayout>
     </LinearLayout>
 </LinearLayout>

@@ -47,15 +47,32 @@ public class BaseActivity extends AppCompatActivity {
     }
 
     public void setupHeader() {
-        setupHeader(null);
+        setupHeader(null, false);
     }
-    public void setupHeader(View secondaryHeader) {
+
+    public void setupHeader(boolean showBackButton) {
+        setupHeader(null, showBackButton);
+    }
+
+    public void setupHeader(View secondaryHeader, boolean showBackButton) {
         Log.d(TAG, "setupHeader called in " + this.getClass().getSimpleName());
         TextView appName = findViewById(R.id.app_name);
         Button loginLogoutButton = findViewById(R.id.login_logout_button);
         ImageButton chatButton = findViewById(R.id.chat_button);
         FrameLayout cartIconContainer = findViewById(R.id.cart_icon_container);
         ImageButton cartButton = findViewById(R.id.cart_button);
+        ImageButton backButton = findViewById(R.id.back_button);
+
+        if (backButton != null) {
+            if (showBackButton) {
+                backButton.setVisibility(View.VISIBLE);
+                backButton.setOnClickListener(v -> {
+                    finish();
+                });
+            } else {
+                backButton.setVisibility(View.GONE);
+            }
+        }
 
         SharedPreferences sharedPreferences = getSharedPreferences("user_prefs", MODE_PRIVATE);
         boolean isLoggedIn = sharedPreferences.getBoolean("is_logged_in", false);

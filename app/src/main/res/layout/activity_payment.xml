@@ -1,33 +1,37 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:padding="16dp">
+    android:orientation="vertical">
 
-    <LinearLayout
-        android:orientation="vertical"
+    <include layout="@layout/header" />
+
+    <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="match_parent"
+        android:padding="16dp">
 
-        <!-- Địa chỉ nhận hàng -->
+        <LinearLayout
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <!-- Delivery Address -->
         <TextView
-            android:text="Địa chỉ giao hàng"
+            android:text="Delivery Address"
             android:textStyle="bold"
             android:textSize="16sp"
             android:layout_marginBottom="4dp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content" />
 
-        <TextView
-            android:id="@+id/tvAddress"
+        <EditText
+            android:id="@+id/edtAddress"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
-
-        <TextView
-            android:id="@+id/tvPhone"
-            android:layout_marginBottom="12dp"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
+            android:layout_height="wrap_content"
+            android:hint="Enter your delivery address"
+            android:inputType="textMultiLine"
+            android:layout_marginBottom="12dp"/>
 
         <!-- Danh sách món -->
         <androidx.recyclerview.widget.RecyclerView
@@ -35,9 +39,9 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content" />
 
-        <!-- Chi tiết thanh toán -->
+        <!-- Payment Details -->
         <TextView
-            android:text="Chi tiết thanh toán"
+            android:text="Payment Details"
             android:textStyle="bold"
             android:textSize="16sp"
             android:layout_marginTop="16dp"
@@ -69,9 +73,9 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content" />
 
-        <!-- Chọn phương thức thanh toán -->
+        <!-- Payment Method -->
         <TextView
-            android:text="Phương thức thanh toán"
+            android:text="Payment Method"
             android:textStyle="bold"
             android:textSize="16sp"
             android:layout_marginBottom="4dp"
@@ -86,25 +90,26 @@
             <RadioButton
                 android:id="@+id/radioCod"
                 android:checked="true"
-                android:text="Thanh toán khi nhận hàng"
+                android:text="Cash on Delivery"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content" />
 
             <RadioButton
                 android:id="@+id/radioVnpay"
-                android:text="Thanh toán bằng VNPAY"
+                android:text="Pay with VNPAY"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content" />
         </RadioGroup>
 
-        <Button
-            android:id="@+id/btnPlaceOrder"
-            android:text="Đặt hàng"
-            android:textStyle="bold"
-            android:backgroundTint="@color/red_500"
-            android:textColor="@android:color/white"
-            android:layout_width="match_parent"
-            android:layout_height="48dp" />
+            <Button
+                android:id="@+id/btnPlaceOrder"
+                android:text="Place Order"
+                android:textStyle="bold"
+                android:backgroundTint="@color/red_500"
+                android:textColor="@android:color/white"
+                android:layout_width="match_parent"
+                android:layout_height="48dp" />
 
-    </LinearLayout>
-</ScrollView>
+        </LinearLayout>
+    </ScrollView>
+</LinearLayout>

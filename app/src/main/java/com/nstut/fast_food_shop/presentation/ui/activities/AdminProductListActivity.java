@@ -33,7 +33,7 @@ public class AdminProductListActivity extends BaseActivity implements ProductAda
     @Override
     protected void onResume() {
         super.onResume();
-        setupHeader(findViewById(R.id.secondary_header));
+        setupHeader(findViewById(R.id.secondary_header), false);
         loadData();
     }
 

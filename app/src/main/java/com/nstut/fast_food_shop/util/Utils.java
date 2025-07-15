@@ -5,8 +5,8 @@ import java.util.Locale;
 
 public class Utils {
     public static String formatCurrency(double amount) {
-        NumberFormat formatter = NumberFormat.getNumberInstance(new Locale("vi", "VN"));
-        return formatter.format(amount) + "đ";
+        NumberFormat formatter = NumberFormat.getCurrencyInstance(new Locale("en", "US"));
+        return formatter.format(amount);
     }
 }
 

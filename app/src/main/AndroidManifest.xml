@@ -33,6 +33,9 @@
         <activity android:name=".presentation.ui.activities.CategoryListActivity"/>
         <activity android:name=".presentation.ui.activities.ChatActivity"/>
         <activity android:name=".CartActivity"/>
+        <activity android:name=".PaymentActivity"/>
+        <activity android:name=".OrderActivity"/>
+        <activity android:name=".VnpayWebViewActivity"/>
     </application>
 
 </manifest>

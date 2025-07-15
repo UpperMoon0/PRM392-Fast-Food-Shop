@@ -4,13 +4,13 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.widget.Toast;
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import com.nstut.fast_food_shop.adapter.CartAdapter;
 import com.nstut.fast_food_shop.data.models.ProductRoom;
 import com.nstut.fast_food_shop.databinding.ActivityPaymentBinding;
 import com.nstut.fast_food_shop.model.CartItem;
 import com.nstut.fast_food_shop.model.FoodItem;
+import com.nstut.fast_food_shop.presentation.ui.activities.BaseActivity;
 import com.nstut.fast_food_shop.util.Utils;
 
 import java.net.Inet4Address;
@@ -25,10 +25,10 @@ import java.util.*;
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
 
-public class PaymentActivity extends AppCompatActivity {
+public class PaymentActivity extends BaseActivity {
 
     private ActivityPaymentBinding binding;
-    private ArrayList<FoodItem> cart;
+    private List<CartItem> cartItems;
 
     private static final int SHIPPING_FEE = 15000;
     private static final int OTHER_FEE = 6000;
@@ -45,49 +45,40 @@ public class PaymentActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         binding = ActivityPaymentBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
+        setupHeader(true);
 
-        cart = getIntent().getParcelableArrayListExtra("cart");
-        if (cart == null) cart = new ArrayList<>();
-
-        List<CartItem> cartItems = new ArrayList<>();
-        for (FoodItem foodItem : cart) {
-            ProductRoom product = new ProductRoom();
-            product.setName(foodItem.getName());
-            product.setPrice(foodItem.getPrice());
-            // Note: FoodItem uses imageResId (int), ProductRoom uses imageUrl (String).
-            // This might require a more sophisticated conversion if you use URLs.
-            // For now, we'll leave imageUrl null or handle it as needed.
-            // product.setImageUrl(String.valueOf(foodItem.getImageResId()));
-            
-            cartItems.add(new CartItem(product, foodItem.getQuantity()));
-        }
+        cartItems = getIntent().getParcelableArrayListExtra("cart");
+        if (cartItems == null) cartItems = new ArrayList<>();
 
         CartAdapter adapter = new CartAdapter(cartItems, this::updateTotal);
         binding.rvOrderList.setLayoutManager(new LinearLayoutManager(this));
         binding.rvOrderList.setAdapter(adapter);
 
-        binding.tvAddress.setText("70 Tr\u1ecbnh Quang Nghi\u1ec7, P.4, T\u00e2n An");
-        binding.tvPhone.setText("Tu\u1ea5n Khang - 84849135986");
-
         updateTotal();
     }
 
     private void updateTotal() {
-        int itemTotal = 0;
-        for (FoodItem item : cart) {
-            itemTotal += item.getPrice() * item.getQuantity();
+        double itemTotal = 0;
+        for (CartItem item : cartItems) {
+            itemTotal += item.getProduct().getPrice() * item.getQuantity();
         }
-        finalTotal = itemTotal + SHIPPING_FEE + OTHER_FEE;
+        finalTotal = (int) (itemTotal + SHIPPING_FEE + OTHER_FEE);
 
-        binding.tvItemTotal.setText("Tổng giá món: " + Utils.formatCurrency(itemTotal));
-        binding.tvShippingFee.setText("Phí giao hàng: " + Utils.formatCurrency(SHIPPING_FEE));
-        binding.tvOtherFee.setText("Phí khác: " + Utils.formatCurrency(OTHER_FEE));
-        binding.tvTotalPrice.setText("Tổng thanh toán: " + Utils.formatCurrency(finalTotal));
+        binding.tvItemTotal.setText("Item Total: " + Utils.formatCurrency(itemTotal));
+        binding.tvShippingFee.setText("Shipping Fee: " + Utils.formatCurrency(SHIPPING_FEE));
+        binding.tvOtherFee.setText("Other Fee: " + Utils.formatCurrency(OTHER_FEE));
+        binding.tvTotalPrice.setText("Total Price: " + Utils.formatCurrency(finalTotal));
 
         binding.btnPlaceOrder.setOnClickListener(v -> {
+            String address = binding.edtAddress.getText().toString().trim();
+            if (address.isEmpty()) {
+                Toast.makeText(this, "Please enter a delivery address.", Toast.LENGTH_SHORT).show();
+                return;
+            }
+
             int selectedId = binding.radioGroupPayment.getCheckedRadioButtonId();
             if (selectedId == R.id.radioCod) {
-                Toast.makeText(this, "Đặt đơn thành công (COD)!", Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, "Order placed successfully (COD)!", Toast.LENGTH_SHORT).show();
                 finish();
             } else if (selectedId == R.id.radioVnpay) {
                 startVnpayPayment(finalTotal);
@@ -107,7 +98,7 @@ public class PaymentActivity extends AppCompatActivity {
             vnp_Params.put("vnp_Amount", String.valueOf((long) amount * 100));
             vnp_Params.put("vnp_CurrCode", "VND");
             vnp_Params.put("vnp_TxnRef", vnp_TxnRef);
-            vnp_Params.put("vnp_OrderInfo", "Thanh_toan_don_hang_" + vnp_TxnRef);
+            vnp_Params.put("vnp_OrderInfo", "Order_Payment_" + vnp_TxnRef);
             vnp_Params.put("vnp_OrderType", "other");
             vnp_Params.put("vnp_Locale", "vn");
             vnp_Params.put("vnp_ReturnUrl", VNP_RETURNURL);
@@ -148,7 +139,7 @@ public class PaymentActivity extends AppCompatActivity {
             startActivity(intent);
         } catch (Exception e) {
             Log.e("VNPAY_ERROR", "Error creating payment URL", e);
-            Toast.makeText(this, "Lỗi tạo URL thanh toán: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "Error creating payment URL: " + e.getMessage(), Toast.LENGTH_SHORT).show();
         }
     }
 

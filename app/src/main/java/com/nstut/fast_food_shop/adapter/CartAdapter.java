@@ -55,35 +55,47 @@ public class CartAdapter extends RecyclerView.Adapter<CartAdapter.ViewHolder> {
         holder.textWatcher = new SimpleTextWatcher() {
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
-                try {
-                    int qty = Integer.parseInt(s.toString());
-                    if (qty < 1) qty = 1;
-                    item.setQuantity(qty);
-                    holder.price.setText(Utils.formatCurrency(item.getProduct().getPrice() * qty));
-                    listener.onChanged();
-                } catch (NumberFormatException ignored) {}
+                int adapterPosition = holder.getAdapterPosition();
+                if (adapterPosition != RecyclerView.NO_POSITION) {
+                    try {
+                        int qty = Integer.parseInt(s.toString());
+                        if (qty < 1) qty = 1;
+                        CartItem currentItem = cartItems.get(adapterPosition);
+                        currentItem.setQuantity(qty);
+                        holder.price.setText(Utils.formatCurrency(currentItem.getProduct().getPrice() * qty));
+                        listener.onChanged();
+                    } catch (NumberFormatException ignored) {
+                    }
+                }
             }
         };
         holder.quantity.addTextChangedListener(holder.textWatcher);
 
         holder.btnMinus.setOnClickListener(v -> {
-            int qty = item.getQuantity();
-            if (qty > 1) {
-                item.setQuantity(qty - 1);
-                notifyItemChanged(holder.getAdapterPosition());
-                listener.onChanged();
-            } else {
-                cartItems.remove(position);
-                notifyItemRemoved(position);
-                notifyItemRangeChanged(position, cartItems.size());
-                listener.onChanged();
+            int adapterPosition = holder.getAdapterPosition();
+            if (adapterPosition != RecyclerView.NO_POSITION) {
+                CartItem currentItem = cartItems.get(adapterPosition);
+                int qty = currentItem.getQuantity();
+                if (qty > 1) {
+                    currentItem.setQuantity(qty - 1);
+                    notifyItemChanged(adapterPosition);
+                    listener.onChanged();
+                } else {
+                    cartItems.remove(adapterPosition);
+                    notifyItemRemoved(adapterPosition);
+                    listener.onChanged();
+                }
             }
         });
 
         holder.btnPlus.setOnClickListener(v -> {
-            item.setQuantity(item.getQuantity() + 1);
-            notifyItemChanged(holder.getAdapterPosition());
-            listener.onChanged();
+            int adapterPosition = holder.getAdapterPosition();
+            if (adapterPosition != RecyclerView.NO_POSITION) {
+                CartItem currentItem = cartItems.get(adapterPosition);
+                currentItem.setQuantity(currentItem.getQuantity() + 1);
+                notifyItemChanged(adapterPosition);
+                listener.onChanged();
+            }
         });
     }
 

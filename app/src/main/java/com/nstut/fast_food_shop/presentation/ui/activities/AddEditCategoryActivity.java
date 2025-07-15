@@ -65,7 +65,7 @@ public class AddEditCategoryActivity extends BaseActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        setupHeader(findViewById(R.id.secondary_header));
+        setupHeader(findViewById(R.id.secondary_header), true);
     }
 
     private void loadCategory() {

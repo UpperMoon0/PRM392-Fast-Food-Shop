@@ -2,18 +2,18 @@ package com.nstut.fast_food_shop;
 
 import android.content.Intent;
 import android.os.Bundle;
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import com.nstut.fast_food_shop.adapter.CartAdapter;
 import com.nstut.fast_food_shop.databinding.ActivityCartBinding;
 import com.nstut.fast_food_shop.model.CartItem;
+import com.nstut.fast_food_shop.presentation.ui.activities.BaseActivity;
 import com.nstut.fast_food_shop.repository.CartRepository;
 import com.nstut.fast_food_shop.util.Utils;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class CartActivity extends AppCompatActivity {
+public class CartActivity extends BaseActivity {
 
     private ActivityCartBinding binding;
     private CartRepository cartRepository;
@@ -25,6 +25,7 @@ public class CartActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         binding = ActivityCartBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
+        setupHeader(true);
 
         cartRepository = new CartRepository(this);
         cartItems = cartRepository.getCartItems();
@@ -34,14 +35,12 @@ public class CartActivity extends AppCompatActivity {
         binding.rvCart.setAdapter(adapter);
 
         updateTotal();
-        binding.btnBack.setOnClickListener(v -> finish());
 
         binding.btnCheckout.setOnClickListener(v -> {
             if (cartItems.isEmpty()) return;
 
             Intent i = new Intent(this, PaymentActivity.class);
-            // You might need to make CartItem Parcelable to pass it in an intent
-            // For now, we'll just start the activity.
+            i.putParcelableArrayListExtra("cart", new ArrayList<>(cartItems));
             startActivity(i);
         });
     }
@@ -51,7 +50,7 @@ public class CartActivity extends AppCompatActivity {
         for (CartItem item : cartItems) {
             total += item.getProduct().getPrice() * item.getQuantity();
         }
-        binding.tvTotal.setText("Tổng tiền: " + Utils.formatCurrency(total));
+        binding.tvTotal.setText("Total: " + Utils.formatCurrency(total));
         cartRepository.saveCartItems(cartItems);
     }
 }
