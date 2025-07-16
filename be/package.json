@@ -1,0 +1,27 @@
+{
+  "name": "fastfood-server",
+  "version": "1.0.0",
+  "description": "Backend server for FastFood app with Stripe payment",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "nodemon server.js"
+  },
+  "dependencies": {
+    "cors": "^2.8.5",
+    "dotenv": "^17.2.0",
+    "express": "^4.18.2",
+    "stripe": "^12.0.0"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.22"
+  },
+  "keywords": [
+    "nodejs",
+    "express",
+    "stripe",
+    "payment"
+  ],
+  "author": "Khangnttse183039",
+  "license": "MIT"
+}

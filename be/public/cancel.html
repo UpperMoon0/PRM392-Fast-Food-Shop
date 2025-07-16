@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Thanh toán bị hủy</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #ff6b6b 0%, #ee5a24 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .container {
+            background: white;
+            padding: 40px;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            text-align: center;
+            max-width: 500px;
+            width: 90%;
+        }
+        
+        .cancel-icon {
+            width: 80px;
+            height: 80px;
+            background: #ff4757;
+            border-radius: 50%;
+            margin: 0 auto 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            animation: shake 0.5s ease-in-out;
+        }
+        
+        .cancel-icon::before {
+            content: '✕';
+            color: white;
+            font-size: 40px;
+            font-weight: bold;
+        }
+        
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
+            20%, 40%, 60%, 80% { transform: translateX(5px); }
+        }
+        
+        h1 {
+            color: #333;
+            margin-bottom: 10px;
+            font-size: 28px;
+        }
+        
+        .subtitle {
+            color: #666;
+            margin-bottom: 30px;
+            font-size: 16px;
+            line-height: 1.5;
+        }
+        
+        .info-box {
+            background: #fff3cd;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+            border-left: 4px solid #ffc107;
+        }
+        
+        .info-box h3 {
+            color: #856404;
+            margin-bottom: 10px;
+            font-size: 18px;
+        }
+        
+        .info-box p {
+            color: #856404;
+            margin-bottom: 8px;
+            font-size: 14px;
+        }
+        
+        .btn-group {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+        
+        .btn {
+            padding: 12px 30px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-block;
+        }
+        
+        .btn-primary {
+            background: #007bff;
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background: #0056b3;
+        }
+        
+        .btn-secondary {
+            background: #6c757d;
+            color: white;
+        }
+        
+        .btn-secondary:hover {
+            background: #5a6268;
+        }
+        
+        .btn-warning {
+            background: #ffc107;
+            color: #212529;
+        }
+        
+        .btn-warning:hover {
+            background: #e0a800;
+        }
+        
+        .help-section {
+            margin-top: 30px;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 10px;
+        }
+        
+        .help-section h3 {
+            color: #495057;
+            margin-bottom: 15px;
+            font-size: 16px;
+        }
+        
+        .help-section ul {
+            text-align: left;
+            color: #6c757d;
+            font-size: 14px;
+        }
+        
+        .help-section li {
+            margin-bottom: 8px;
+        }
+        
+        .contact-info {
+            margin-top: 20px;
+            padding: 15px;
+            background: #e7f3ff;
+            border-radius: 8px;
+        }
+        
+        .contact-info p {
+            color: #0066cc;
+            font-size: 14px;
+            margin-bottom: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="cancel-icon"></div>
+        <h1>Thanh toán bị hủy</h1>
+        <p class="subtitle">Đơn hàng của bạn chưa được hoàn thành. Bạn có thể thử lại hoặc chọn phương thức thanh toán khác.</p>
+        
+        <div class="info-box">
+            <h3>Tại sao thanh toán bị hủy?</h3>
+            <p>• Bạn đã nhấn nút "Quay lại" hoặc đóng cửa sổ thanh toán</p>
+            <p>• Phiên thanh toán đã hết hạn</p>
+            <p>• Có lỗi xảy ra trong quá trình xử lý</p>
+        </div>
+        
+        <div class="btn-group">
+            <a href="/payment" class="btn btn-primary">Thử lại</a>
+            <a href="/cart" class="btn btn-warning">Xem giỏ hàng</a>
+            <a href="/" class="btn btn-secondary">Về trang chủ</a>
+        </div>
+        
+        <div class="help-section">
+            <h3>Cần hỗ trợ?</h3>
+            <ul>
+                <li>Kiểm tra kết nối internet của bạn</li>
+                <li>Đảm bảo thông tin thẻ được nhập chính xác</li>
+                <li>Thử sử dụng thẻ khác hoặc phương thức thanh toán khác</li>
+                <li>Liên hệ ngân hàng nếu gặp vấn đề với thẻ</li>
+            </ul>
+        </div>
+        
+        <div class="contact-info">
+            <p><strong>Hotline hỗ trợ:</strong> 1900-1234</p>
+            <p><strong>Email:</strong> support@fastfood.com</p>
+            <p><strong>Giờ hỗ trợ:</strong> 8:00 - 22:00 hàng ngày</p>
+        </div>
+    </div>
+
+    <script>
+        // Lưu thông tin giỏ hàng để người dùng có thể quay lại
+        const cartData = localStorage.getItem('cart');
+        if (cartData) {
+            console.log('Cart data preserved:', cartData);
+        }
+        
+        // Tự động chuyển về giỏ hàng sau 60 giây
+        let countdown = 60;
+        const countdownInterval = setInterval(() => {
+            countdown--;
+            if (countdown <= 0) {
+                clearInterval(countdownInterval);
+                window.location.href = '/cart';
+            }
+        }, 1000);
+        
+        // Hiển thị thông báo nếu có lỗi cụ thể
+        const urlParams = new URLSearchParams(window.location.search);
+        const error = urlParams.get('error');
+        
+        if (error) {
+            const errorMessages = {
+                'card_declined': 'Thẻ bị từ chối. Vui lòng liên hệ ngân hàng.',
+                'insufficient_funds': 'Số dư không đủ. Vui lòng kiểm tra tài khoản.',
+                'expired_card': 'Thẻ đã hết hạn. Vui lòng sử dụng thẻ khác.',
+                'network_error': 'Lỗi kết nối. Vui lòng thử lại sau.'
+            };
+            
+            const errorMessage = errorMessages[error] || 'Có lỗi xảy ra. Vui lòng thử lại.';
+            
+            const errorDiv = document.createElement('div');
+            errorDiv.className = 'info-box';
+            errorDiv.style.background = '#f8d7da';
+            errorDiv.style.borderColor = '#dc3545';
+            errorDiv.innerHTML = `<h3 style="color: #721c24;">Lỗi thanh toán</h3><p style="color: #721c24;">${errorMessage}</p>`;
+            
+            document.querySelector('.info-box').after(errorDiv);
+        }
+    </script>
+</body>
+</html>

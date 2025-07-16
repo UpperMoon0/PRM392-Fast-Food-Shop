@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Thanh toán thành công</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .container {
+            background: white;
+            padding: 40px;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            text-align: center;
+            max-width: 500px;
+            width: 90%;
+        }
+        
+        .success-icon {
+            width: 80px;
+            height: 80px;
+            background: #4CAF50;
+            border-radius: 50%;
+            margin: 0 auto 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            animation: bounce 1s ease-in-out;
+        }
+        
+        .success-icon::before {
+            content: '✓';
+            color: white;
+            font-size: 40px;
+            font-weight: bold;
+        }
+        
+        @keyframes bounce {
+            0%, 20%, 50%, 80%, 100% {
+                transform: translateY(0);
+            }
+            40% {
+                transform: translateY(-10px);
+            }
+            60% {
+                transform: translateY(-5px);
+            }
+        }
+        
+        h1 {
+            color: #333;
+            margin-bottom: 10px;
+            font-size: 28px;
+        }
+        
+        .subtitle {
+            color: #666;
+            margin-bottom: 30px;
+            font-size: 16px;
+        }
+        
+        .order-details {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+            text-align: left;
+        }
+        
+        .order-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+        }
+        
+        .order-row:last-child {
+            margin-bottom: 0;
+            font-weight: bold;
+            border-top: 1px solid #ddd;
+            padding-top: 10px;
+        }
+        
+        .btn-group {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+        
+        .btn {
+            padding: 12px 30px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-block;
+        }
+        
+        .btn-primary {
+            background: #007bff;
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background: #0056b3;
+        }
+        
+        .btn-secondary {
+            background: #6c757d;
+            color: white;
+        }
+        
+        .btn-secondary:hover {
+            background: #5a6268;
+        }
+        
+        .btn-outline {
+            background: transparent;
+            color: #007bff;
+            border: 2px solid #007bff;
+        }
+        
+        .btn-outline:hover {
+            background: #007bff;
+            color: white;
+        }
+        
+        .btn-app {
+            background: #28a745;
+            color: white;
+        }
+        
+        .btn-app:hover {
+            background: #218838;
+        }
+        
+        .session-info {
+            margin-top: 20px;
+            padding: 15px;
+            background: #e7f3ff;
+            border-radius: 8px;
+            font-size: 14px;
+            color: #0066cc;
+        }
+        
+        .loading {
+            color: #999;
+            font-style: italic;
+        }
+        
+        .error {
+            color: #dc3545;
+            font-size: 12px;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="success-icon"></div>
+        <h1>Thanh toán thành công!</h1>
+        <p class="subtitle">Cảm ơn bạn đã đặt hàng. Đơn hàng của bạn đang được xử lý.</p>
+        
+        <div class="order-details">
+            <div class="order-row">
+                <span>Mã đơn hàng:</span>
+                <span id="orderNumber">#12345</span>
+            </div>
+            <div class="order-row">
+                <span>Tổng tiền:</span>
+                <span id="totalAmount">150.000 VND</span>
+            </div>
+            <div class="order-row">
+                <span>Phương thức thanh toán:</span>
+                <span>Stripe</span>
+            </div>
+            <div class="order-row">
+                <span>Thời gian:</span>
+                <span id="paymentTime">Vừa xong</span>
+            </div>
+            <div class="order-row">
+                <span>Trạng thái:</span>
+                <span style="color: #4CAF50;">Đã thanh toán</span>
+            </div>
+        </div>
+        
+        <div class="btn-group">
+            <button onclick="goToOrders()" class="btn btn-primary">Xem đơn hàng</button>
+                        <button onclick="shareOrder()" class="btn btn-outline">📱 Chia sẻ đơn hàng</button>
+        </div>
+        
+        <div class="btn-group" style="margin-top: 15px;">
+            <button onclick="backToApp()" class="btn btn-app">📲 Trở về App</button>
+        </div>
+        
+        <div class="session-info" id="sessionInfo">
+            Session ID: <span id="sessionId" class="loading">Đang tải...</span>
+        </div>
+        
+        <div id="errorMessage" class="error" style="display: none;"></div>
+    </div>
+
+    <script>
+        // Lấy session_id từ URL
+        const urlParams = new URLSearchParams(window.location.search);
+        const sessionId = urlParams.get('session_id');
+        
+        if (sessionId) {
+            document.getElementById('sessionId').textContent = sessionId;
+            
+            // Gọi API để lấy thông tin chi tiết từ session
+            fetch('/api/get-session-details?session_id=' + sessionId)
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('API response not ok');
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    if (data.success) {
+                        document.getElementById('orderNumber').textContent = '#' + data.order_id;
+                        document.getElementById('totalAmount').textContent = data.amount_formatted;
+                    } else {
+                        throw new Error('API returned error: ' + data.message);
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    document.getElementById('errorMessage').textContent = 'Không thể tải thông tin đơn hàng: ' + error.message;
+                    document.getElementById('errorMessage').style.display = 'block';
+                });
+        } else {
+            document.getElementById('sessionId').textContent = 'Không có session ID';
+            document.getElementById('sessionId').className = 'error';
+        }
+        
+        // Functions for navigation
+        function goToOrders() {
+            // Add loading state
+            const btn = document.querySelector('.btn-primary');
+            btn.innerHTML = '⏳ Đang tải...';
+            btn.disabled = true;
+            
+            // Try to go to orders page, fallback to current page
+            setTimeout(() => {
+                try {
+                    window.location.href = '/orders';
+                } catch (e) {
+                    alert('Trang đơn hàng chưa được thiết lập');
+                    btn.innerHTML = 'Xem đơn hàng';
+                    btn.disabled = false;
+                }
+            }, 500);
+        }
+        
+        function shareOrder() {
+            const orderNumber = document.getElementById('orderNumber').textContent;
+            const totalAmount = document.getElementById('totalAmount').textContent;
+            const sessionId = document.getElementById('sessionId').textContent;
+            
+            const shareText = `🎉 Đã thanh toán thành công!\n\nMã đơn hàng: ${orderNumber}\nTổng tiền: ${totalAmount}\nPhương thức: Stripe\n\nFast Food Shop - Cảm ơn bạn đã đặt hàng! 🍔`;
+            
+            // Try to use Web Share API if available
+            if (navigator.share) {
+                navigator.share({
+                    title: 'Đơn hàng đã thanh toán',
+                    text: shareText,
+                    url: window.location.href
+                }).catch(err => console.log('Error sharing:', err));
+            } else {
+                // Fallback to clipboard
+                navigator.clipboard.writeText(shareText).then(() => {
+                    alert('📋 Đã copy thông tin đơn hàng vào clipboard!');
+                }).catch(() => {
+                    // Ultimate fallback
+                    prompt('Copy thông tin đơn hàng:', shareText);
+                });
+            }
+        }
+        
+        function backToApp() {
+            // Try to open the app using custom scheme
+            const appScheme = 'fastfoodshop://success?session_id=' + encodeURIComponent(document.getElementById('sessionId').textContent);
+            
+            // Create a hidden link to try opening the app
+            const link = document.createElement('a');
+            link.href = appScheme;
+            link.style.display = 'none';
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            
+            // Fallback message after a short delay
+            setTimeout(() => {
+                const userChoice = confirm('Không thể mở app tự động.\n\nBạn có muốn tải app Fast Food Shop không?');
+                if (userChoice) {
+                    // Redirect to app store or provide download link
+                    window.open('https://play.google.com/store/apps/details?id=com.nstut.fast_food_shop', '_blank');
+                }
+            }, 1000);
+        }
+        
+        // Update payment time to current time
+        function updatePaymentTime() {
+            const now = new Date();
+            const timeString = now.toLocaleString('vi-VN', {
+                year: 'numeric',
+                month: '2-digit',
+                day: '2-digit',
+                hour: '2-digit',
+                minute: '2-digit'
+            });
+            document.getElementById('paymentTime').textContent = timeString;
+        }
+        
+        // Call updatePaymentTime when page loads
+        updatePaymentTime();
+        
+        // Tự động chuyển về trang chủ sau 30 giây
+        // setTimeout(() => {
+        //     if (confirm('Bạn có muốn trở về trang chủ không?')) {
+        //         goHome();
+        //     }
+        // }, 30000);
+    </script>
+</body>
+</html>
