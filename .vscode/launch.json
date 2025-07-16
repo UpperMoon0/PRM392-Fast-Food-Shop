@@ -1,0 +1,15 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "type": "java",
+            "name": "Spring Boot-FastFoodShopApplication",
+            "request": "launch",
+            "cwd": "${workspaceFolder}/be",
+            "mainClass": "com.nstut.fast_food_shop.FastFoodShopApplication",
+            "projectName": "fast-food-shop-be",
+            "args": "",
+            "envFile": "${workspaceFolder}/be/.env"
+        }
+    ]
+}
