@@ -119,7 +119,7 @@ public class PaymentActivity extends BaseActivity {
     }
 
     private void startStripeCheckout(double amount) {
-        String backendUrl = "https://677fa46842a2.ngrok-free.app";
+        String backendUrl = "http://10.0.2.2:3000";
         Log.d(TAG, "Starting Stripe checkout for amount: " + amount);
 
         try {
