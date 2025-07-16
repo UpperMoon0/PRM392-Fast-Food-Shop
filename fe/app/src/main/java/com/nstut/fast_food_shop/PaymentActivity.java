@@ -125,7 +125,7 @@ public class PaymentActivity extends BaseActivity {
         try {
             if (amount <= 0) {
                 Log.e(TAG, "Invalid amount: " + amount);
-                Toast.makeText(this, "Số tiền không hợp lệ", Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, "Invalid amount", Toast.LENGTH_SHORT).show();
                 return;
             }
 
@@ -153,12 +153,12 @@ public class PaymentActivity extends BaseActivity {
                             stripeLauncher.launch(intent);
                         } catch (JSONException e) {
                             Log.e(TAG, "Error parsing Stripe response", e);
-                            Toast.makeText(this, "Lỗi khi đọc phản hồi từ Stripe", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(this, "Error reading response from Stripe", Toast.LENGTH_SHORT).show();
                         }
                     },
                     error -> {
                         Log.e(TAG, "Stripe error: " + error.getMessage(), error);
-                        Toast.makeText(this, "Lỗi khi tạo phiên thanh toán Stripe", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(this, "Error creating Stripe payment session", Toast.LENGTH_SHORT).show();
                     }
             ) {
                 @Override
@@ -172,7 +172,7 @@ public class PaymentActivity extends BaseActivity {
             Volley.newRequestQueue(this).add(request);
         } catch (Exception e) {
             Log.e(TAG, "Error creating Stripe payment", e);
-            Toast.makeText(this, "Lỗi khi tạo thanh toán Stripe", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "Error creating Stripe payment", Toast.LENGTH_SHORT).show();
         }
     }
     private void createOrder(String status) {
