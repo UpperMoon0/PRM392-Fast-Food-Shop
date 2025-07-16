@@ -78,8 +78,8 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ViewHold
         holder.txtPrice.setText("$" + product.getPrice());
         Glide.with(context).load(product.getImageUrl()).into(holder.imageView);
 
-        if (product.getCategories() != null) {
-            holder.txtCategories.setText(product.getCategories().stream().map(Category::getName).collect(Collectors.joining(", ")));
+        if (product.getCategory() != null) {
+            holder.txtCategories.setText(product.getCategory().getName());
         }
 
         if (adminProductClickListener != null) {
@@ -101,12 +101,13 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ViewHold
         }
 
         // Làm mờ item nếu không available
-        boolean available = product.isAvailable();
-        float alpha = available ? 1.0f : 0.4f;
-        holder.itemView.setAlpha(alpha);
-        holder.txtName.setAlpha(alpha);
-        holder.txtPrice.setAlpha(alpha);
-        holder.imageView.setAlpha(alpha);
+        if (product.isAvailable()) {
+            holder.itemView.setAlpha(1.0f);
+            holder.btnAddToCart.setEnabled(true);
+        } else {
+            holder.itemView.setAlpha(0.5f);
+            holder.btnAddToCart.setEnabled(false);
+        }
     }
 
     @Override

@@ -1,5 +1,6 @@
 package com.nstut.fast_food_shop.controller;
 
+import com.nstut.fast_food_shop.dto.ProductDTO;
 import com.nstut.fast_food_shop.model.Product;
 import com.nstut.fast_food_shop.service.ProductService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,8 +17,8 @@ public class ProductController {
     private ProductService productService;
 
     @GetMapping
-    public ResponseEntity<List<Product>> getAllProducts() {
-        return ResponseEntity.ok(productService.getAllProducts());
+    public ResponseEntity<List<Product>> getAllProducts(@RequestParam(required = false) String keyword, @RequestParam(required = false) Long categoryId) {
+        return ResponseEntity.ok(productService.searchProducts(keyword, categoryId));
     }
 
     @GetMapping("/{id}")
@@ -26,13 +27,13 @@ public class ProductController {
     }
 
     @PostMapping
-    public ResponseEntity<Product> createProduct(@RequestBody Product product) {
-        return ResponseEntity.ok(productService.createProduct(product));
+    public ResponseEntity<Product> createProduct(@RequestBody ProductDTO productDTO) {
+        return ResponseEntity.ok(productService.createProduct(productDTO));
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Product> updateProduct(@PathVariable String id, @RequestBody Product product) {
-        return ResponseEntity.ok(productService.updateProduct(id, product));
+    public ResponseEntity<Product> updateProduct(@PathVariable String id, @RequestBody ProductDTO productDTO) {
+        return ResponseEntity.ok(productService.updateProduct(id, productDTO));
     }
 
     @DeleteMapping("/{id}")

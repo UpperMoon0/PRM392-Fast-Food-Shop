@@ -106,7 +106,7 @@ public class HomeActivity extends BaseActivity implements CategoryAdapter.OnCate
             }
         });
 
-        searchAndFilterProducts();
+        loadProducts();
     }
 
     @Override
@@ -169,30 +169,48 @@ public class HomeActivity extends BaseActivity implements CategoryAdapter.OnCate
         }
     }
 
+    private void loadProducts() {
+        productRepository.getAllProducts().enqueue(new Callback<List<Product>>() {
+            @Override
+            public void onResponse(Call<List<Product>> call, Response<List<Product>> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    productList.clear();
+                    productList.addAll(response.body());
+                    productAdapter.updateProducts(productList);
+                }
+            }
+
+            @Override
+            public void onFailure(Call<List<Product>> call, Throwable t) {
+                Log.e("HomeActivity", "Error loading products", t);
+            }
+        });
+    }
+
     private void searchAndFilterProducts() {
         String query = searchView.getQuery().toString().toLowerCase();
-        int selectedCategoryId = -1;
+        Long selectedCategoryId = null;
         int checkedChipId = categoryChipGroup.getCheckedChipId();
         if (checkedChipId != View.NO_ID) {
             Chip selectedChip = categoryChipGroup.findViewById(checkedChipId);
             if (selectedChip != null) {
                 Object tag = selectedChip.getTag();
-                if (tag != null) {
-                    selectedCategoryId = (int) tag;
+                if (tag instanceof Long) {
+                    selectedCategoryId = (Long) tag;
                 }
             }
         }
-        
-        productRepository.searchProducts(query, String.valueOf(selectedCategoryId)).enqueue(new retrofit2.Callback<List<Product>>() {
+
+        productRepository.searchProducts(query, selectedCategoryId != null ? String.valueOf(selectedCategoryId) : null).enqueue(new Callback<List<Product>>() {
             @Override
-            public void onResponse(retrofit2.Call<List<Product>> call, retrofit2.Response<List<Product>> response) {
+            public void onResponse(Call<List<Product>> call, Response<List<Product>> response) {
                 if (response.isSuccessful() && response.body() != null) {
                     productAdapter.updateProducts(response.body());
                 }
             }
 
             @Override
-            public void onFailure(retrofit2.Call<List<Product>> call, Throwable t) {
+            public void onFailure(Call<List<Product>> call, Throwable t) {
                 Log.e("HomeActivity", "Error searching products", t);
             }
         });

@@ -12,6 +12,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import com.bumptech.glide.Glide;
 import com.nstut.fast_food_shop.R;
+import com.nstut.fast_food_shop.data.remote.request.ProductDTO;
 import com.nstut.fast_food_shop.model.Category;
 import com.nstut.fast_food_shop.model.Product;
 import com.nstut.fast_food_shop.presentation.ui.adapters.CategorySelectionAdapter;
@@ -182,18 +183,9 @@ public class AddEditProductActivity extends BaseActivity {
     }
 
     private void createProduct(String name, String description, double price, String imageUrl) {
-        Product product = new Product();
-        product.setName(name);
-        product.setDescription(description);
-        product.setPrice(BigDecimal.valueOf(price));
-        product.setImageUrl(imageUrl);
-        product.setCategories(categoryAdapter.getSelectedCategoryIds().stream().map(id -> {
-            Category c = new Category(null, null, null);
-            c.setId(id);
-            return c;
-        }).collect(Collectors.toList()));
+        ProductDTO productDTO = new ProductDTO(name, description, BigDecimal.valueOf(price), imageUrl, categoryAdapter.getSelectedCategoryIds(), true);
 
-        productRepository.createProduct(product).enqueue(new Callback<Product>() {
+        productRepository.createProduct(productDTO).enqueue(new Callback<Product>() {
             @Override
             public void onResponse(Call<Product> call, Response<Product> response) {
                 if (response.isSuccessful()) {
@@ -212,17 +204,9 @@ public class AddEditProductActivity extends BaseActivity {
     }
 
     private void updateProduct(String name, String description, double price, String imageUrl) {
-        currentProduct.setName(name);
-        currentProduct.setDescription(description);
-        currentProduct.setPrice(BigDecimal.valueOf(price));
-        currentProduct.setImageUrl(imageUrl);
-        currentProduct.setCategories(categoryAdapter.getSelectedCategoryIds().stream().map(id -> {
-            Category c = new Category(null, null, null);
-            c.setId(id);
-            return c;
-        }).collect(Collectors.toList()));
+        ProductDTO productDTO = new ProductDTO(name, description, BigDecimal.valueOf(price), imageUrl, categoryAdapter.getSelectedCategoryIds(), currentProduct.isAvailable());
 
-        productRepository.updateProduct(productId, currentProduct).enqueue(new Callback<Product>() {
+        productRepository.updateProduct(productId, productDTO).enqueue(new Callback<Product>() {
             @Override
             public void onResponse(Call<Product> call, Response<Product> response) {
                 if (response.isSuccessful()) {

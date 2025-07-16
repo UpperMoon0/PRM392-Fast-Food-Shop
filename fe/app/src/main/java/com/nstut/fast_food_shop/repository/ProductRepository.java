@@ -2,6 +2,7 @@ package com.nstut.fast_food_shop.repository;
 
 import com.nstut.fast_food_shop.data.remote.ApiClient;
 import com.nstut.fast_food_shop.data.remote.ApiService;
+import com.nstut.fast_food_shop.data.remote.request.ProductDTO;
 import com.nstut.fast_food_shop.model.Product;
 
 import java.util.List;
@@ -29,12 +30,12 @@ public class ProductRepository {
         return apiService.getProductById(id);
     }
 
-    public Call<Product> createProduct(Product product) {
-        return apiService.createProduct(product);
+    public Call<Product> createProduct(ProductDTO productDTO) {
+        return apiService.createProduct(productDTO);
     }
 
-    public Call<Product> updateProduct(String id, Product product) {
-        return apiService.updateProduct(id, product);
+    public Call<Product> updateProduct(String id, ProductDTO productDTO) {
+        return apiService.updateProduct(id, productDTO);
     }
 
     public Call<Void> deleteProduct(String id) {

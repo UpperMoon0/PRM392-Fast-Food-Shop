@@ -4,6 +4,7 @@ import com.nstut.fast_food_shop.model.Cart;
 import com.nstut.fast_food_shop.model.Category;
 import com.nstut.fast_food_shop.model.DailyRevenue;
 import com.nstut.fast_food_shop.model.Order;
+import com.nstut.fast_food_shop.data.remote.request.ProductDTO;
 import com.nstut.fast_food_shop.model.Product;
 import com.nstut.fast_food_shop.model.User;
 import com.nstut.fast_food_shop.data.remote.request.AddItemRequest;
@@ -29,7 +30,7 @@ import retrofit2.http.Query;
 
 public interface ApiService {
 
-    @GET("api/products/search")
+    @GET("api/products")
     Call<List<Product>> searchProducts(@Query("keyword") String keyword, @Query("categoryId") String categoryId);
 
     @POST("api/auth/login")
@@ -63,10 +64,10 @@ public interface ApiService {
     Call<Product> getProductById(@Path("id") String id);
 
     @POST("api/products")
-    Call<Product> createProduct(@Body Product product);
+    Call<Product> createProduct(@Body ProductDTO productDTO);
 
     @PUT("api/products/{id}")
-    Call<Product> updateProduct(@Path("id") String id, @Body Product product);
+    Call<Product> updateProduct(@Path("id") String id, @Body ProductDTO productDTO);
 
     @DELETE("api/products/{id}")
     Call<Void> deleteProduct(@Path("id") String id);
