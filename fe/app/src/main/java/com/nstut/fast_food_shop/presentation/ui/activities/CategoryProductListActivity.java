@@ -94,10 +94,7 @@ public class CategoryProductListActivity extends BaseActivity implements Product
         adapter = new ProductAdapter(filteredProducts, this);
         recyclerView.setAdapter(adapter);
 
-        backButton = findViewById(R.id.back_button);
-        backButton.setOnClickListener(v -> {
-            onBackPressed();
-        });
+        setupHeader(true);
 
         searchView = findViewById(R.id.search_view);
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {

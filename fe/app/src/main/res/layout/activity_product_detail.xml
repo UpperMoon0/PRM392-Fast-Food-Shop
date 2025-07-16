@@ -25,15 +25,6 @@
             android:padding="16dp">
 
         <ImageView
-            android:id="@+id/back_button"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:src="@drawable/ic_arrow_back"
-            android:padding="8dp"
-            android:background="?attr/selectableItemBackgroundBorderless"
-            android:layout_marginBottom="16dp"/>
-
-        <ImageView
             android:id="@+id/product_image_view"
             android:layout_width="match_parent"
             android:layout_height="200dp"

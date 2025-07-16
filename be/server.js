@@ -25,7 +25,7 @@ app.post('/create-checkout-session', async (req, res) => {
             payment_method_types: ['card'],
             line_items: [{
                 price_data: {
-                    currency: 'vnd',
+                    currency: 'usd',
                     product_data: {
                         name: productName,
                     },
@@ -70,10 +70,11 @@ app.get('/api/get-session-details', async (req, res) => {
 
 // Format currency helper
 function formatCurrency(amount) {
-    return new Intl.NumberFormat('vi-VN', {
+    // Stripe amount is in cents, so we need to divide by 100 for dollars
+    return new Intl.NumberFormat('en-US', {
         style: 'currency',
-        currency: 'VND'
-    }).format(amount);
+        currency: 'USD'
+    }).format(amount / 100);
 }
 
 // Route test

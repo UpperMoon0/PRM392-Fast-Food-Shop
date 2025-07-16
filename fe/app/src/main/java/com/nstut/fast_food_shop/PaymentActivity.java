@@ -98,7 +98,7 @@ public class PaymentActivity extends BaseActivity {
         binding.tvItemTotal.setVisibility(View.GONE);
         binding.tvShippingFee.setVisibility(View.GONE);
         binding.tvOtherFee.setVisibility(View.GONE);
-        binding.tvTotalPrice.setText("Total Price: $" + String.format(Locale.getDefault(), "%,.2f", finalTotal));
+        binding.tvTotalPrice.setText("Total Price: " + Utils.formatCurrency(finalTotal));
 
         binding.btnPlaceOrder.setOnClickListener(v -> {
             String address = binding.edtAddress.getText().toString().trim();

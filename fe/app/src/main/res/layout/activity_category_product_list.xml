@@ -8,20 +8,11 @@
         android:id="@+id/header"
         layout="@layout/header" />
 
-    <ImageView
-        android:id="@+id/back_button"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/header"
-        android:background="?attr/selectableItemBackgroundBorderless"
-        android:padding="8dp"
-        android:src="@drawable/ic_arrow_back" />
-
     <androidx.appcompat.widget.SearchView
         android:id="@+id/search_view"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@id/back_button"
+        android:layout_below="@id/header"
         android:layout_margin="8dp"
         app:queryHint="Search products..." />
 

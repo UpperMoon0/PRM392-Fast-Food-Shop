@@ -15,6 +15,7 @@ import com.bumptech.glide.Glide;
 import com.google.android.material.chip.Chip;
 import com.google.android.material.chip.ChipGroup;
 import com.nstut.fast_food_shop.R;
+import com.nstut.fast_food_shop.util.Utils;
 import com.nstut.fast_food_shop.data.local.db.AppDatabase;
 import com.nstut.fast_food_shop.data.models.Category;
 import com.nstut.fast_food_shop.data.models.ProductRoom;
@@ -40,7 +41,6 @@ public class ProductDetailActivity extends BaseActivity {
         com.google.android.material.chip.ChipGroup categoryChipGroup = findViewById(R.id.category_chip_group);
         Button addToCartButton = findViewById(R.id.add_to_cart_button);
         
-        ImageView backButton = findViewById(R.id.back_button);
 
         int productId = getIntent().getIntExtra(EXTRA_PRODUCT_ID, -1);
 
@@ -53,7 +53,7 @@ public class ProductDetailActivity extends BaseActivity {
                     Glide.with(this).load(currentProduct.getImageUrl()).into(productImageView);
                     productNameTextView.setText(currentProduct.getName());
                     productDescriptionTextView.setText(currentProduct.getDescription());
-                    productPriceTextView.setText(String.format("$%.2f", currentProduct.getPrice()));
+                    productPriceTextView.setText(Utils.formatCurrency(currentProduct.getPrice()));
 
                     categoryChipGroup.removeAllViews();
                     for (Category category : productWithCategories.categories) {
@@ -83,11 +83,11 @@ public class ProductDetailActivity extends BaseActivity {
             }
         });
 
-        backButton.setOnClickListener(v -> onBackPressed());
     }
 
     @Override
     public void setupHeader() {
         super.setupHeader();
+        setupHeader(true);
     }
 }
