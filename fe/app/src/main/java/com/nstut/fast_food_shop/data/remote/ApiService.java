@@ -14,6 +14,7 @@ import com.nstut.fast_food_shop.data.remote.response.UserResponse;
 
 import java.util.List;
 
+import okhttp3.MultipartBody;
 import retrofit2.Call;
 import retrofit2.http.Body;
 import retrofit2.http.DELETE;

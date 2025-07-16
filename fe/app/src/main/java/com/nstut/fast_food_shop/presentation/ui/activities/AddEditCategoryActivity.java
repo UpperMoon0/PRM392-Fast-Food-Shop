@@ -95,12 +95,12 @@ public class AddEditCategoryActivity extends BaseActivity {
         }
 
         if (imageUri != null) {
-            try {
-                File imageFile = FileUtil.from(this, imageUri);
+            String filePath = FileUtil.getPathFromUri(this, imageUri);
+            if (filePath != null) {
+                File imageFile = new File(filePath);
                 uploadImageToBackend(imageFile, name, description);
-            } catch (IOException e) {
-                e.printStackTrace();
-                Toast.makeText(this, "Failed to process image", Toast.LENGTH_SHORT).show();
+            } else {
+                Toast.makeText(this, "Failed to get file path from Uri", Toast.LENGTH_SHORT).show();
             }
         } else if (currentCategory != null) {
             saveCategoryToDb(name, description, currentCategory.getImageUrl());

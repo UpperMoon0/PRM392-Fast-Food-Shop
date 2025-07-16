@@ -22,6 +22,7 @@ import com.nstut.fast_food_shop.presentation.ui.adapters.CategoryAdapter;
 import com.nstut.fast_food_shop.model.Category;
 import com.nstut.fast_food_shop.model.Product;
 import com.nstut.fast_food_shop.presentation.ui.adapters.ProductAdapter;
+import com.nstut.fast_food_shop.repository.CartRepository;
 import com.nstut.fast_food_shop.repository.CategoryRepository;
 import com.nstut.fast_food_shop.repository.ProductRepository;
 
@@ -32,7 +33,7 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-public class HomeActivity extends BaseActivity implements CategoryAdapter.OnCategoryClickListener, ProductAdapter.OnProductClickListener {
+public class HomeActivity extends BaseActivity implements CategoryAdapter.OnCategoryClickListener, ProductAdapter.OnProductClickListener, ProductAdapter.OnAddToCartClickListener {
 
     private RecyclerView productsRecyclerView;
     private RecyclerView categoryRecyclerView;
@@ -45,6 +46,7 @@ public class HomeActivity extends BaseActivity implements CategoryAdapter.OnCate
     private ProductRepository productRepository;
     private CategoryRepository categoryRepository;
     private ChipGroup categoryChipGroup;
+    private CartRepository cartRepository;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -77,7 +79,7 @@ public class HomeActivity extends BaseActivity implements CategoryAdapter.OnCate
         categoryRecyclerView.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));
         categoryRecyclerView.setAdapter(categoryAdapter);
 
-        productAdapter = new ProductAdapter(new ArrayList<Product>(), this);
+        productAdapter = new ProductAdapter(new ArrayList<Product>(), this, null, this);
         productsRecyclerView.setLayoutManager(new LinearLayoutManager(this));
         productsRecyclerView.setAdapter(productAdapter);
 
@@ -110,15 +112,20 @@ public class HomeActivity extends BaseActivity implements CategoryAdapter.OnCate
     @Override
     public void onCategoryClick(Category category) {
         Intent intent = new Intent(this, CategoryProductListActivity.class);
-        intent.putExtra("category_id", category.getId());
+        intent.putExtra("category_id", String.valueOf(category.getId()));
         startActivity(intent);
     }
 
     @Override
     public void onProductClick(Product product) {
         Intent intent = new Intent(this, ProductDetailActivity.class);
-        intent.putExtra(ProductDetailActivity.EXTRA_PRODUCT_ID, product.getId());
+        intent.putExtra(ProductDetailActivity.EXTRA_PRODUCT_ID, String.valueOf(product.getId()));
         startActivity(intent);
+    }
+
+    @Override
+    public void onAddToCartClick(Product product) {
+        cartRepository.addItemToCart(getCurrentUser().getId(), String.valueOf(product.getId()), 1);
     }
 
     private void setupSearch() {

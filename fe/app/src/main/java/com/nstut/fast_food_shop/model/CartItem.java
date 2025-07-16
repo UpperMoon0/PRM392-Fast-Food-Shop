@@ -3,6 +3,7 @@ package com.nstut.fast_food_shop.model;
 import android.os.Parcel;
 import android.os.Parcelable;
 public class CartItem implements Parcelable {
+    private String id;
     private Product product;
     private int quantity;
 
@@ -12,6 +13,14 @@ public class CartItem implements Parcelable {
     public CartItem(Product product, int quantity) {
         this.product = product;
         this.quantity = quantity;
+    }
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
     }
 
     public Product getProduct() {
@@ -31,6 +40,7 @@ public class CartItem implements Parcelable {
     }
 
     protected CartItem(Parcel in) {
+        id = in.readString();
         product = in.readParcelable(Product.class.getClassLoader());
         quantity = in.readInt();
     }
@@ -54,6 +64,7 @@ public class CartItem implements Parcelable {
 
     @Override
     public void writeToParcel(Parcel dest, int flags) {
+        dest.writeString(id);
         dest.writeParcelable(product, flags);
         dest.writeInt(quantity);
     }

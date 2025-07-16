@@ -17,6 +17,7 @@ import com.nstut.fast_food_shop.R;
 import com.nstut.fast_food_shop.model.CartItem;
 import com.nstut.fast_food_shop.util.Utils;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 public class CartAdapter extends RecyclerView.Adapter<CartAdapter.ViewHolder> {
@@ -45,7 +46,7 @@ public class CartAdapter extends RecyclerView.Adapter<CartAdapter.ViewHolder> {
         CartItem item = cartItems.get(position);
         holder.name.setText(item.getProduct().getName());
         Glide.with(holder.itemView.getContext()).load(item.getProduct().getImageUrl()).into(holder.img);
-        holder.price.setText(Utils.formatCurrency(item.getProduct().getPrice() * item.getQuantity()));
+        holder.price.setText(Utils.formatCurrency(item.getProduct().getPrice().multiply(BigDecimal.valueOf(item.getQuantity()))));
 
         if (holder.textWatcher != null) {
             holder.quantity.removeTextChangedListener(holder.textWatcher);
@@ -63,7 +64,7 @@ public class CartAdapter extends RecyclerView.Adapter<CartAdapter.ViewHolder> {
                         if (qty < 1) qty = 1;
                         CartItem currentItem = cartItems.get(adapterPosition);
                         currentItem.setQuantity(qty);
-                        holder.price.setText(Utils.formatCurrency(currentItem.getProduct().getPrice() * qty));
+                        holder.price.setText(Utils.formatCurrency(currentItem.getProduct().getPrice().multiply(BigDecimal.valueOf(qty))));
                         listener.onQuantityChanged(currentItem, qty);
                     } catch (NumberFormatException ignored) {
                     }

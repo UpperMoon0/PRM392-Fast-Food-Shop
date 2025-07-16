@@ -17,7 +17,7 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.gson.Gson;
 import com.nstut.fast_food_shop.CartActivity;
 import com.nstut.fast_food_shop.R;
-import com.nstut.fast_food_shop.data.models.User;
+import com.nstut.fast_food_shop.model.User;
 import com.nstut.fast_food_shop.model.CartItem;
 import com.nstut.fast_food_shop.repository.CartRepository;
 
@@ -30,7 +30,7 @@ public class BaseActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        cartRepository = new CartRepository(this);
+        cartRepository = new CartRepository();
         setupHeader();
         updateCartBadge();
     }
@@ -43,11 +43,8 @@ public class BaseActivity extends AppCompatActivity {
         String userRole = sharedPreferences.getString("user_role", null);
 
         if (userId != null) {
-            User user = new User();
+            User user = new User(userEmail, "", userName, "", "", userRole);
             user.setId(userId);
-            user.setName(userName);
-            user.setEmail(userEmail);
-            user.setRole(userRole);
             return user;
         }
         return null;

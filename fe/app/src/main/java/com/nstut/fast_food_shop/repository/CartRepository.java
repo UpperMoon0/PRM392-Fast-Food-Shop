@@ -1,7 +1,5 @@
 package com.nstut.fast_food_shop.repository;
 
-import android.content.Context;
-
 import com.nstut.fast_food_shop.data.remote.ApiClient;
 import com.nstut.fast_food_shop.data.remote.ApiService;
 import com.nstut.fast_food_shop.data.remote.request.AddItemRequest;

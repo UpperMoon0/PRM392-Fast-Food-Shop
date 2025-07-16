@@ -69,7 +69,7 @@ public class AdminProductListActivity extends BaseActivity implements ProductAda
             Intent intent = new Intent(this, CategoryListActivity.class);
             startActivity(intent);
         });
-        adapter = new ProductAdapter(products, this);
+        adapter = new ProductAdapter(products, null, this, null);
         recyclerView.setAdapter(adapter);
     }
 

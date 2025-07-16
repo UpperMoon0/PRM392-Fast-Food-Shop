@@ -82,7 +82,7 @@ public class CategoryProductListActivity extends BaseActivity implements Product
         recyclerView = findViewById(R.id.recyclerView);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
 
-        adapter = new ProductAdapter(new ArrayList<>(), this);
+        adapter = new ProductAdapter(new ArrayList<>(), this, null, null);
         recyclerView.setAdapter(adapter);
 
         backButton = findViewById(R.id.back_button);

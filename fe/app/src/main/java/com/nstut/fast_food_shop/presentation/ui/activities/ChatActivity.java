@@ -18,6 +18,7 @@ import com.nstut.fast_food_shop.data.models.ChatMessage;
 import com.nstut.fast_food_shop.model.Product;
 import com.nstut.fast_food_shop.data.remote.GenerativeModel;
 import com.nstut.fast_food_shop.presentation.ui.adapters.ChatAdapter;
+import com.nstut.fast_food_shop.presentation.ui.adapters.ProductAdapter;
 import com.nstut.fast_food_shop.repository.CartRepository;
 import android.widget.Toast;
 import org.json.JSONArray;
@@ -28,7 +29,7 @@ import java.util.List;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 
-public class ChatActivity extends BaseActivity implements ChatAdapter.OnProductClickListener, ChatAdapter.OnAddToCartClickListener {
+public class ChatActivity extends BaseActivity implements ProductAdapter.OnProductClickListener, ProductAdapter.OnAddToCartClickListener {
 
     private RecyclerView chatRecyclerView;
     private ChatAdapter chatAdapter;
@@ -51,7 +52,7 @@ public class ChatActivity extends BaseActivity implements ChatAdapter.OnProductC
 
         geminiPro = new GenerativeModel();
         mainExecutor = Executors.newSingleThreadExecutor();
-        cartRepository = new CartRepository(this);
+        cartRepository = new CartRepository();
 
         chatMessages = new ArrayList<>();
         chatHistory = new ArrayList<>();
@@ -141,8 +142,7 @@ public class ChatActivity extends BaseActivity implements ChatAdapter.OnProductC
 
     @Override
     public void onAddToCartClick(Product product) {
-        // TODO: Fix this addItemToCart call
-        // cartRepository.addItemToCart(product, 1);
+        cartRepository.addItemToCart(getCurrentUser().getId(), String.valueOf(product.getId()), 1);
         Toast.makeText(this, "Added " + product.getName() + " to cart", Toast.LENGTH_SHORT).show();
         updateCartBadge();
     }

@@ -12,13 +12,15 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import com.bumptech.glide.Glide;
 import com.nstut.fast_food_shop.R;
-import com.nstut.fast_food_shop.data.models.Category;
+import com.nstut.fast_food_shop.model.Category;
 import com.nstut.fast_food_shop.model.Product;
 import com.nstut.fast_food_shop.presentation.ui.adapters.CategorySelectionAdapter;
 import com.nstut.fast_food_shop.repository.CategoryRepository;
 import com.nstut.fast_food_shop.repository.ProductRepository;
+import com.nstut.fast_food_shop.presentation.utils.FileUtil;
 import java.io.File;
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.stream.Collectors;
 import okhttp3.MediaType;
@@ -116,7 +118,7 @@ public class AddEditProductActivity extends BaseActivity {
                     edtDesc.setText(currentProduct.getDescription());
                     edtPrice.setText(String.valueOf(currentProduct.getPrice()));
                     Glide.with(AddEditProductActivity.this).load(currentProduct.getImageUrl()).into(imageView);
-                    categoryAdapter.setSelectedCategories(currentProduct.getCategories().stream().map(Category::getId).collect(Collectors.toList()));
+                    categoryAdapter.setSelectedCategoryIds(currentProduct.getCategories().stream().map(Category::getId).collect(Collectors.toList()));
                 }
             }
 
@@ -133,12 +135,12 @@ public class AddEditProductActivity extends BaseActivity {
         double price = Double.parseDouble(edtPrice.getText().toString());
 
         if (selectedImageUri != null) {
-            try {
-                File imageFile = FileUtil.from(this, selectedImageUri);
+            String filePath = FileUtil.getPathFromUri(this, selectedImageUri);
+            if (filePath != null) {
+                File imageFile = new File(filePath);
                 uploadImageToBackend(imageFile, name, description, price);
-            } catch (IOException e) {
-                e.printStackTrace();
-                Toast.makeText(this, "Upload image failed", Toast.LENGTH_SHORT).show();
+            } else {
+                Toast.makeText(this, "Failed to get file path from Uri", Toast.LENGTH_SHORT).show();
             }
         } else {
             if (isEditMode) {
@@ -183,10 +185,10 @@ public class AddEditProductActivity extends BaseActivity {
         Product product = new Product();
         product.setName(name);
         product.setDescription(description);
-        product.setPrice(price);
+        product.setPrice(BigDecimal.valueOf(price));
         product.setImageUrl(imageUrl);
-        product.setCategories(categoryAdapter.getSelectedCategories().stream().map(id -> {
-            Category c = new Category();
+        product.setCategories(categoryAdapter.getSelectedCategoryIds().stream().map(id -> {
+            Category c = new Category(null, null, null);
             c.setId(id);
             return c;
         }).collect(Collectors.toList()));
@@ -212,10 +214,10 @@ public class AddEditProductActivity extends BaseActivity {
     private void updateProduct(String name, String description, double price, String imageUrl) {
         currentProduct.setName(name);
         currentProduct.setDescription(description);
-        currentProduct.setPrice(price);
+        currentProduct.setPrice(BigDecimal.valueOf(price));
         currentProduct.setImageUrl(imageUrl);
-        currentProduct.setCategories(categoryAdapter.getSelectedCategories().stream().map(id -> {
-            Category c = new Category();
+        currentProduct.setCategories(categoryAdapter.getSelectedCategoryIds().stream().map(id -> {
+            Category c = new Category(null, null, null);
             c.setId(id);
             return c;
         }).collect(Collectors.toList()));

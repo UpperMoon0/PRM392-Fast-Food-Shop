@@ -18,9 +18,10 @@
     import retrofit2.Response;
     import com.nstut.fast_food_shop.util.Utils;
 
+    import java.math.BigDecimal;
     import java.util.ArrayList;
     import java.util.List;
-
+    
     public class OrderActivity extends AppCompatActivity {
 
         private ActivityOrderBinding binding;
@@ -70,9 +71,9 @@
             }
         }
         private void updateTotal() {
-            double total = 0;
+            BigDecimal total = BigDecimal.ZERO;
             for (Product item : cart) {
-                total += item.getPrice().doubleValue() * item.getQuantity();
+                total = total.add(item.getPrice().multiply(BigDecimal.valueOf(item.getQuantity())));
             }
             binding.tvCartTotal.setText("Tổng: " + Utils.formatCurrency(total));
         }

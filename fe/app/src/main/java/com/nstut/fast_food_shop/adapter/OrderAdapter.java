@@ -38,10 +38,10 @@ public class OrderAdapter extends RecyclerView.Adapter<OrderAdapter.ViewHolder> 
         Product item = data.get(pos);
 
         h.binding.tvFoodName.setText(item.getName());
-        h.binding.tvFoodPrice.setText(Utils.formatCurrency(item.getPrice().doubleValue()));
+        h.binding.tvFoodPrice.setText(Utils.formatCurrency(item.getPrice()));
         // You might need to use a library like Glide or Picasso to load images from URLs
         // For now, we'll just set a placeholder
-        h.binding.imgFood.setImageResource(R.drawable.ic_food);
+        com.bumptech.glide.Glide.with(h.itemView.getContext()).load(item.getImageUrl()).into(h.binding.imgFood);
 
         if (h.currentWatcher != null) {
             h.binding.tvQuantity.removeTextChangedListener(h.currentWatcher);

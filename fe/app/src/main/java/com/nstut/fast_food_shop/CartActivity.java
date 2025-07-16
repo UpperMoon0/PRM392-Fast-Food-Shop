@@ -13,6 +13,7 @@ import com.nstut.fast_food_shop.model.User;
 import com.nstut.fast_food_shop.util.Utils;
 
 import java.util.ArrayList;
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -35,7 +36,7 @@ public class CartActivity extends BaseActivity {
         setContentView(binding.getRoot());
         setupHeader(true);
 
-        cartRepository = new CartRepository(this);
+        cartRepository = new CartRepository();
         currentUser = getCurrentUser();
 
         adapter = new CartAdapter(cartItems, new CartAdapter.OnQuantityChanged() {
@@ -123,9 +124,9 @@ public class CartActivity extends BaseActivity {
     }
 
     private void updateTotal() {
-        double total = 0;
+        BigDecimal total = BigDecimal.ZERO;
         for (CartItem item : cartItems) {
-            total += item.getProduct().getPrice().doubleValue() * item.getQuantity();
+            total = total.add(item.getProduct().getPrice().multiply(BigDecimal.valueOf(item.getQuantity())));
         }
         binding.tvTotal.setText("Total: " + Utils.formatCurrency(total));
     }

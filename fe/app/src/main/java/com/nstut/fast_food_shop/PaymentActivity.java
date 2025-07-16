@@ -28,9 +28,10 @@ import com.nstut.fast_food_shop.util.Utils;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.math.BigDecimal;
 import java.util.*;
 
-public class PaymentActivity extends BaseActivity {
+public class PaymentActivity extends BaseActivity implements CartAdapter.OnQuantityChanged {
 
     private ActivityPaymentBinding binding;
     private List<CartItem> cartItems;
@@ -62,7 +63,7 @@ public class PaymentActivity extends BaseActivity {
         cartItems = getIntent().getParcelableArrayListExtra("cart");
         if (cartItems == null) cartItems = new ArrayList<>();
 
-        CartAdapter adapter = new CartAdapter(cartItems, this::updateTotal);
+        CartAdapter adapter = new CartAdapter(cartItems, this);
         binding.rvOrderList.setLayoutManager(new LinearLayoutManager(this));
         binding.rvOrderList.setAdapter(adapter);
 
@@ -70,11 +71,11 @@ public class PaymentActivity extends BaseActivity {
     }
 
     private void updateTotal() {
-        double itemTotal = 0;
+        BigDecimal itemTotal = BigDecimal.ZERO;
         for (CartItem item : cartItems) {
-            itemTotal += item.getProduct().getPrice() * item.getQuantity();
+            itemTotal = itemTotal.add(item.getProduct().getPrice().multiply(BigDecimal.valueOf(item.getQuantity())));
         }
-        finalTotal = itemTotal;
+        finalTotal = itemTotal.doubleValue();
 
         binding.tvItemTotal.setVisibility(View.GONE);
         binding.tvShippingFee.setVisibility(View.GONE);
@@ -125,6 +126,17 @@ public class PaymentActivity extends BaseActivity {
         } catch (Exception e) {
             Toast.makeText(this, "Error creating Stripe payment", Toast.LENGTH_SHORT).show();
         }
+    }
+
+    @Override
+    public void onQuantityChanged(CartItem item, int quantity) {
+        updateTotal();
+    }
+
+    @Override
+    public void onRemoveItem(CartItem item) {
+        cartItems.remove(item);
+        updateTotal();
     }
 
     private void createOrder(String status) {

@@ -30,7 +30,7 @@ public class ProductDetailActivity extends BaseActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_product_detail);
 
-        cartRepository = new CartRepository(this);
+        cartRepository = new CartRepository();
 
         ImageView productImageView = findViewById(R.id.product_image_view);
         TextView productNameTextView = findViewById(R.id.product_name_text_view);

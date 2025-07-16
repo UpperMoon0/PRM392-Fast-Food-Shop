@@ -79,11 +79,7 @@ public class RegisterActivity extends AppCompatActivity {
             return;
         }
 
-        User user = new User();
-        user.setName(fullName);
-        user.setEmail(email);
-        user.setPassword(password);
-        user.setRole("CUSTOMER");
+        User user = new User(email, password, fullName, "", phoneNumber, "CUSTOMER");
 
         userRepository.register(user).enqueue(new Callback<User>() {
             @Override

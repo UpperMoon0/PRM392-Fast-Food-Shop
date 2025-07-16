@@ -4,6 +4,7 @@ import android.os.Parcel;
 import android.os.Parcelable;
 
 import java.math.BigDecimal;
+import java.util.List;
 
 public class Product implements Parcelable {
     private Long id;
@@ -11,8 +12,9 @@ public class Product implements Parcelable {
     private String description;
     private BigDecimal price;
     private String imageUrl;
-    private Category category;
+    private List<Category> categories;
     private int quantity = 0;
+    private boolean available;
 
     public Product() {
     }
@@ -27,8 +29,9 @@ public class Product implements Parcelable {
         description = in.readString();
         price = new BigDecimal(in.readString());
         imageUrl = in.readString();
-        category = in.readParcelable(Category.class.getClassLoader());
+        categories = in.createTypedArrayList(Category.CREATOR);
         quantity = in.readInt();
+        available = in.readByte() != 0;
     }
 
     public static final Creator<Product> CREATOR = new Creator<Product>() {
@@ -83,12 +86,12 @@ public class Product implements Parcelable {
         this.imageUrl = imageUrl;
     }
 
-    public Category getCategory() {
-        return category;
+    public List<Category> getCategories() {
+        return categories;
     }
 
-    public void setCategory(Category category) {
-        this.category = category;
+    public void setCategories(List<Category> categories) {
+        this.categories = categories;
     }
 
     public int getQuantity() {
@@ -97,6 +100,14 @@ public class Product implements Parcelable {
 
     public void setQuantity(int quantity) {
         this.quantity = quantity;
+    }
+
+    public boolean isAvailable() {
+        return available;
+    }
+
+    public void setAvailable(boolean available) {
+        this.available = available;
     }
 
     @Override
@@ -116,7 +127,8 @@ public class Product implements Parcelable {
         dest.writeString(description);
         dest.writeString(price.toString());
         dest.writeString(imageUrl);
-        dest.writeParcelable(category, flags);
+        dest.writeTypedList(categories);
         dest.writeInt(quantity);
+        dest.writeByte((byte) (available ? 1 : 0));
     }
 }

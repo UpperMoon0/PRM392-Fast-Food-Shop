@@ -3,7 +3,7 @@ import java.io.FileInputStream
 
 plugins {
     alias(libs.plugins.android.application)
-    id("com.google.gms.google-services")
+    
 }
 
 // Đọc local.properties
@@ -12,9 +12,6 @@ val localPropertiesFile = rootProject.file("local.properties")
 if (localPropertiesFile.exists()) {
     localProperties.load(FileInputStream(localPropertiesFile))
 }
-val cloudinaryApiKey = localProperties.getProperty("CLOUDINARY_API_KEY") ?: ""
-val cloudinaryApiSecret = localProperties.getProperty("CLOUDINARY_API_SECRET") ?: ""
-val geminiApiKey: String by rootProject.extra
 
 android {
     namespace = "com.nstut.fast_food_shop"
@@ -24,9 +21,6 @@ android {
     }
 
     defaultConfig {
-        buildConfigField("String", "CLOUDINARY_API_KEY", "\"$cloudinaryApiKey\"")
-        buildConfigField("String", "GEMINI_API_KEY", "\"$geminiApiKey\"")
-        buildConfigField("String", "CLOUDINARY_API_SECRET", "\"$cloudinaryApiSecret\"")
         applicationId = "com.nstut.fast_food_shop"
         minSdk = 24
         targetSdk = 35
@@ -59,9 +53,8 @@ dependencies {
     coreLibraryDesugaring(libs.android.desugarJdkLibs)
     implementation("androidx.recyclerview:recyclerview:1.2.1")
     implementation("androidx.cardview:cardview:1.0.0")
-    implementation("com.stripe:stripe-android:20.45.0")
-    implementation(platform("com.google.firebase:firebase-bom:33.16.0"))
-    implementation("com.google.firebase:firebase-analytics")
+    
+    
     implementation("com.android.volley:volley:1.2.1")
     implementation(libs.appcompat)
     implementation(libs.material)
@@ -70,10 +63,8 @@ dependencies {
     testImplementation(libs.junit)
     androidTestImplementation(libs.ext.junit)
     androidTestImplementation(libs.espresso.core)
-    implementation("com.cloudinary:cloudinary-android:2.4.0")
     implementation("com.github.bumptech.glide:glide:4.15.0")
     annotationProcessor("com.github.bumptech.glide:compiler:4.15.0")
-    implementation("com.google.ai.client.generativeai:generativeai:0.3.0")
     implementation("com.google.guava:guava:32.0.1-android")
 
 
@@ -88,8 +79,23 @@ dependencies {
     // BCrypt
     implementation("at.favre.lib:bcrypt:0.9.0")
 
-   implementation(platform("com.google.firebase:firebase-bom:33.1.1"))
-   implementation("com.google.firebase:firebase-auth")
-   implementation("com.google.firebase:firebase-firestore")
+   
+   
+   
     implementation("com.github.PhilJay:MPAndroidChart:v3.1.0")
+
+    // Room for database
+    implementation("androidx.room:room-runtime:2.6.1")
+    annotationProcessor("androidx.room:room-compiler:2.6.1")
+
+    // Firebase
+    implementation(platform("com.google.firebase:firebase-bom:33.1.1"))
+    implementation("com.google.firebase:firebase-analytics")
+    implementation("com.google.firebase:firebase-auth")
+
+    // Google AI
+    implementation("com.google.ai.client.generativeai:generativeai:0.5.0")
+
+    // OkHttp for multipart
+    implementation("com.squareup.okhttp3:okhttp:4.12.0")
 }

@@ -28,14 +28,11 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ViewHold
     private OnAdminProductClickListener adminProductClickListener;
     private OnAddToCartClickListener addToCartClickListener;
 
-    public ProductAdapter(List<Product> products, Object listener) {
+    public ProductAdapter(List<Product> products, OnProductClickListener productClickListener, OnAdminProductClickListener adminProductClickListener, OnAddToCartClickListener addToCartClickListener) {
         this.products = products;
-        if (listener instanceof OnProductClickListener) {
-            this.productClickListener = (OnProductClickListener) listener;
-        }
-        if (listener instanceof OnAdminProductClickListener) {
-            this.adminProductClickListener = (OnAdminProductClickListener) listener;
-        }
+        this.productClickListener = productClickListener;
+        this.adminProductClickListener = adminProductClickListener;
+        this.addToCartClickListener = addToCartClickListener;
     }
 
     public void updateProducts(List<Product> newProducts) {
@@ -61,6 +58,7 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ViewHold
             adminActions = view.findViewById(R.id.admin_action);
             btnEdit = view.findViewById(R.id.button_edit);
             btnDelete = view.findViewById(R.id.button_delete);
+            btnAddToCart = view.findViewById(R.id.button_add_to_cart);
         }
     }
 
@@ -80,8 +78,9 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ViewHold
         holder.txtPrice.setText("$" + product.getPrice());
         Glide.with(context).load(product.getImageUrl()).into(holder.imageView);
 
-        // TODO: Get category names from category IDs
-        holder.txtCategories.setText(String.join(", ", product.getCategoryIds()));
+        if (product.getCategories() != null) {
+            holder.txtCategories.setText(product.getCategories().stream().map(Category::getName).collect(Collectors.joining(", ")));
+        }
 
         if (adminProductClickListener != null) {
             holder.adminActions.setVisibility(View.VISIBLE);
@@ -94,6 +93,12 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ViewHold
             holder.adminActions.setVisibility(View.GONE);
         }
 
+        if (addToCartClickListener != null) {
+            holder.btnAddToCart.setVisibility(View.VISIBLE);
+            holder.btnAddToCart.setOnClickListener(v -> addToCartClickListener.onAddToCartClick(product));
+        } else {
+            holder.btnAddToCart.setVisibility(View.GONE);
+        }
 
         // Làm mờ item nếu không available
         boolean available = product.isAvailable();
@@ -109,16 +114,16 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ViewHold
         return products.size();
     }
 
-    public interface OnProductClickListener {
+    public static interface OnProductClickListener {
         void onProductClick(Product product);
     }
 
-    public interface OnAdminProductClickListener {
+    public static interface OnAdminProductClickListener {
         void onEditClick(Product product);
         void onDeleteClick(Product product);
     }
 
-    public interface OnAddToCartClickListener {
+    public static interface OnAddToCartClickListener {
         void onAddToCartClick(Product product);
     }
 }

@@ -24,18 +24,10 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     private static final int VIEW_TYPE_RECOMMENDATION = 3;
 
     private List<ChatMessage> messages;
-    private OnProductClickListener onProductClickListener;
-    private OnAddToCartClickListener onAddToCartClickListener;
+    private ProductAdapter.OnProductClickListener onProductClickListener;
+    private ProductAdapter.OnAddToCartClickListener onAddToCartClickListener;
 
-    public interface OnProductClickListener {
-        void onProductClick(Product product);
-    }
-
-    public interface OnAddToCartClickListener {
-        void onAddToCartClick(Product product);
-    }
-
-    public ChatAdapter(List<ChatMessage> messages, OnProductClickListener onProductClickListener, OnAddToCartClickListener onAddToCartClickListener) {
+    public ChatAdapter(List<ChatMessage> messages, ProductAdapter.OnProductClickListener onProductClickListener, ProductAdapter.OnAddToCartClickListener onAddToCartClickListener) {
         this.messages = messages;
         this.onProductClickListener = onProductClickListener;
         this.onAddToCartClickListener = onAddToCartClickListener;
@@ -109,13 +101,11 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
             productsRecyclerView = itemView.findViewById(R.id.products_recycler_view);
         }
 
-        void bind(final ChatMessage message, final OnProductClickListener productClickListener, final OnAddToCartClickListener addToCartClickListener) {
+        void bind(final ChatMessage message, final ProductAdapter.OnProductClickListener productClickListener, final ProductAdapter.OnAddToCartClickListener addToCartClickListener) {
             messageText.setText(message.getMessage());
             if (message.getProducts() != null && !message.getProducts().isEmpty()) {
                 productsRecyclerView.setVisibility(View.VISIBLE);
-                productAdapter = new ProductAdapter(message.getProducts(),
-                        product -> productClickListener.onProductClick(product),
-                        product -> addToCartClickListener.onAddToCartClick(product));
+                productAdapter = new ProductAdapter(message.getProducts(), productClickListener, null, addToCartClickListener);
                 productsRecyclerView.setLayoutManager(new LinearLayoutManager(itemView.getContext(), LinearLayoutManager.HORIZONTAL, false));
                 productsRecyclerView.setAdapter(productAdapter);
             } else {

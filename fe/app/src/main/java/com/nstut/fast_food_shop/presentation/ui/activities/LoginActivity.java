@@ -76,7 +76,7 @@ public class LoginActivity extends BaseActivity {
                     UserResponse userResponse = response.body();
                     SharedPreferences.Editor editor = sharedPreferences.edit();
                     editor.putString("user_id", userResponse.getUser().getId());
-                    editor.putString("user_name", userResponse.getUser().getName());
+                    editor.putString("user_name", userResponse.getUser().getFullname());
                     editor.putString("user_email", userResponse.getUser().getEmail());
                     editor.putString("user_role", userResponse.getUser().getRole());
                     editor.apply();

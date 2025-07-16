@@ -7,7 +7,7 @@ import android.widget.CheckBox;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 import com.nstut.fast_food_shop.R;
-import com.nstut.fast_food_shop.data.models.Category;
+import com.nstut.fast_food_shop.model.Category;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
