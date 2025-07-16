@@ -3,7 +3,8 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
-    <uses-permission android:name="android.permission.INTERNET"/>
+    <uses-permission android:name="android.permission.INTERNET" />
+
     <application
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
@@ -14,30 +15,34 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.FastFoodShop"
         tools:targetApi="31">
-        <activity android:name=".presentation.ui.activities.LoginActivity"
-            android:exported="true">
-        </activity>
-        <activity android:name=".presentation.ui.activities.RegisterActivity"/>
-        <activity android:name=".presentation.ui.activities.AddEditProductActivity"/>
-        <activity android:name=".presentation.ui.activities.CategoryProductListActivity"/>
-        <activity android:name=".presentation.ui.activities.AdminProductListActivity"/>
-        <activity android:name=".presentation.ui.activities.HomeActivity"
+        <activity
+            android:name=".StripeWebViewActivity"
+            android:exported="false" />
+        <activity
+            android:name=".presentation.ui.activities.LoginActivity"
+            android:exported="true"></activity>
+        <activity android:name=".presentation.ui.activities.RegisterActivity" />
+        <activity android:name=".presentation.ui.activities.AddEditProductActivity" />
+        <activity android:name=".presentation.ui.activities.CategoryProductListActivity" />
+        <activity android:name=".presentation.ui.activities.AdminProductListActivity" />
+        <activity
+            android:name=".presentation.ui.activities.HomeActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".presentation.ui.activities.ProductDetailActivity"/>
-        <activity android:name=".presentation.ui.activities.AddEditCategoryActivity"/>
-        <activity android:name=".presentation.ui.activities.CategoryListActivity"/>
-        <activity android:name=".presentation.ui.activities.ChatActivity"/>
-        <activity android:name=".CartActivity"/>
-        <activity android:name=".PaymentActivity"/>
-        <activity android:name=".OrderActivity"/>
-        <activity android:name=".StripeWebViewActivity"/>
-        <activity android:name=".presentation.ui.activities.TransactionHistoryActivity"/>
-        <activity android:name=".presentation.ui.activities.FinanceActivity"/>
+        <activity android:name=".presentation.ui.activities.ProductDetailActivity" />
+        <activity android:name=".presentation.ui.activities.AddEditCategoryActivity" />
+        <activity android:name=".presentation.ui.activities.CategoryListActivity" />
+        <activity android:name=".presentation.ui.activities.ChatActivity" />
+        <activity android:name=".CartActivity" />
+        <activity android:name=".PaymentActivity" />
+        <activity android:name=".OrderActivity" />
+        <activity android:name=".presentation.ui.activities.TransactionHistoryActivity" />
+        <activity android:name=".presentation.ui.activities.FinanceActivity" />
     </application>
 
 </manifest>
