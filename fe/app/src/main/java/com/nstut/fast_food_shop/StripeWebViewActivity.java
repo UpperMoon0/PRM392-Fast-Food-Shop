@@ -24,11 +24,11 @@ public class StripeWebViewActivity extends AppCompatActivity {
             @Override
             public boolean shouldOverrideUrlLoading(WebView view, String url) {
                 if (url.contains("/success")) {
-                    Toast.makeText(StripeWebViewActivity.this, "Thanh toán thành công!", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(StripeWebViewActivity.this, "Payment successful", Toast.LENGTH_SHORT).show();
                     finish();
                     return true;
                 } else if (url.contains("/cancel")) {
-                    Toast.makeText(StripeWebViewActivity.this, "Thanh toán bị hủy", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(StripeWebViewActivity.this, "Payment canceled", Toast.LENGTH_SHORT).show();
                     finish();
                     return true;
                 }

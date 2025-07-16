@@ -20,7 +20,7 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     public Product getProductById(String id) {
-        return productRepository.findById(id).orElse(null);
+        return productRepository.findById(Long.parseLong(id)).orElse(null);
     }
 
     @Override
@@ -30,8 +30,8 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     public Product updateProduct(String id, Product product) {
-        if (productRepository.existsById(id)) {
-            product.setId(id);
+        if (productRepository.existsById(Long.parseLong(id))) {
+            product.setId(Long.parseLong(id));
             return productRepository.save(product);
         }
         return null;
@@ -39,6 +39,6 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     public void deleteProduct(String id) {
-        productRepository.deleteById(id);
+        productRepository.deleteById(Long.parseLong(id));
     }
 }

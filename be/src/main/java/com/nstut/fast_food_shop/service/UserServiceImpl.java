@@ -13,6 +13,6 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public User getUserById(String id) {
-        return userRepository.findById(id).orElse(null);
+        return userRepository.findById(Long.parseLong(id)).orElse(null);
     }
 }

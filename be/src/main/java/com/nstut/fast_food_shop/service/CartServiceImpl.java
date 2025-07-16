@@ -30,7 +30,7 @@ public class CartServiceImpl implements CartService {
 
     @Override
     public Cart getCartByUserId(String userId) {
-        return cartRepository.findByCustomerId(Long.parseLong(userId)).orElse(null);
+        return cartRepository.findByCustomer_Id(Long.parseLong(userId)).orElse(null);
     }
 
     @Override

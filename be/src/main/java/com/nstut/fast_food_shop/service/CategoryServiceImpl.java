@@ -20,7 +20,7 @@ public class CategoryServiceImpl implements CategoryService {
 
     @Override
     public Category getCategoryById(String id) {
-        return categoryRepository.findById(id).orElse(null);
+        return categoryRepository.findById(Long.parseLong(id)).orElse(null);
     }
 
     @Override
@@ -30,8 +30,8 @@ public class CategoryServiceImpl implements CategoryService {
 
     @Override
     public Category updateCategory(String id, Category category) {
-        if (categoryRepository.existsById(id)) {
-            category.setId(id);
+        if (categoryRepository.existsById(Long.parseLong(id))) {
+            category.setId(Long.parseLong(id));
             return categoryRepository.save(category);
         }
         return null;
@@ -39,6 +39,6 @@ public class CategoryServiceImpl implements CategoryService {
 
     @Override
     public void deleteCategory(String id) {
-        categoryRepository.deleteById(id);
+        categoryRepository.deleteById(Long.parseLong(id));
     }
 }
