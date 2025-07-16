@@ -12,15 +12,17 @@ import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.nstut.fast_food_shop.R;
-import com.nstut.fast_food_shop.presentation.utils.HashUtils;
+import com.nstut.fast_food_shop.model.User;
+import com.nstut.fast_food_shop.repository.UserRepository;
 
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class RegisterActivity extends AppCompatActivity {
 
     private EditText etFullName, etEmail, etPassword, etPhoneNumber;
-    private ExecutorService executorService;
+    private UserRepository userRepository;
     private Button loginLogoutButton;
 
     @Override
@@ -43,7 +45,7 @@ public class RegisterActivity extends AppCompatActivity {
         Button btnRegister = findViewById(R.id.btn_register);
         TextView tvLogin = findViewById(R.id.tv_login);
 
-        executorService = Executors.newSingleThreadExecutor();
+        userRepository = new UserRepository();
 
         btnRegister.setOnClickListener(v -> registerUser());
 
@@ -77,9 +79,28 @@ public class RegisterActivity extends AppCompatActivity {
             return;
         }
 
-        // TODO: Call UserRepository to register the user on the backend
-        Toast.makeText(this, "Registration successful", Toast.LENGTH_SHORT).show();
-        finish();
+        User user = new User();
+        user.setName(fullName);
+        user.setEmail(email);
+        user.setPassword(password);
+        user.setRole("CUSTOMER");
+
+        userRepository.register(user).enqueue(new Callback<User>() {
+            @Override
+            public void onResponse(Call<User> call, Response<User> response) {
+                if (response.isSuccessful()) {
+                    Toast.makeText(RegisterActivity.this, "Registration successful", Toast.LENGTH_SHORT).show();
+                    finish();
+                } else {
+                    Toast.makeText(RegisterActivity.this, "Registration failed", Toast.LENGTH_SHORT).show();
+                }
+            }
+
+            @Override
+            public void onFailure(Call<User> call, Throwable t) {
+                Toast.makeText(RegisterActivity.this, "Error: " + t.getMessage(), Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 
     private void checkUserLoginStatus() {

@@ -22,11 +22,15 @@ import com.nstut.fast_food_shop.presentation.ui.adapters.CategoryAdapter;
 import com.nstut.fast_food_shop.model.Category;
 import com.nstut.fast_food_shop.model.Product;
 import com.nstut.fast_food_shop.presentation.ui.adapters.ProductAdapter;
+import com.nstut.fast_food_shop.repository.CategoryRepository;
+import com.nstut.fast_food_shop.repository.ProductRepository;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class HomeActivity extends BaseActivity implements CategoryAdapter.OnCategoryClickListener, ProductAdapter.OnProductClickListener {
 
@@ -36,10 +40,10 @@ public class HomeActivity extends BaseActivity implements CategoryAdapter.OnCate
     private ProductAdapter productAdapter;
     private List<Category> categoryList;
     private List<Product> productList;
-    private List<Product> filteredProductList;
-    private ExecutorService executorService = Executors.newSingleThreadExecutor();
     private ImageView bannerImage;
     private SearchView searchView;
+    private ProductRepository productRepository;
+    private CategoryRepository categoryRepository;
     private ChipGroup categoryChipGroup;
 
     @Override
@@ -64,9 +68,10 @@ public class HomeActivity extends BaseActivity implements CategoryAdapter.OnCate
         searchView = findViewById(R.id.search_view);
         categoryChipGroup = findViewById(R.id.category_chip_group);
 
+        productRepository = new ProductRepository();
+        categoryRepository = new CategoryRepository();
         categoryList = new ArrayList<>();
         productList = new ArrayList<>();
-        filteredProductList = new ArrayList<>();
 
         categoryAdapter = new CategoryAdapter(categoryList, this);
         categoryRecyclerView.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));
@@ -82,18 +87,31 @@ public class HomeActivity extends BaseActivity implements CategoryAdapter.OnCate
     }
 
     private void loadData() {
-        // TODO: Call CategoryRepository and ProductRepository to load data from the backend
-        categoryList.clear();
-        categoryAdapter.notifyDataSetChanged();
-        updateCategoryChips(new ArrayList<>());
+        categoryRepository.getAllCategories().enqueue(new Callback<List<Category>>() {
+            @Override
+            public void onResponse(Call<List<Category>> call, Response<List<Category>> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    categoryList.clear();
+                    categoryList.addAll(response.body());
+                    categoryAdapter.notifyDataSetChanged();
+                    updateCategoryChips(categoryList);
+                }
+            }
 
-        productList.clear();
-        filterProducts();
+            @Override
+            public void onFailure(Call<List<Category>> call, Throwable t) {
+                Log.e("HomeActivity", "Error loading categories", t);
+            }
+        });
+
+        searchAndFilterProducts();
     }
 
     @Override
     public void onCategoryClick(Category category) {
-        // TODO: Implement what happens when a category is clicked
+        Intent intent = new Intent(this, CategoryProductListActivity.class);
+        intent.putExtra("category_id", category.getId());
+        startActivity(intent);
     }
 
     @Override
@@ -107,13 +125,13 @@ public class HomeActivity extends BaseActivity implements CategoryAdapter.OnCate
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String query) {
-                filterProducts();
+                searchAndFilterProducts();
                 return true;
             }
 
             @Override
             public boolean onQueryTextChange(String newText) {
-                filterProducts();
+                searchAndFilterProducts();
                 return true;
             }
         });
@@ -121,7 +139,7 @@ public class HomeActivity extends BaseActivity implements CategoryAdapter.OnCate
 
     private void setupCategoryFilter() {
         categoryChipGroup.setOnCheckedChangeListener((group, checkedId) -> {
-            filterProducts();
+            searchAndFilterProducts();
         });
     }
 
@@ -144,7 +162,7 @@ public class HomeActivity extends BaseActivity implements CategoryAdapter.OnCate
         }
     }
 
-    private void filterProducts() {
+    private void searchAndFilterProducts() {
         String query = searchView.getQuery().toString().toLowerCase();
         int selectedCategoryId = -1;
         int checkedChipId = categoryChipGroup.getCheckedChipId();
@@ -157,18 +175,19 @@ public class HomeActivity extends BaseActivity implements CategoryAdapter.OnCate
                 }
             }
         }
-        final int finalSelectedCategoryId = selectedCategoryId;
-
-        filteredProductList.clear();
-        for (Product product : productList) {
-            boolean matchesCategory = finalSelectedCategoryId == -1 ||
-                    product.getCategoryIds().contains(String.valueOf(finalSelectedCategoryId));
-            boolean matchesSearch = query.isEmpty() || product.getName().toLowerCase().contains(query);
-
-            if (matchesCategory && matchesSearch) {
-                filteredProductList.add(product);
+        
+        productRepository.searchProducts(query, String.valueOf(selectedCategoryId)).enqueue(new retrofit2.Callback<List<Product>>() {
+            @Override
+            public void onResponse(retrofit2.Call<List<Product>> call, retrofit2.Response<List<Product>> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    productAdapter.updateProducts(response.body());
+                }
             }
-        }
-        productAdapter.updateProducts(filteredProductList);
+
+            @Override
+            public void onFailure(retrofit2.Call<List<Product>> call, Throwable t) {
+                Log.e("HomeActivity", "Error searching products", t);
+            }
+        });
     }
 }

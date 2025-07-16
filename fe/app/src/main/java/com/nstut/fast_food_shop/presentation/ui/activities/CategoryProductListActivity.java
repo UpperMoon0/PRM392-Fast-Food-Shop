@@ -16,6 +16,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.nstut.fast_food_shop.R;
 import com.nstut.fast_food_shop.model.Product;
 import com.nstut.fast_food_shop.presentation.ui.adapters.ProductAdapter;
+import com.nstut.fast_food_shop.repository.ProductRepository;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -25,11 +26,10 @@ import java.util.concurrent.Executors;
 public class CategoryProductListActivity extends BaseActivity implements ProductAdapter.OnProductClickListener {
     RecyclerView recyclerView;
     ProductAdapter adapter;
-    List<Product> products;
-    private List<Product> filteredProducts;
     private ExecutorService executorService;
     private ImageView backButton;
     private SearchView searchView;
+    private ProductRepository productRepository;
 
     private void loadData() {
         String categoryId = getIntent().getStringExtra("category_id");
@@ -42,22 +42,24 @@ public class CategoryProductListActivity extends BaseActivity implements Product
 
     private void loadAllAvailableProducts() {
         // TODO: Call ProductRepository to get all available products
-        products.clear();
-        filterProducts("");
+        searchProducts("");
     }
 
-    private void filterProducts(String query) {
-        filteredProducts.clear();
-        if (query.isEmpty()) {
-            filteredProducts.addAll(products);
-        } else {
-            for (Product product : products) {
-                if (product.getName().toLowerCase().contains(query.toLowerCase())) {
-                    filteredProducts.add(product);
+    private void searchProducts(String query) {
+        String categoryId = getIntent().getStringExtra("category_id");
+        productRepository.searchProducts(query, categoryId).enqueue(new retrofit2.Callback<List<Product>>() {
+            @Override
+            public void onResponse(retrofit2.Call<List<Product>> call, retrofit2.Response<List<Product>> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    adapter.updateProducts(response.body());
                 }
             }
-        }
-        adapter.updateProducts(filteredProducts);
+
+            @Override
+            public void onFailure(retrofit2.Call<List<Product>> call, Throwable t) {
+                // Handle failure
+            }
+        });
     }
 
     @Override
@@ -65,6 +67,7 @@ public class CategoryProductListActivity extends BaseActivity implements Product
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_category_product_list);
 
+        productRepository = new ProductRepository();
         executorService = Executors.newSingleThreadExecutor();
 
         EdgeToEdge.enable(this);
@@ -78,10 +81,8 @@ public class CategoryProductListActivity extends BaseActivity implements Product
         }
         recyclerView = findViewById(R.id.recyclerView);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
-        products = new ArrayList<>();
-        filteredProducts = new ArrayList<>();
 
-        adapter = new ProductAdapter(filteredProducts, this);
+        adapter = new ProductAdapter(new ArrayList<>(), this);
         recyclerView.setAdapter(adapter);
 
         backButton = findViewById(R.id.back_button);
@@ -93,13 +94,13 @@ public class CategoryProductListActivity extends BaseActivity implements Product
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String query) {
-                filterProducts(query);
+                searchProducts(query);
                 return true;
             }
 
             @Override
             public boolean onQueryTextChange(String newText) {
-                filterProducts(newText);
+                searchProducts(newText);
                 return true;
             }
         });

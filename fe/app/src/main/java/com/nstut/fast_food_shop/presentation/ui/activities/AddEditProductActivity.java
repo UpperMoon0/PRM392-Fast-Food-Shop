@@ -15,13 +15,18 @@ import com.nstut.fast_food_shop.R;
 import com.nstut.fast_food_shop.data.models.Category;
 import com.nstut.fast_food_shop.model.Product;
 import com.nstut.fast_food_shop.presentation.ui.adapters.CategorySelectionAdapter;
-import com.nstut.fast_food_shop.presentation.utils.CloudinaryManager;
-import com.nstut.fast_food_shop.presentation.utils.FileUtil;
+import com.nstut.fast_food_shop.repository.CategoryRepository;
+import com.nstut.fast_food_shop.repository.ProductRepository;
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
-import java.util.concurrent.Executors;
 import java.util.stream.Collectors;
+import okhttp3.MediaType;
+import okhttp3.MultipartBody;
+import okhttp3.RequestBody;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class AddEditProductActivity extends BaseActivity {
 
@@ -36,14 +41,14 @@ public class AddEditProductActivity extends BaseActivity {
     private List<Category> categoryList;
     private CategorySelectionAdapter categoryAdapter;
     private boolean isEditMode = false;
-    private CloudinaryManager cloudinaryManager;
+    private ProductRepository productRepository;
+    private CategoryRepository categoryRepository;
 
     private static final int REQUEST_IMAGE_PICK = 1001;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        cloudinaryManager = new CloudinaryManager();
         setContentView(R.layout.activity_add_edit_product);
         
         edtName = findViewById(R.id.edtName);
@@ -54,7 +59,8 @@ public class AddEditProductActivity extends BaseActivity {
         btnChooseImage = findViewById(R.id.btnChooseImage);
         btnSave = findViewById(R.id.btnSave);
 
-        // TODO: Get product repository instance
+        productRepository = new ProductRepository();
+        categoryRepository = new CategoryRepository();
         productId = getIntent().getStringExtra("product_id");
         isEditMode = productId != null;
 
@@ -63,6 +69,7 @@ public class AddEditProductActivity extends BaseActivity {
 
         if (isEditMode) {
             btnSave.setText("Save Changes");
+            loadProductDetails();
         }
 
         btnChooseImage.setOnClickListener(v -> openImagePicker());
@@ -83,11 +90,41 @@ public class AddEditProductActivity extends BaseActivity {
     }
 
     private void loadCategories() {
-        // TODO: Load categories from repository
+        categoryRepository.getAllCategories().enqueue(new Callback<List<Category>>() {
+            @Override
+            public void onResponse(Call<List<Category>> call, Response<List<Category>> response) {
+                if (response.isSuccessful()) {
+                    categoryList = response.body();
+                    categoryAdapter.setCategories(categoryList);
+                }
+            }
+
+            @Override
+            public void onFailure(Call<List<Category>> call, Throwable t) {
+                Toast.makeText(AddEditProductActivity.this, "Failed to load categories", Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 
     private void loadProductDetails() {
-        // TODO: Load product details from repository
+        productRepository.getProductById(productId).enqueue(new Callback<Product>() {
+            @Override
+            public void onResponse(Call<Product> call, Response<Product> response) {
+                if (response.isSuccessful()) {
+                    currentProduct = response.body();
+                    edtName.setText(currentProduct.getName());
+                    edtDesc.setText(currentProduct.getDescription());
+                    edtPrice.setText(String.valueOf(currentProduct.getPrice()));
+                    Glide.with(AddEditProductActivity.this).load(currentProduct.getImageUrl()).into(imageView);
+                    categoryAdapter.setSelectedCategories(currentProduct.getCategories().stream().map(Category::getId).collect(Collectors.toList()));
+                }
+            }
+
+            @Override
+            public void onFailure(Call<Product> call, Throwable t) {
+                Toast.makeText(AddEditProductActivity.this, "Failed to load product details", Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 
     private void saveProduct() {
@@ -98,14 +135,7 @@ public class AddEditProductActivity extends BaseActivity {
         if (selectedImageUri != null) {
             try {
                 File imageFile = FileUtil.from(this, selectedImageUri);
-                cloudinaryManager.uploadImage(imageFile, "project-prm", result -> {
-                    uploadedImageUrl = result;
-                    if (isEditMode) {
-                        updateProduct(name, description, price, uploadedImageUrl);
-                    } else {
-                        createProduct(name, description, price, uploadedImageUrl);
-                    }
-                });
+                uploadImageToBackend(imageFile, name, description, price);
             } catch (IOException e) {
                 e.printStackTrace();
                 Toast.makeText(this, "Upload image failed", Toast.LENGTH_SHORT).show();
@@ -119,12 +149,93 @@ public class AddEditProductActivity extends BaseActivity {
         }
     }
 
+    private void uploadImageToBackend(File imageFile, String name, String description, double price) {
+        RequestBody requestFile = RequestBody.create(MediaType.parse("image/*"), imageFile);
+        MultipartBody.Part body = MultipartBody.Part.createFormData("file", imageFile.getName(), requestFile);
+        
+        productRepository.uploadImage(body).enqueue(new Callback<String>() {
+            @Override
+            public void onResponse(Call<String> call, Response<String> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    String imageUrl = response.body();
+                    runOnUiThread(() -> {
+                        uploadedImageUrl = imageUrl;
+                        if (isEditMode) {
+                            updateProduct(name, description, price, uploadedImageUrl);
+                        } else {
+                            createProduct(name, description, price, uploadedImageUrl);
+                        }
+                    });
+                } else {
+                    runOnUiThread(() -> Toast.makeText(AddEditProductActivity.this, "Image upload failed", Toast.LENGTH_SHORT).show());
+                }
+            }
+
+            @Override
+            public void onFailure(Call<String> call, Throwable t) {
+                t.printStackTrace();
+                runOnUiThread(() -> Toast.makeText(AddEditProductActivity.this, "Image upload failed: " + t.getMessage(), Toast.LENGTH_SHORT).show());
+            }
+        });
+    }
+
     private void createProduct(String name, String description, double price, String imageUrl) {
-        // TODO: Create product using repository
+        Product product = new Product();
+        product.setName(name);
+        product.setDescription(description);
+        product.setPrice(price);
+        product.setImageUrl(imageUrl);
+        product.setCategories(categoryAdapter.getSelectedCategories().stream().map(id -> {
+            Category c = new Category();
+            c.setId(id);
+            return c;
+        }).collect(Collectors.toList()));
+
+        productRepository.createProduct(product).enqueue(new Callback<Product>() {
+            @Override
+            public void onResponse(Call<Product> call, Response<Product> response) {
+                if (response.isSuccessful()) {
+                    Toast.makeText(AddEditProductActivity.this, "Product created successfully", Toast.LENGTH_SHORT).show();
+                    finish();
+                } else {
+                    Toast.makeText(AddEditProductActivity.this, "Failed to create product", Toast.LENGTH_SHORT).show();
+                }
+            }
+
+            @Override
+            public void onFailure(Call<Product> call, Throwable t) {
+                Toast.makeText(AddEditProductActivity.this, "Error: " + t.getMessage(), Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 
     private void updateProduct(String name, String description, double price, String imageUrl) {
-        // TODO: Update product using repository
+        currentProduct.setName(name);
+        currentProduct.setDescription(description);
+        currentProduct.setPrice(price);
+        currentProduct.setImageUrl(imageUrl);
+        currentProduct.setCategories(categoryAdapter.getSelectedCategories().stream().map(id -> {
+            Category c = new Category();
+            c.setId(id);
+            return c;
+        }).collect(Collectors.toList()));
+
+        productRepository.updateProduct(productId, currentProduct).enqueue(new Callback<Product>() {
+            @Override
+            public void onResponse(Call<Product> call, Response<Product> response) {
+                if (response.isSuccessful()) {
+                    Toast.makeText(AddEditProductActivity.this, "Product updated successfully", Toast.LENGTH_SHORT).show();
+                    finish();
+                } else {
+                    Toast.makeText(AddEditProductActivity.this, "Failed to update product", Toast.LENGTH_SHORT).show();
+                }
+            }
+
+            @Override
+            public void onFailure(Call<Product> call, Throwable t) {
+                Toast.makeText(AddEditProductActivity.this, "Error: " + t.getMessage(), Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 
     private void openImagePicker() {

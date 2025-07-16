@@ -20,6 +20,10 @@ public class ProductRepository {
         return apiService.getAllProducts();
     }
 
+    public Call<List<Product>> searchProducts(String keyword, String categoryId) {
+        return apiService.searchProducts(keyword, categoryId);
+    }
+
     public Call<Product> getProductById(String id) {
         return apiService.getProductById(id);
     }

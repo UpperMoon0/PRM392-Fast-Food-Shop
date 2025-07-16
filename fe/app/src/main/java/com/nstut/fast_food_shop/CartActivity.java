@@ -85,7 +85,7 @@ public class CartActivity extends BaseActivity {
     }
 
     private void updateCartItem(CartItem item, int quantity) {
-        cartRepository.addItemToCart(currentUser.getId(), item.getProduct().getId(), quantity).enqueue(new Callback<Cart>() {
+        cartRepository.updateCartItem(currentUser.getId(), item.getId(), quantity).enqueue(new Callback<Cart>() {
             @Override
             public void onResponse(Call<Cart> call, Response<Cart> response) {
                 if (response.isSuccessful() && response.body() != null) {

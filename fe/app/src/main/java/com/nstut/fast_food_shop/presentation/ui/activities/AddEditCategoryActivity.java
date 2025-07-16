@@ -13,12 +13,19 @@ import androidx.annotation.Nullable;
 import com.bumptech.glide.Glide;
 import com.nstut.fast_food_shop.R;
 import com.nstut.fast_food_shop.model.Category;
-import com.nstut.fast_food_shop.presentation.utils.CloudinaryManager;
 import com.nstut.fast_food_shop.presentation.utils.FileUtil;
+import com.nstut.fast_food_shop.data.remote.ApiClient;
+import com.nstut.fast_food_shop.data.remote.ApiService;
 import java.io.File;
 import java.io.IOException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import okhttp3.MediaType;
+import okhttp3.MultipartBody;
+import okhttp3.RequestBody;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class AddEditCategoryActivity extends BaseActivity {
 
@@ -90,13 +97,7 @@ public class AddEditCategoryActivity extends BaseActivity {
         if (imageUri != null) {
             try {
                 File imageFile = FileUtil.from(this, imageUri);
-                new CloudinaryManager().uploadImage(imageFile, "categories", imageUrl -> {
-                    if (imageUrl != null && !imageUrl.isEmpty()) {
-                        saveCategoryToDb(name, description, imageUrl);
-                    } else {
-                        runOnUiThread(() -> Toast.makeText(AddEditCategoryActivity.this, "Image upload failed", Toast.LENGTH_SHORT).show());
-                    }
-                });
+                uploadImageToBackend(imageFile, name, description);
             } catch (IOException e) {
                 e.printStackTrace();
                 Toast.makeText(this, "Failed to process image", Toast.LENGTH_SHORT).show();
@@ -106,6 +107,32 @@ public class AddEditCategoryActivity extends BaseActivity {
         } else {
             saveCategoryToDb(name, description, null);
         }
+    }
+
+    private void uploadImageToBackend(File imageFile, String name, String description) {
+        RequestBody requestFile = RequestBody.create(MediaType.parse("image/*"), imageFile);
+        MultipartBody.Part body = MultipartBody.Part.createFormData("file", imageFile.getName(), requestFile);
+        
+        ApiService apiService = ApiClient.getClient().create(ApiService.class);
+        Call<String> call = apiService.uploadImage(body);
+        
+        call.enqueue(new Callback<String>() {
+            @Override
+            public void onResponse(Call<String> call, Response<String> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    String imageUrl = response.body();
+                    runOnUiThread(() -> saveCategoryToDb(name, description, imageUrl));
+                } else {
+                    runOnUiThread(() -> Toast.makeText(AddEditCategoryActivity.this, "Image upload failed", Toast.LENGTH_SHORT).show());
+                }
+            }
+
+            @Override
+            public void onFailure(Call<String> call, Throwable t) {
+                t.printStackTrace();
+                runOnUiThread(() -> Toast.makeText(AddEditCategoryActivity.this, "Image upload failed: " + t.getMessage(), Toast.LENGTH_SHORT).show());
+            }
+        });
     }
 
     private void saveCategoryToDb(String name, String description, String imageUrl) {
