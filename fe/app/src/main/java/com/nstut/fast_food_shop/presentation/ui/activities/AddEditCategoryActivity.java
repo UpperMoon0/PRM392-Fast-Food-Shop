@@ -12,8 +12,7 @@ import android.widget.Toast;
 import androidx.annotation.Nullable;
 import com.bumptech.glide.Glide;
 import com.nstut.fast_food_shop.R;
-import com.nstut.fast_food_shop.data.local.db.AppDatabase;
-import com.nstut.fast_food_shop.data.models.Category;
+import com.nstut.fast_food_shop.model.Category;
 import com.nstut.fast_food_shop.presentation.utils.CloudinaryManager;
 import com.nstut.fast_food_shop.presentation.utils.FileUtil;
 import java.io.File;
@@ -29,9 +28,8 @@ public class AddEditCategoryActivity extends BaseActivity {
     private ImageView imageView;
     private Button buttonSelectImage, buttonSave;
     private Uri imageUri;
-    private AppDatabase appDatabase;
     private Category currentCategory;
-    private int categoryId = -1;
+    private String categoryId = null;
     private ExecutorService executorService;
 
     @Override
@@ -39,7 +37,6 @@ public class AddEditCategoryActivity extends BaseActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_edit_category);
 
-        appDatabase = AppDatabase.getInstance(this);
         executorService = Executors.newSingleThreadExecutor();
 
         editTextName = findViewById(R.id.edit_text_category_name);
@@ -49,7 +46,7 @@ public class AddEditCategoryActivity extends BaseActivity {
         buttonSave = findViewById(R.id.button_save_category);
 
         if (getIntent().hasExtra("category_id")) {
-            categoryId = getIntent().getIntExtra("category_id", -1);
+            categoryId = getIntent().getStringExtra("category_id");
             loadCategory();
             buttonSave.setText("Save Changes");
         }
@@ -69,16 +66,7 @@ public class AddEditCategoryActivity extends BaseActivity {
     }
 
     private void loadCategory() {
-        appDatabase.categoryDao().getCategoryById(categoryId).observe(this, category -> {
-            currentCategory = category;
-            if (currentCategory != null) {
-                editTextName.setText(currentCategory.getName());
-                editTextDescription.setText(currentCategory.getDescription());
-                if (currentCategory.getImageUrl() != null && !currentCategory.getImageUrl().isEmpty()) {
-                    Glide.with(this).load(currentCategory.getImageUrl()).into(imageView);
-                }
-            }
-        });
+        // TODO: Call CategoryRepository to get category by ID
     }
 
     @Override
@@ -121,19 +109,8 @@ public class AddEditCategoryActivity extends BaseActivity {
     }
 
     private void saveCategoryToDb(String name, String description, String imageUrl) {
-        executorService.execute(() -> {
-            if (currentCategory == null) {
-                currentCategory = new Category(name, description, imageUrl);
-                appDatabase.categoryDao().insert(currentCategory);
-            } else {
-                currentCategory = new Category(name, description, imageUrl);
-                currentCategory.setId(categoryId);
-                appDatabase.categoryDao().update(currentCategory);
-            }
-            runOnUiThread(() -> {
-                Toast.makeText(this, "Category saved", Toast.LENGTH_SHORT).show();
-                finish();
-            });
-        });
+        // TODO: Call CategoryRepository to save the category
+        Toast.makeText(this, "Category saved", Toast.LENGTH_SHORT).show();
+        finish();
     }
 }

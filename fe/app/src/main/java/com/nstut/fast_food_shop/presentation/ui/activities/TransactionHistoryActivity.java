@@ -7,8 +7,6 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.google.gson.Gson;
 import com.nstut.fast_food_shop.R;
 import com.nstut.fast_food_shop.adapter.TransactionAdapter;
-import com.nstut.fast_food_shop.data.local.db.AppDatabase;
-import com.nstut.fast_food_shop.data.models.User;
 import com.nstut.fast_food_shop.model.Order;
 
 import java.util.ArrayList;
@@ -19,14 +17,12 @@ public class TransactionHistoryActivity extends BaseActivity {
     private RecyclerView recyclerView;
     private TransactionAdapter transactionAdapter;
     private List<Order> orderList;
-    private AppDatabase db;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_transaction_history);
 
-        db = AppDatabase.getInstance(this);
 
         recyclerView = findViewById(R.id.recycler_view_transactions);
         orderList = new ArrayList<>();
@@ -43,16 +39,12 @@ public class TransactionHistoryActivity extends BaseActivity {
             // Handle user not logged in
             return;
         }
-        User user = new Gson().fromJson(userJson, User.class);
-        String userId = String.valueOf(user.userId);
+        com.nstut.fast_food_shop.model.User user = new Gson().fromJson(userJson, com.nstut.fast_food_shop.model.User.class);
+        String userId = user.getId();
 
-        AppDatabase.databaseWriteExecutor.execute(() -> {
-            List<Order> orders = db.orderDao().getOrdersByUserId(userId);
-            runOnUiThread(() -> {
-                orderList.clear();
-                orderList.addAll(orders);
-                transactionAdapter.notifyDataSetChanged();
-            });
-        });
+        // TODO: Call OrderRepository to get orders by user ID
+        // For now, just clearing the list
+        orderList.clear();
+        transactionAdapter.notifyDataSetChanged();
     }
 }

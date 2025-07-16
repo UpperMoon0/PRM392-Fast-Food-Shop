@@ -22,7 +22,8 @@ import java.util.List;
 public class CartAdapter extends RecyclerView.Adapter<CartAdapter.ViewHolder> {
 
     public interface OnQuantityChanged {
-        void onChanged();
+        void onQuantityChanged(CartItem item, int quantity);
+        void onRemoveItem(CartItem item);
     }
     private final List<CartItem> cartItems;
     private final OnQuantityChanged listener;
@@ -63,7 +64,7 @@ public class CartAdapter extends RecyclerView.Adapter<CartAdapter.ViewHolder> {
                         CartItem currentItem = cartItems.get(adapterPosition);
                         currentItem.setQuantity(qty);
                         holder.price.setText(Utils.formatCurrency(currentItem.getProduct().getPrice() * qty));
-                        listener.onChanged();
+                        listener.onQuantityChanged(currentItem, qty);
                     } catch (NumberFormatException ignored) {
                     }
                 }
@@ -79,11 +80,9 @@ public class CartAdapter extends RecyclerView.Adapter<CartAdapter.ViewHolder> {
                 if (qty > 1) {
                     currentItem.setQuantity(qty - 1);
                     notifyItemChanged(adapterPosition);
-                    listener.onChanged();
+                    listener.onQuantityChanged(currentItem, qty - 1);
                 } else {
-                    cartItems.remove(adapterPosition);
-                    notifyItemRemoved(adapterPosition);
-                    listener.onChanged();
+                    listener.onRemoveItem(currentItem);
                 }
             }
         });
@@ -94,7 +93,7 @@ public class CartAdapter extends RecyclerView.Adapter<CartAdapter.ViewHolder> {
                 CartItem currentItem = cartItems.get(adapterPosition);
                 currentItem.setQuantity(currentItem.getQuantity() + 1);
                 notifyItemChanged(adapterPosition);
-                listener.onChanged();
+                listener.onQuantityChanged(currentItem, currentItem.getQuantity() + 1);
             }
         });
     }

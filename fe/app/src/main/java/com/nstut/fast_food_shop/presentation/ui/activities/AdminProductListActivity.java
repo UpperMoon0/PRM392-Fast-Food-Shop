@@ -12,10 +12,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.nstut.fast_food_shop.R;
-import com.nstut.fast_food_shop.data.local.db.AppDatabase;
-import com.nstut.fast_food_shop.data.models.ProductRoom;
-import com.nstut.fast_food_shop.data.models.ProductWithCategories;
-import com.nstut.fast_food_shop.data.models.User;
+import com.nstut.fast_food_shop.model.Product;
 import com.nstut.fast_food_shop.presentation.ui.adapters.ProductAdapter;
 
 import java.util.ArrayList;
@@ -26,9 +23,8 @@ import java.util.concurrent.Executors;
 public class AdminProductListActivity extends BaseActivity implements ProductAdapter.OnAdminProductClickListener {
     RecyclerView recyclerView;
     ProductAdapter adapter;
-    List<ProductWithCategories> products;
+    List<Product> products;
     private ExecutorService executorService;
-    private AppDatabase appDatabase;
 
     @Override
     protected void onResume() {
@@ -39,11 +35,9 @@ public class AdminProductListActivity extends BaseActivity implements ProductAda
     }
 
     private void loadData() {
-        appDatabase.productDao().getProductsWithCategories().observe(this, newProducts -> {
-            products.clear();
-            products.addAll(newProducts);
-            adapter.notifyDataSetChanged();
-        });
+        // TODO: Call ProductRepository to get all products
+        products.clear();
+        adapter.notifyDataSetChanged();
     }
 
     @Override
@@ -52,7 +46,6 @@ public class AdminProductListActivity extends BaseActivity implements ProductAda
         setContentView(R.layout.activity_admin_product_list);
 
         executorService = Executors.newSingleThreadExecutor();
-        appDatabase = AppDatabase.getInstance(this);
 
         EdgeToEdge.enable(this);
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(android.R.id.content), (v, insets) -> {
@@ -81,17 +74,15 @@ public class AdminProductListActivity extends BaseActivity implements ProductAda
     }
 
     @Override
-    public void onEditClick(ProductRoom product) {
+    public void onEditClick(Product product) {
         Intent intent = new Intent(this, AddEditProductActivity.class);
         intent.putExtra("product_id", product.getId());
         startActivity(intent);
     }
 
     @Override
-    public void onDeleteClick(ProductRoom product) {
-        executorService.execute(() -> {
-            appDatabase.productDao().delete(product);
-            loadData();
-        });
+    public void onDeleteClick(Product product) {
+        // TODO: Call ProductRepository to delete the product
+        loadData();
     }
 }

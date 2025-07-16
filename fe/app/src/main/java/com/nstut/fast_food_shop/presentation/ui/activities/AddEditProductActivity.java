@@ -12,11 +12,8 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import com.bumptech.glide.Glide;
 import com.nstut.fast_food_shop.R;
-import com.nstut.fast_food_shop.data.local.dao.ProductDao;
-import com.nstut.fast_food_shop.data.local.db.AppDatabase;
 import com.nstut.fast_food_shop.data.models.Category;
-import com.nstut.fast_food_shop.data.models.ProductRoom;
-import com.nstut.fast_food_shop.data.models.ProductWithCategories;
+import com.nstut.fast_food_shop.model.Product;
 import com.nstut.fast_food_shop.presentation.ui.adapters.CategorySelectionAdapter;
 import com.nstut.fast_food_shop.presentation.utils.CloudinaryManager;
 import com.nstut.fast_food_shop.presentation.utils.FileUtil;
@@ -33,9 +30,8 @@ public class AddEditProductActivity extends BaseActivity {
     private ImageView imageView;
     private Button btnChooseImage, btnSave;
     private Uri selectedImageUri;
-    private ProductDao productDao;
     private String productId;
-    private ProductWithCategories currentProduct;
+    private Product currentProduct;
     private String uploadedImageUrl = "";
     private List<Category> categoryList;
     private CategorySelectionAdapter categoryAdapter;
@@ -58,7 +54,7 @@ public class AddEditProductActivity extends BaseActivity {
         btnChooseImage = findViewById(R.id.btnChooseImage);
         btnSave = findViewById(R.id.btnSave);
 
-        productDao = AppDatabase.getInstance(this).productDao();
+        // TODO: Get product repository instance
         productId = getIntent().getStringExtra("product_id");
         isEditMode = productId != null;
 
@@ -87,31 +83,11 @@ public class AddEditProductActivity extends BaseActivity {
     }
 
     private void loadCategories() {
-        AppDatabase.getInstance(this).categoryDao().getAllCategories().observe(this, categories -> {
-            categoryList = categories;
-            categoryAdapter.setCategories(categoryList);
-            if (isEditMode) {
-                loadProductDetails();
-            }
-        });
+        // TODO: Load categories from repository
     }
 
     private void loadProductDetails() {
-        productDao.getProductWithCategories(Integer.parseInt(productId)).observe(this, product -> {
-            currentProduct = product;
-            if (currentProduct != null) {
-                edtName.setText(currentProduct.product.getName());
-                edtDesc.setText(currentProduct.product.getDescription());
-                edtPrice.setText(String.valueOf(currentProduct.product.getPrice()));
-                if (currentProduct.product.getImageUrl() != null && !currentProduct.product.getImageUrl().isEmpty()) {
-                    Glide.with(this).load(currentProduct.product.getImageUrl()).into(imageView);
-                }
-                List<Integer> selectedIds = currentProduct.categories.stream()
-                        .map(Category::getId)
-                        .collect(Collectors.toList());
-                categoryAdapter.setSelectedCategoryIds(selectedIds);
-            }
-        });
+        // TODO: Load product details from repository
     }
 
     private void saveProduct() {
@@ -136,7 +112,7 @@ public class AddEditProductActivity extends BaseActivity {
             }
         } else {
             if (isEditMode) {
-                updateProduct(name, description, price, currentProduct.product.getImageUrl());
+                updateProduct(name, description, price, currentProduct.getImageUrl());
             } else {
                 createProduct(name, description, price, "");
             }
@@ -144,47 +120,11 @@ public class AddEditProductActivity extends BaseActivity {
     }
 
     private void createProduct(String name, String description, double price, String imageUrl) {
-        Executors.newSingleThreadExecutor().execute(() -> {
-            ProductRoom product = new ProductRoom();
-            product.setName(name);
-            product.setDescription(description);
-            product.setPrice(price);
-            product.setAvailable(true);
-            String now = java.time.LocalDateTime.now().toString();
-            product.setCreatedAt(now);
-            product.setUpdatedAt(now);
-            product.setImageUrl(imageUrl);
-
-            List<Integer> selectedCategoryIds = categoryAdapter.getSelectedCategoryIds();
-            productDao.insertProductWithCategories(product, selectedCategoryIds);
-
-            runOnUiThread(() -> {
-                Toast.makeText(this, "Product Saved", Toast.LENGTH_SHORT).show();
-                finish();
-            });
-        });
+        // TODO: Create product using repository
     }
 
     private void updateProduct(String name, String description, double price, String imageUrl) {
-        Executors.newSingleThreadExecutor().execute(() -> {
-            currentProduct.product.setName(name);
-            currentProduct.product.setDescription(description);
-            currentProduct.product.setPrice(price);
-            if (imageUrl != null) {
-                currentProduct.product.setImageUrl(imageUrl);
-            }
-            String now = java.time.LocalDateTime.now().toString();
-            currentProduct.product.setUpdatedAt(now);
-
-            List<Integer> selectedCategoryIds = categoryAdapter.getSelectedCategoryIds();
-            productDao.updateProductWithCategories(currentProduct.product, selectedCategoryIds);
-
-            runOnUiThread(() -> {
-                Toast.makeText(this, "Product updated", Toast.LENGTH_SHORT).show();
-                setResult(Activity.RESULT_OK);
-                finish();
-            });
-        });
+        // TODO: Update product using repository
     }
 
     private void openImagePicker() {

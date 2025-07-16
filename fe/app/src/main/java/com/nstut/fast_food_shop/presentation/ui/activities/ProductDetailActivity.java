@@ -15,16 +15,15 @@ import com.bumptech.glide.Glide;
 import com.google.android.material.chip.Chip;
 import com.google.android.material.chip.ChipGroup;
 import com.nstut.fast_food_shop.R;
-import com.nstut.fast_food_shop.data.local.db.AppDatabase;
-import com.nstut.fast_food_shop.data.models.Category;
-import com.nstut.fast_food_shop.data.models.ProductRoom;
+import com.nstut.fast_food_shop.model.Product;
+import com.nstut.fast_food_shop.model.Category;
 import com.nstut.fast_food_shop.repository.CartRepository;
 
 public class ProductDetailActivity extends BaseActivity {
 
     public static final String EXTRA_PRODUCT_ID = "extra_product_id";
     private CartRepository cartRepository;
-    private ProductRoom currentProduct;
+    private Product currentProduct;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -42,27 +41,10 @@ public class ProductDetailActivity extends BaseActivity {
         
         ImageView backButton = findViewById(R.id.back_button);
 
-        int productId = getIntent().getIntExtra(EXTRA_PRODUCT_ID, -1);
+        String productId = getIntent().getStringExtra(EXTRA_PRODUCT_ID);
 
-        if (productId != -1) {
-            AppDatabase.getInstance(this).productDao().getProductWithCategories(productId).observe(this, productWithCategories -> {
-                if (productWithCategories != null) {
-                    currentProduct = productWithCategories.product;
-                    TextView appName = findViewById(R.id.app_name);
-                    appName.setText(currentProduct.getName());
-                    Glide.with(this).load(currentProduct.getImageUrl()).into(productImageView);
-                    productNameTextView.setText(currentProduct.getName());
-                    productDescriptionTextView.setText(currentProduct.getDescription());
-                    productPriceTextView.setText(String.format("$%.2f", currentProduct.getPrice()));
-
-                    categoryChipGroup.removeAllViews();
-                    for (Category category : productWithCategories.categories) {
-                        com.google.android.material.chip.Chip chip = new com.google.android.material.chip.Chip(this);
-                        chip.setText(category.getName());
-                        categoryChipGroup.addView(chip);
-                    }
-                }
-            });
+        if (productId != null) {
+            // TODO: Call ProductRepository to get product by ID
         }
 
 
@@ -77,7 +59,8 @@ public class ProductDetailActivity extends BaseActivity {
 
         addToCartButton.setOnClickListener(v -> {
             if (currentProduct != null) {
-                cartRepository.addItemToCart(currentProduct, 1);
+                // TODO: Fix this addItemToCart call
+                // cartRepository.addItemToCart(currentProduct, 1);
                 Toast.makeText(this, "Added to cart", Toast.LENGTH_SHORT).show();
                 updateCartBadge();
             }

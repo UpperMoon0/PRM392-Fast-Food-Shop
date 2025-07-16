@@ -14,9 +14,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.nstut.fast_food_shop.R;
-import com.nstut.fast_food_shop.data.local.db.AppDatabase;
-import com.nstut.fast_food_shop.data.models.ProductRoom;
-import com.nstut.fast_food_shop.data.models.ProductWithCategories;
+import com.nstut.fast_food_shop.model.Product;
 import com.nstut.fast_food_shop.presentation.ui.adapters.ProductAdapter;
 
 import java.util.ArrayList;
@@ -27,32 +25,25 @@ import java.util.concurrent.Executors;
 public class CategoryProductListActivity extends BaseActivity implements ProductAdapter.OnProductClickListener {
     RecyclerView recyclerView;
     ProductAdapter adapter;
-    List<ProductWithCategories> products;
-    private List<ProductWithCategories> filteredProducts;
+    List<Product> products;
+    private List<Product> filteredProducts;
     private ExecutorService executorService;
-    private AppDatabase appDatabase;
     private ImageView backButton;
     private SearchView searchView;
 
     private void loadData() {
-        int categoryId = getIntent().getIntExtra("category_id", -1);
-        if (categoryId != -1) {
-            appDatabase.productDao().getProductsWithCategoriesByCategoryId(categoryId).observe(this, newProducts -> {
-                products.clear();
-                products.addAll(newProducts);
-                filterProducts("");
-            });
+        String categoryId = getIntent().getStringExtra("category_id");
+        if (categoryId != null) {
+            // TODO: Call ProductRepository to get products by category
         } else {
             loadAllAvailableProducts();
         }
     }
 
     private void loadAllAvailableProducts() {
-        appDatabase.productDao().getAvailableProductsWithCategories().observe(this, newProducts -> {
-            products.clear();
-            products.addAll(newProducts);
-            filterProducts("");
-        });
+        // TODO: Call ProductRepository to get all available products
+        products.clear();
+        filterProducts("");
     }
 
     private void filterProducts(String query) {
@@ -60,9 +51,9 @@ public class CategoryProductListActivity extends BaseActivity implements Product
         if (query.isEmpty()) {
             filteredProducts.addAll(products);
         } else {
-            for (ProductWithCategories productWithCategories : products) {
-                if (productWithCategories.product.getName().toLowerCase().contains(query.toLowerCase())) {
-                    filteredProducts.add(productWithCategories);
+            for (Product product : products) {
+                if (product.getName().toLowerCase().contains(query.toLowerCase())) {
+                    filteredProducts.add(product);
                 }
             }
         }
@@ -75,7 +66,6 @@ public class CategoryProductListActivity extends BaseActivity implements Product
         setContentView(R.layout.activity_category_product_list);
 
         executorService = Executors.newSingleThreadExecutor();
-        appDatabase = AppDatabase.getInstance(this);
 
         EdgeToEdge.enable(this);
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(android.R.id.content), (v, insets) -> {
@@ -118,7 +108,7 @@ public class CategoryProductListActivity extends BaseActivity implements Product
     }
 
     @Override
-    public void onProductClick(ProductRoom product) {
+    public void onProductClick(Product product) {
         Intent intent = new Intent(this, ProductDetailActivity.class);
         intent.putExtra(ProductDetailActivity.EXTRA_PRODUCT_ID, product.getId());
         startActivity(intent);

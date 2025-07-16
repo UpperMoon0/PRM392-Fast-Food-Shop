@@ -36,15 +36,20 @@ public class BaseActivity extends AppCompatActivity {
     }
 
     public User getCurrentUser() {
-        SharedPreferences sharedPreferences = getSharedPreferences("user_prefs", MODE_PRIVATE);
-        String userJson = sharedPreferences.getString("user", null);
-        Log.d(TAG, "getCurrentUser: userJson from SharedPreferences: " + userJson);
-        if (userJson != null) {
-            User user = new Gson().fromJson(userJson, User.class);
-            Log.d(TAG, "getCurrentUser: User object created from JSON. Role: " + (user != null ? user.getRole() : "null user object"));
+        SharedPreferences sharedPreferences = getSharedPreferences("login_prefs", MODE_PRIVATE);
+        String userId = sharedPreferences.getString("user_id", null);
+        String userName = sharedPreferences.getString("user_name", null);
+        String userEmail = sharedPreferences.getString("user_email", null);
+        String userRole = sharedPreferences.getString("user_role", null);
+
+        if (userId != null) {
+            User user = new User();
+            user.setId(userId);
+            user.setName(userName);
+            user.setEmail(userEmail);
+            user.setRole(userRole);
             return user;
         }
-        Log.d(TAG, "getCurrentUser: userJson is null, returning null.");
         return null;
     }
 
@@ -74,9 +79,9 @@ public class BaseActivity extends AppCompatActivity {
             }
         }
 
-        SharedPreferences sharedPreferences = getSharedPreferences("user_prefs", MODE_PRIVATE);
-        boolean isLoggedIn = sharedPreferences.getBoolean("is_logged_in", false);
-        String role = sharedPreferences.getString("role", "user");
+        SharedPreferences sharedPreferences = getSharedPreferences("login_prefs", MODE_PRIVATE);
+        boolean isLoggedIn = sharedPreferences.getString("user_id", null) != null;
+        String role = sharedPreferences.getString("user_role", "user");
         Log.d(TAG, "--- setupHeader in " + this.getClass().getSimpleName() + " ---");
         Log.d(TAG, "isLoggedIn from SharedPreferences: " + isLoggedIn);
         Log.d(TAG, "Role from SharedPreferences: " + role);
@@ -106,9 +111,9 @@ public class BaseActivity extends AppCompatActivity {
         } else {
             appName.setOnClickListener(v -> {
                 Intent intent;
-                SharedPreferences currentPrefs = getSharedPreferences("user_prefs", MODE_PRIVATE);
-                boolean currentIsLoggedIn = currentPrefs.getBoolean("is_logged_in", false);
-                String currentRole = currentPrefs.getString("role", "user");
+                SharedPreferences currentPrefs = getSharedPreferences("login_prefs", MODE_PRIVATE);
+                boolean currentIsLoggedIn = currentPrefs.getString("user_id", null) != null;
+                String currentRole = currentPrefs.getString("user_role", "user");
                 Log.d(TAG, "App name clicked. Role: " + currentRole);
                 if (currentIsLoggedIn && "admin".equalsIgnoreCase(currentRole)) {
                     intent = new Intent(this, FinanceActivity.class);
@@ -196,7 +201,7 @@ public class BaseActivity extends AppCompatActivity {
 
     private void logout() {
         FirebaseAuth.getInstance().signOut();
-        SharedPreferences sharedPreferences = getSharedPreferences("user_prefs", MODE_PRIVATE);
+        SharedPreferences sharedPreferences = getSharedPreferences("login_prefs", MODE_PRIVATE);
         SharedPreferences.Editor editor = sharedPreferences.edit();
         editor.clear();
         editor.apply();

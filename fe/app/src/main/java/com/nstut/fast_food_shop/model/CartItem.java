@@ -2,25 +2,23 @@ package com.nstut.fast_food_shop.model;
 
 import android.os.Parcel;
 import android.os.Parcelable;
-import com.nstut.fast_food_shop.data.models.ProductRoom;
-
 public class CartItem implements Parcelable {
-    private ProductRoom product;
+    private Product product;
     private int quantity;
 
     public CartItem() {
     }
 
-    public CartItem(ProductRoom product, int quantity) {
+    public CartItem(Product product, int quantity) {
         this.product = product;
         this.quantity = quantity;
     }
 
-    public ProductRoom getProduct() {
+    public Product getProduct() {
         return product;
     }
 
-    public void setProduct(ProductRoom product) {
+    public void setProduct(Product product) {
         this.product = product;
     }
 
@@ -33,7 +31,7 @@ public class CartItem implements Parcelable {
     }
 
     protected CartItem(Parcel in) {
-        product = in.readParcelable(ProductRoom.class.getClassLoader());
+        product = in.readParcelable(Product.class.getClassLoader());
         quantity = in.readInt();
     }
 

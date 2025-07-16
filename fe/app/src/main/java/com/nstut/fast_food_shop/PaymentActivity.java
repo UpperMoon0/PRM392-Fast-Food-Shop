@@ -17,14 +17,12 @@ import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
 import com.google.gson.Gson;
 import com.nstut.fast_food_shop.adapter.CartAdapter;
-import com.nstut.fast_food_shop.data.local.db.AppDatabase;
-import com.nstut.fast_food_shop.data.models.User;
 import com.nstut.fast_food_shop.databinding.ActivityPaymentBinding;
 import com.nstut.fast_food_shop.model.CartItem;
 import com.nstut.fast_food_shop.model.Order;
 import com.nstut.fast_food_shop.presentation.ui.activities.BaseActivity;
 import com.nstut.fast_food_shop.presentation.ui.activities.HomeActivity;
-import com.nstut.fast_food_shop.repository.CartRepository;
+import com.nstut.fast_food_shop.repository.OrderRepository;
 import com.nstut.fast_food_shop.util.Utils;
 
 import org.json.JSONException;
@@ -36,8 +34,8 @@ public class PaymentActivity extends BaseActivity {
 
     private ActivityPaymentBinding binding;
     private List<CartItem> cartItems;
-    private AppDatabase db;
     private ActivityResultLauncher<Intent> stripeLauncher;
+    private OrderRepository orderRepository;
 
 
     private double finalTotal = 0;
@@ -48,8 +46,7 @@ public class PaymentActivity extends BaseActivity {
         binding = ActivityPaymentBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
         setupHeader(true);
-
-        db = AppDatabase.getInstance(this);
+        orderRepository = new OrderRepository();
 
         stripeLauncher = registerForActivityResult(
                 new ActivityResultContracts.StartActivityForResult(),
@@ -131,28 +128,39 @@ public class PaymentActivity extends BaseActivity {
     }
 
     private void createOrder(String status) {
-        SharedPreferences sharedPreferences = getSharedPreferences("user_prefs", MODE_PRIVATE);
-        String userJson = sharedPreferences.getString("user", null);
-        if (userJson == null) {
+        com.nstut.fast_food_shop.model.User user = getCurrentUser();
+        if (user == null) {
             Toast.makeText(this, "User not logged in.", Toast.LENGTH_SHORT).show();
             return;
         }
-        User user = new Gson().fromJson(userJson, User.class);
-        String userId = String.valueOf(user.userId);
+        String userId = user.getId();
 
-        String orderId = "ORDER_" + System.currentTimeMillis();
-        Order order = new Order(orderId, userId, cartItems, finalTotal, new Date(), status);
+        Order order = new Order();
+        order.setUserId(userId);
+        order.setItems(cartItems);
+        order.setTotalAmount(finalTotal);
+        order.setOrderDate(new Date());
+        order.setStatus(status);
 
-        AppDatabase.databaseWriteExecutor.execute(() -> {
-            db.orderDao().insertOrder(order);
-            runOnUiThread(() -> {
-                Toast.makeText(PaymentActivity.this, "Order placed successfully!", Toast.LENGTH_SHORT).show();
-                new CartRepository(this).clearCart();
-                Intent intent = new Intent(PaymentActivity.this, HomeActivity.class);
-                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
-                startActivity(intent);
-                finish();
-            });
+        orderRepository.createOrder(order).enqueue(new retrofit2.Callback<Order>() {
+            @Override
+            public void onResponse(retrofit2.Call<Order> call, retrofit2.Response<Order> response) {
+                if (response.isSuccessful()) {
+                    Toast.makeText(PaymentActivity.this, "Order placed successfully!", Toast.LENGTH_SHORT).show();
+                    // You might want to clear the cart here
+                    Intent intent = new Intent(PaymentActivity.this, HomeActivity.class);
+                    intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
+                    startActivity(intent);
+                    finish();
+                } else {
+                    Toast.makeText(PaymentActivity.this, "Failed to place order.", Toast.LENGTH_SHORT).show();
+                }
+            }
+
+            @Override
+            public void onFailure(retrofit2.Call<Order> call, Throwable t) {
+                Toast.makeText(PaymentActivity.this, "Failed to place order.", Toast.LENGTH_SHORT).show();
+            }
         });
     }
 }

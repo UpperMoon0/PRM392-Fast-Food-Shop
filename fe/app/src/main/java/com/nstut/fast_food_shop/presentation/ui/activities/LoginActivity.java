@@ -14,20 +14,19 @@ import android.util.Log;
 
 import com.google.gson.Gson;
 import com.nstut.fast_food_shop.R;
-import com.nstut.fast_food_shop.data.local.db.AppDatabase;
-import com.nstut.fast_food_shop.data.models.User;
-import com.nstut.fast_food_shop.presentation.utils.HashUtils;
+import com.nstut.fast_food_shop.data.remote.response.UserResponse;
+import com.nstut.fast_food_shop.repository.UserRepository;
 
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class LoginActivity extends BaseActivity {
 
     private EditText etEmail, etPassword;
     private CheckBox cbRememberMe;
-    private AppDatabase appDatabase;
-    private ExecutorService executorService;
     private SharedPreferences sharedPreferences;
+    private UserRepository userRepository;
     private Button loginLogoutButton;
 
     @Override
@@ -43,8 +42,7 @@ public class LoginActivity extends BaseActivity {
         Button btnLogin = findViewById(R.id.btn_login);
         TextView tvRegister = findViewById(R.id.tv_register);
 
-        appDatabase = AppDatabase.getInstance(this);
-        executorService = Executors.newSingleThreadExecutor();
+        userRepository = new UserRepository();
         sharedPreferences = getSharedPreferences("login_prefs", MODE_PRIVATE);
 
         boolean isRemembered = sharedPreferences.getBoolean("remember_me", false);
@@ -71,39 +69,39 @@ public class LoginActivity extends BaseActivity {
             return;
         }
 
-        executorService.execute(() -> {
-            User user = appDatabase.userDao().findByEmail(email);
+        userRepository.login(email, password).enqueue(new Callback<UserResponse>() {
+            @Override
+            public void onResponse(Call<UserResponse> call, Response<UserResponse> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    UserResponse userResponse = response.body();
+                    SharedPreferences.Editor editor = sharedPreferences.edit();
+                    editor.putString("user_id", userResponse.getUser().getId());
+                    editor.putString("user_name", userResponse.getUser().getName());
+                    editor.putString("user_email", userResponse.getUser().getEmail());
+                    editor.putString("user_role", userResponse.getUser().getRole());
+                    editor.apply();
 
-            runOnUiThread(() -> {
-                if (user != null && HashUtils.verifyPassword(password, user.passwordHash)) {
                     if (cbRememberMe.isChecked()) {
-                        sharedPreferences.edit()
-                                .putBoolean("remember_me", true)
-                                .putString("email", email)
-                                .putString("password", password)
-                                .apply();
+                        editor.putBoolean("remember_me", true);
+                        editor.putString("email", email);
+                        editor.putString("password", password);
+                        editor.apply();
                     } else {
                         sharedPreferences.edit().clear().apply();
                     }
-                    SharedPreferences userPrefs = getSharedPreferences("user_prefs", MODE_PRIVATE);
-                    SharedPreferences.Editor editor = userPrefs.edit();
-                    Log.d("LoginActivity", "Saving user data. Role: " + user.role);
-                    editor.putString("user", new Gson().toJson(user));
-                    editor.putString("role", user.role);
-                    editor.putBoolean("is_logged_in", true);
-                    editor.apply();
 
-                    Toast.makeText(this, "Login successful", Toast.LENGTH_SHORT).show();
-                    if (User.ROLE_ADMIN.equals(user.role)) {
-                        startActivity(new Intent(LoginActivity.this, FinanceActivity.class));
-                    } else {
-                        startActivity(new Intent(LoginActivity.this, HomeActivity.class));
-                    }
+                    Toast.makeText(LoginActivity.this, "Login successful", Toast.LENGTH_SHORT).show();
+                    startActivity(new Intent(LoginActivity.this, HomeActivity.class));
                     finish();
                 } else {
-                    Toast.makeText(this, "Invalid credentials", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(LoginActivity.this, "Invalid credentials", Toast.LENGTH_SHORT).show();
                 }
-            });
+            }
+
+            @Override
+            public void onFailure(Call<UserResponse> call, Throwable t) {
+                Toast.makeText(LoginActivity.this, "Login failed", Toast.LENGTH_SHORT).show();
+            }
         });
     }
 

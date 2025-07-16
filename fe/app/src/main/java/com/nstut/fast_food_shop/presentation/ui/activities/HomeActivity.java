@@ -16,15 +16,12 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.nstut.fast_food_shop.R;
-import com.nstut.fast_food_shop.data.local.db.AppDatabase;
-import com.nstut.fast_food_shop.data.models.Category;
-import com.nstut.fast_food_shop.data.models.ProductRoom;
-import com.nstut.fast_food_shop.data.models.User;
 import com.google.android.material.chip.Chip;
 import com.google.android.material.chip.ChipGroup;
 import com.nstut.fast_food_shop.presentation.ui.adapters.CategoryAdapter;
+import com.nstut.fast_food_shop.model.Category;
+import com.nstut.fast_food_shop.model.Product;
 import com.nstut.fast_food_shop.presentation.ui.adapters.ProductAdapter;
-import com.nstut.fast_food_shop.data.models.ProductWithCategories;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -38,9 +35,8 @@ public class HomeActivity extends BaseActivity implements CategoryAdapter.OnCate
     private CategoryAdapter categoryAdapter;
     private ProductAdapter productAdapter;
     private List<Category> categoryList;
-    private List<ProductWithCategories> productList;
-    private List<ProductWithCategories> filteredProductList;
-    private AppDatabase appDatabase;
+    private List<Product> productList;
+    private List<Product> filteredProductList;
     private ExecutorService executorService = Executors.newSingleThreadExecutor();
     private ImageView bannerImage;
     private SearchView searchView;
@@ -53,15 +49,14 @@ public class HomeActivity extends BaseActivity implements CategoryAdapter.OnCate
 
         SharedPreferences sharedPreferences = getSharedPreferences("user_prefs", MODE_PRIVATE);
         boolean isLoggedIn = sharedPreferences.getBoolean("is_logged_in", false);
-        String role = sharedPreferences.getString("role", User.ROLE_USER);
+        String role = sharedPreferences.getString("role", "USER");
 
-        if (isLoggedIn && User.ROLE_ADMIN.equals(role)) {
+        if (isLoggedIn && "ADMIN".equals(role)) {
             startActivity(new Intent(this, AdminProductListActivity.class));
             finish();
             return;
         }
 
-        appDatabase = AppDatabase.getInstance(this);
 
         bannerImage = findViewById(R.id.banner_image);
         productsRecyclerView = findViewById(R.id.products_recycler_view);
@@ -77,7 +72,7 @@ public class HomeActivity extends BaseActivity implements CategoryAdapter.OnCate
         categoryRecyclerView.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));
         categoryRecyclerView.setAdapter(categoryAdapter);
 
-        productAdapter = new ProductAdapter(new ArrayList<ProductWithCategories>(), this);
+        productAdapter = new ProductAdapter(new ArrayList<Product>(), this);
         productsRecyclerView.setLayoutManager(new LinearLayoutManager(this));
         productsRecyclerView.setAdapter(productAdapter);
 
@@ -87,29 +82,22 @@ public class HomeActivity extends BaseActivity implements CategoryAdapter.OnCate
     }
 
     private void loadData() {
-        appDatabase.categoryDao().getAllCategories().observe(this, categories -> {
-            categoryList.clear();
-            categoryList.addAll(categories);
-            categoryAdapter.notifyDataSetChanged();
-            updateCategoryChips(categories);
-        });
+        // TODO: Call CategoryRepository and ProductRepository to load data from the backend
+        categoryList.clear();
+        categoryAdapter.notifyDataSetChanged();
+        updateCategoryChips(new ArrayList<>());
 
-        appDatabase.productDao().getProductsWithCategories().observe(this, productsWithCategories -> {
-            productList.clear();
-            productList.addAll(productsWithCategories);
-            filterProducts();
-        });
+        productList.clear();
+        filterProducts();
     }
 
     @Override
     public void onCategoryClick(Category category) {
-        Intent intent = new Intent(this, CategoryProductListActivity.class);
-        intent.putExtra("category_id", category.getId());
-        startActivity(intent);
+        // TODO: Implement what happens when a category is clicked
     }
 
     @Override
-    public void onProductClick(ProductRoom product) {
+    public void onProductClick(Product product) {
         Intent intent = new Intent(this, ProductDetailActivity.class);
         intent.putExtra(ProductDetailActivity.EXTRA_PRODUCT_ID, product.getId());
         startActivity(intent);
@@ -137,7 +125,7 @@ public class HomeActivity extends BaseActivity implements CategoryAdapter.OnCate
         });
     }
 
-    private void updateCategoryChips(List<Category> categories) {
+    private void updateCategoryChips(List<com.nstut.fast_food_shop.model.Category> categories) {
         categoryChipGroup.removeAllViews();
 
         Chip allChip = new Chip(this);
@@ -147,7 +135,7 @@ public class HomeActivity extends BaseActivity implements CategoryAdapter.OnCate
         allChip.setChecked(true);
         categoryChipGroup.addView(allChip);
 
-        for (Category category : categories) {
+        for (com.nstut.fast_food_shop.model.Category category : categories) {
             Chip chip = new Chip(this);
             chip.setText(category.getName());
             chip.setTag(category.getId());
@@ -172,14 +160,13 @@ public class HomeActivity extends BaseActivity implements CategoryAdapter.OnCate
         final int finalSelectedCategoryId = selectedCategoryId;
 
         filteredProductList.clear();
-        for (ProductWithCategories productWithCategories : productList) {
-            ProductRoom product = productWithCategories.product;
+        for (Product product : productList) {
             boolean matchesCategory = finalSelectedCategoryId == -1 ||
-                    productWithCategories.categories.stream().anyMatch(c -> c.getId() == finalSelectedCategoryId);
+                    product.getCategoryIds().contains(String.valueOf(finalSelectedCategoryId));
             boolean matchesSearch = query.isEmpty() || product.getName().toLowerCase().contains(query);
 
             if (matchesCategory && matchesSearch) {
-                filteredProductList.add(productWithCategories);
+                filteredProductList.add(product);
             }
         }
         productAdapter.updateProducts(filteredProductList);

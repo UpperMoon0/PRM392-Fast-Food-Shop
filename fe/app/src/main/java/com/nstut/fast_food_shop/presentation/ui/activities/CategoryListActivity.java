@@ -11,9 +11,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.nstut.fast_food_shop.R;
-import com.nstut.fast_food_shop.data.local.db.AppDatabase;
-import com.nstut.fast_food_shop.data.models.Category;
-import com.nstut.fast_food_shop.data.models.User;
+import com.nstut.fast_food_shop.model.Category;
 import com.nstut.fast_food_shop.presentation.ui.adapters.CategoryAdapter;
 
 import java.util.ArrayList;
@@ -24,7 +22,6 @@ public class CategoryListActivity extends BaseActivity {
     private RecyclerView recyclerView;
     private CategoryAdapter categoryAdapter;
     private List<Category> categoryList = new ArrayList<>();
-    private AppDatabase appDatabase;
     private static final String TAG = "CategoryListActivity";
 
     @Override
@@ -32,7 +29,6 @@ public class CategoryListActivity extends BaseActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_category_list);
 
-        appDatabase = AppDatabase.getInstance(this);
 
         recyclerView = findViewById(R.id.category_recycler_view);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
@@ -51,10 +47,8 @@ public class CategoryListActivity extends BaseActivity {
 
             @Override
             public void onDeleteClick(Category category) {
-                new Thread(() -> {
-                    appDatabase.categoryDao().delete(category);
-                    loadCategories();
-                }).start();
+                // TODO: Call CategoryRepository to delete the category
+                loadCategories();
             }
         });
 
@@ -80,10 +74,8 @@ public class CategoryListActivity extends BaseActivity {
     }
 
     private void loadCategories() {
-        appDatabase.categoryDao().getAllCategories().observe(this, categories -> {
-            categoryList.clear();
-            categoryList.addAll(categories);
-            categoryAdapter.notifyDataSetChanged();
-        });
+        // TODO: Call CategoryRepository to get all categories
+        categoryList.clear();
+        categoryAdapter.notifyDataSetChanged();
     }
 }

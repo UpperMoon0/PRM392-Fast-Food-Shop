@@ -7,7 +7,7 @@ import android.view.ViewGroup;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 import com.nstut.fast_food_shop.databinding.ItemFoodBinding;
-import com.nstut.fast_food_shop.model.FoodItem;
+import com.nstut.fast_food_shop.model.Product;
 import com.nstut.fast_food_shop.util.Utils;
 
 import java.util.List;
@@ -15,13 +15,13 @@ import java.util.List;
 public class OrderAdapter extends RecyclerView.Adapter<OrderAdapter.ViewHolder> {
 
     public interface OnCartChangeListener {
-        void onAdd(FoodItem item);
+        void onAdd(Product item);
     }
 
-    private final List<FoodItem> data;
+    private final List<Product> data;
     private final OnCartChangeListener listener;
 
-    public OrderAdapter(List<FoodItem> data, OnCartChangeListener listener) {
+    public OrderAdapter(List<Product> data, OnCartChangeListener listener) {
         this.data = data;
         this.listener = listener;
     }
@@ -35,11 +35,13 @@ public class OrderAdapter extends RecyclerView.Adapter<OrderAdapter.ViewHolder> 
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder h, int pos) {
-        FoodItem item = data.get(pos);
+        Product item = data.get(pos);
 
         h.binding.tvFoodName.setText(item.getName());
-        h.binding.tvFoodPrice.setText(Utils.formatCurrency(item.getPrice()));
-        h.binding.imgFood.setImageResource(item.getImageResId());
+        h.binding.tvFoodPrice.setText(Utils.formatCurrency(item.getPrice().doubleValue()));
+        // You might need to use a library like Glide or Picasso to load images from URLs
+        // For now, we'll just set a placeholder
+        h.binding.imgFood.setImageResource(R.drawable.ic_food);
 
         if (h.currentWatcher != null) {
             h.binding.tvQuantity.removeTextChangedListener(h.currentWatcher);

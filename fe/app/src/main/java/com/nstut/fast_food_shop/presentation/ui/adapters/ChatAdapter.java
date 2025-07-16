@@ -13,7 +13,7 @@ import com.bumptech.glide.Glide;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import com.nstut.fast_food_shop.R;
 import com.nstut.fast_food_shop.data.models.ChatMessage;
-import com.nstut.fast_food_shop.data.models.ProductRoom;
+import com.nstut.fast_food_shop.model.Product;
 
 import java.util.List;
 
@@ -28,11 +28,11 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     private OnAddToCartClickListener onAddToCartClickListener;
 
     public interface OnProductClickListener {
-        void onProductClick(ProductRoom product);
+        void onProductClick(Product product);
     }
 
     public interface OnAddToCartClickListener {
-        void onAddToCartClick(ProductRoom product);
+        void onAddToCartClick(Product product);
     }
 
     public ChatAdapter(List<ChatMessage> messages, OnProductClickListener onProductClickListener, OnAddToCartClickListener onAddToCartClickListener) {

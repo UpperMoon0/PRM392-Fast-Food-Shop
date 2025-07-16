@@ -10,7 +10,12 @@
     import androidx.recyclerview.widget.LinearLayoutManager;
     import com.nstut.fast_food_shop.adapter.OrderAdapter;
     import com.nstut.fast_food_shop.databinding.ActivityOrderBinding;
-    import com.nstut.fast_food_shop.model.FoodItem;
+    import com.nstut.fast_food_shop.model.Product;
+    import com.nstut.fast_food_shop.repository.ProductRepository;
+    
+    import retrofit2.Call;
+    import retrofit2.Callback;
+    import retrofit2.Response;
     import com.nstut.fast_food_shop.util.Utils;
 
     import java.util.ArrayList;
@@ -19,7 +24,8 @@
     public class OrderActivity extends AppCompatActivity {
 
         private ActivityOrderBinding binding;
-        private final List<FoodItem> cart = new ArrayList<>();
+        private final List<Product> cart = new ArrayList<>();
+        private ProductRepository productRepository;
 
         private TextView badge;
 
@@ -30,31 +36,10 @@
             setContentView(binding.getRoot());
 
             badge = findViewById(R.id.cartBadge);
-
-            List<FoodItem> menu = List.of(
-                    new FoodItem("Burger", 45000, R.drawable.ic_food),
-                    new FoodItem("Fries", 32000, R.drawable.ic_food),
-                    new FoodItem("Coke", 15000, R.drawable.ic_food)
-            );
-
-            OrderAdapter adapter = new OrderAdapter(menu, item -> {
-                boolean found = false;
-                for (FoodItem f : cart) {
-                    if (f.getName().equals(item.getName())) {
-                        f.setQuantity(item.getQuantity());
-                        found = true;
-                        break;
-                    }
-                }
-                if (!found) {
-                    cart.add(new FoodItem(item.getName(), item.getPrice(), item.getImageResId(), item.getQuantity()));
-                }
-                updateCartBadge();
-                updateTotal();
-            });
+            productRepository = new ProductRepository();
 
             binding.rvMenu.setLayoutManager(new LinearLayoutManager(this));
-            binding.rvMenu.setAdapter(adapter);
+            fetchProducts();
 
             binding.btnViewCart.setOnClickListener(v -> {
                 Intent i = new Intent(this, CartActivity.class);
@@ -73,7 +58,7 @@
 
         private void updateCartBadge() {
             int totalQuantity = 0;
-            for (FoodItem item : cart) {
+            for (Product item : cart) {
                 totalQuantity += item.getQuantity();
             }
 
@@ -85,13 +70,43 @@
             }
         }
         private void updateTotal() {
-            int total = 0;
-            for (FoodItem item : cart) {
-                total += item.getPrice() * item.getQuantity();
+            double total = 0;
+            for (Product item : cart) {
+                total += item.getPrice().doubleValue() * item.getQuantity();
             }
             binding.tvCartTotal.setText("Tổng: " + Utils.formatCurrency(total));
         }
 
+        private void fetchProducts() {
+            productRepository.getAllProducts().enqueue(new Callback<List<Product>>() {
+                @Override
+                public void onResponse(Call<List<Product>> call, Response<List<Product>> response) {
+                    if (response.isSuccessful() && response.body() != null) {
+                        List<Product> products = response.body();
+                        OrderAdapter adapter = new OrderAdapter(products, item -> {
+                            boolean found = false;
+                            for (Product p : cart) {
+                                if (p.getId().equals(item.getId())) {
+                                    p.setQuantity(item.getQuantity());
+                                    found = true;
+                                    break;
+                                }
+                            }
+                            if (!found) {
+                                cart.add(item);
+                            }
+                            updateCartBadge();
+                            updateTotal();
+                        });
+                        binding.rvMenu.setAdapter(adapter);
+                    }
+                }
 
+                @Override
+                public void onFailure(Call<List<Product>> call, Throwable t) {
+                    // Handle failure
+                }
+            });
+        }
     }
 

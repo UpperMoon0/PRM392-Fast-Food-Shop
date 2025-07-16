@@ -13,7 +13,6 @@ import com.github.mikephil.charting.data.LineDataSet;
 import com.github.mikephil.charting.formatter.ValueFormatter;
 import com.nstut.fast_food_shop.R;
 import com.nstut.fast_food_shop.adapter.TransactionAdapter;
-import com.nstut.fast_food_shop.data.local.db.AppDatabase;
 import com.nstut.fast_food_shop.model.Order;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -28,7 +27,6 @@ public class FinanceActivity extends BaseActivity {
     private RecyclerView recyclerView;
     private TransactionAdapter transactionAdapter;
     private List<Order> orderList;
-    private AppDatabase db;
     private LineChart lineChart;
 
     @Override
@@ -37,7 +35,6 @@ public class FinanceActivity extends BaseActivity {
         setContentView(R.layout.activity_finance);
         setupHeader(findViewById(R.id.secondary_header), false);
 
-        db = AppDatabase.getInstance(this);
 
         recyclerView = findViewById(R.id.recycler_view_transactions);
         lineChart = findViewById(R.id.line_chart);
@@ -49,15 +46,11 @@ public class FinanceActivity extends BaseActivity {
     }
 
     private void loadOrders() {
-        AppDatabase.databaseWriteExecutor.execute(() -> {
-            List<Order> orders = db.orderDao().getAllOrders();
-            runOnUiThread(() -> {
-                orderList.clear();
-                orderList.addAll(orders);
-                transactionAdapter.notifyDataSetChanged();
-                setupChart(orders);
-            });
-        });
+        // TODO: Call OrderRepository to get all orders
+        // For now, just clearing the list and chart
+        orderList.clear();
+        transactionAdapter.notifyDataSetChanged();
+        setupChart(new ArrayList<>());
     }
 
     private void setupChart(List<Order> orders) {

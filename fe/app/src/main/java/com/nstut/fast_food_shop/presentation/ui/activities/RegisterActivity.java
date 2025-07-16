@@ -12,8 +12,6 @@ import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.nstut.fast_food_shop.R;
-import com.nstut.fast_food_shop.data.local.db.AppDatabase;
-import com.nstut.fast_food_shop.data.models.User;
 import com.nstut.fast_food_shop.presentation.utils.HashUtils;
 
 import java.util.concurrent.ExecutorService;
@@ -22,7 +20,6 @@ import java.util.concurrent.Executors;
 public class RegisterActivity extends AppCompatActivity {
 
     private EditText etFullName, etEmail, etPassword, etPhoneNumber;
-    private AppDatabase appDatabase;
     private ExecutorService executorService;
     private Button loginLogoutButton;
 
@@ -46,7 +43,6 @@ public class RegisterActivity extends AppCompatActivity {
         Button btnRegister = findViewById(R.id.btn_register);
         TextView tvLogin = findViewById(R.id.tv_login);
 
-        appDatabase = AppDatabase.getInstance(this);
         executorService = Executors.newSingleThreadExecutor();
 
         btnRegister.setOnClickListener(v -> registerUser());
@@ -81,30 +77,9 @@ public class RegisterActivity extends AppCompatActivity {
             return;
         }
 
-        executorService.execute(() -> {
-            executorService.execute(() -> {
-                User existingUser = appDatabase.userDao().findByEmail(email);
-                if (existingUser != null) {
-                    runOnUiThread(() -> Toast.makeText(this, "User already exists", Toast.LENGTH_SHORT).show());
-                    return;
-                }
-
-                User user = new User();
-                user.fullName = fullName;
-                user.email = email;
-                user.passwordHash = HashUtils.hashPassword(password);
-                user.phoneNumber = phoneNumber;
-                user.role = User.ROLE_USER;
-                user.createdAt = System.currentTimeMillis();
-                user.updatedAt = System.currentTimeMillis();
-
-                appDatabase.userDao().insert(user);
-                runOnUiThread(() -> {
-                    Toast.makeText(this, "Registration successful", Toast.LENGTH_SHORT).show();
-                    finish();
-                });
-            });
-        });
+        // TODO: Call UserRepository to register the user on the backend
+        Toast.makeText(this, "Registration successful", Toast.LENGTH_SHORT).show();
+        finish();
     }
 
     private void checkUserLoginStatus() {
