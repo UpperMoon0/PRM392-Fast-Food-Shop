@@ -1,7 +1,7 @@
 package com.nstut.fast_food_shop.service;
 
 import com.nstut.fast_food_shop.dto.LoginRequest;
-import com.nstut.fast_food_shop.dto.UserResponse;
+import com.nstut.fast_food_shop.dto.LoginResponse;
 import com.nstut.fast_food_shop.model.User;
 import com.nstut.fast_food_shop.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,17 +14,12 @@ public class AuthServiceImpl implements AuthService {
     private UserRepository userRepository;
 
     @Override
-    public UserResponse login(LoginRequest loginRequest) {
-        User user = userRepository.findByEmail(loginRequest.getEmail()).orElse(null);
-        if (user != null && user.getPassword().equals(loginRequest.getPassword())) {
-            UserResponse userResponse = new UserResponse();
-            userResponse.setId(String.valueOf(user.getId()));
-            userResponse.setName(user.getName());
-            userResponse.setEmail(user.getEmail());
-            userResponse.setRole(user.getRole());
-            return userResponse;
+    public LoginResponse login(LoginRequest loginRequest) {
+        User user = userRepository.findByEmail(loginRequest.getEmail()).orElseThrow(() -> new RuntimeException("User not found"));
+        if (user.getPassword().equals(loginRequest.getPassword())) {
+            return new LoginResponse(user);
         }
-        return null;
+        throw new RuntimeException("Invalid credentials");
     }
 
     @Override

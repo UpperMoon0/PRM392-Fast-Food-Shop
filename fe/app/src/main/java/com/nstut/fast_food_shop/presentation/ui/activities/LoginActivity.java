@@ -14,6 +14,7 @@ import android.util.Log;
 
 import com.google.gson.Gson;
 import com.nstut.fast_food_shop.R;
+import com.nstut.fast_food_shop.data.remote.response.LoginResponse;
 import com.nstut.fast_food_shop.data.remote.response.UserResponse;
 import com.nstut.fast_food_shop.repository.UserRepository;
 
@@ -69,16 +70,16 @@ public class LoginActivity extends BaseActivity {
             return;
         }
 
-        userRepository.login(email, password).enqueue(new Callback<UserResponse>() {
+        userRepository.login(email, password).enqueue(new Callback<LoginResponse>() {
             @Override
-            public void onResponse(Call<UserResponse> call, Response<UserResponse> response) {
+            public void onResponse(Call<LoginResponse> call, Response<LoginResponse> response) {
                 if (response.isSuccessful() && response.body() != null) {
-                    UserResponse userResponse = response.body();
+                    LoginResponse loginResponse = response.body();
                     SharedPreferences.Editor editor = sharedPreferences.edit();
-                    editor.putString("user_id", userResponse.getUser().getId());
-                    editor.putString("user_name", userResponse.getUser().getFullname());
-                    editor.putString("user_email", userResponse.getUser().getEmail());
-                    editor.putString("user_role", userResponse.getUser().getRole());
+                    editor.putString("user_id", loginResponse.getUser().getId());
+                    editor.putString("user_name", loginResponse.getUser().getFullname());
+                    editor.putString("user_email", loginResponse.getUser().getEmail());
+                    editor.putString("user_role", loginResponse.getUser().getRole());
                     editor.apply();
 
                     if (cbRememberMe.isChecked()) {
@@ -99,7 +100,7 @@ public class LoginActivity extends BaseActivity {
             }
 
             @Override
-            public void onFailure(Call<UserResponse> call, Throwable t) {
+            public void onFailure(Call<LoginResponse> call, Throwable t) {
                 Toast.makeText(LoginActivity.this, "Login failed", Toast.LENGTH_SHORT).show();
             }
         });

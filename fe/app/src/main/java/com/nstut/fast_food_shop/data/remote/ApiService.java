@@ -9,6 +9,7 @@ import com.nstut.fast_food_shop.model.User;
 import com.nstut.fast_food_shop.data.remote.request.AddItemRequest;
 import com.nstut.fast_food_shop.data.remote.request.LoginRequest;
 import com.nstut.fast_food_shop.data.remote.request.UpdateItemRequest;
+import com.nstut.fast_food_shop.data.remote.response.LoginResponse;
 import com.nstut.fast_food_shop.data.remote.response.UserResponse;
 
 
@@ -32,7 +33,7 @@ public interface ApiService {
     Call<List<Product>> searchProducts(@Query("keyword") String keyword, @Query("categoryId") String categoryId);
 
     @POST("api/auth/login")
-    Call<UserResponse> login(@Body LoginRequest loginRequest);
+    Call<LoginResponse> login(@Body LoginRequest loginRequest);
 
     @POST("api/auth/register")
     Call<User> register(@Body User user);

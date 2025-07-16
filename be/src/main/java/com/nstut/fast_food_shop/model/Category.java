@@ -1,5 +1,6 @@
 package com.nstut.fast_food_shop.model;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -19,4 +20,6 @@ public class Category {
 
     private String name;
     private String description;
+    @Column(name = "image_url")
+    private String imageUrl;
 }
