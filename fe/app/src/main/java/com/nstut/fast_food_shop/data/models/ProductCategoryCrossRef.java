@@ -10,7 +10,8 @@ import androidx.room.Index;
         foreignKeys = {
                 @ForeignKey(entity = ProductRoom.class,
                         parentColumns = "productId",
-                        childColumns = "productId"),
+                        childColumns = "productId",
+                        onDelete = ForeignKey.CASCADE),
                 @ForeignKey(entity = Category.class,
                         parentColumns = "id",
                         childColumns = "categoryId")

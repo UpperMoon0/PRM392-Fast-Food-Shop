@@ -90,7 +90,7 @@ public class AdminProductListActivity extends BaseActivity implements ProductAda
     @Override
     public void onDeleteClick(ProductRoom product) {
         executorService.execute(() -> {
-            appDatabase.productDao().delete(product);
+            appDatabase.productDao().deleteProduct(product);
             loadData();
         });
     }
