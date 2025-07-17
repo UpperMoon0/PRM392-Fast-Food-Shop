@@ -126,8 +126,9 @@ public class AddEditCategoryActivity extends BaseActivity {
                 currentCategory = new Category(name, description, imageUrl);
                 appDatabase.categoryDao().insert(currentCategory);
             } else {
-                currentCategory = new Category(name, description, imageUrl);
-                currentCategory.setId(categoryId);
+                currentCategory.setName(name);
+                currentCategory.setDescription(description);
+                currentCategory.setImageUrl(imageUrl);
                 appDatabase.categoryDao().update(currentCategory);
             }
             runOnUiThread(() -> {
