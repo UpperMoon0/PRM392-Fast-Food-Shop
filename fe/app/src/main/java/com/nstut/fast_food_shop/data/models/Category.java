@@ -41,4 +41,16 @@ public class Category implements Serializable {
     public String getImageUrl() {
         return imageUrl;
     }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public void setImageUrl(String imageUrl) {
+        this.imageUrl = imageUrl;
+    }
 }

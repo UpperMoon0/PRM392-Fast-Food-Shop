@@ -97,7 +97,7 @@ public class AddEditProductActivity extends BaseActivity {
     }
 
     private void loadProductDetails() {
-        productDao.getProductWithCategories(Integer.parseInt(productId)).observe(this, product -> {
+        productDao.getProductWithCategories(productId).observe(this, product -> {
             currentProduct = product;
             if (currentProduct != null) {
                 edtName.setText(currentProduct.product.getName());
