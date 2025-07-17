@@ -34,7 +34,7 @@ public class AddEditProductActivity extends BaseActivity {
     private Button btnChooseImage, btnSave;
     private Uri selectedImageUri;
     private ProductDao productDao;
-    private String productId;
+    private int productId;
     private ProductWithCategories currentProduct;
     private String uploadedImageUrl = "";
     private List<Category> categoryList;
@@ -59,8 +59,8 @@ public class AddEditProductActivity extends BaseActivity {
         btnSave = findViewById(R.id.btnSave);
 
         productDao = AppDatabase.getInstance(this).productDao();
-        productId = getIntent().getStringExtra("product_id");
-        isEditMode = productId != null;
+        productId = getIntent().getIntExtra("product_id",-1);
+        isEditMode = productId != -1;
 
         setupRecyclerView();
         loadCategories();
