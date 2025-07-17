@@ -167,17 +167,18 @@ public class AddEditProductActivity extends BaseActivity {
 
     private void updateProduct(String name, String description, double price, String imageUrl) {
         Executors.newSingleThreadExecutor().execute(() -> {
-            currentProduct.product.setName(name);
-            currentProduct.product.setDescription(description);
-            currentProduct.product.setPrice(price);
+            ProductRoom productToUpdate = currentProduct.product;
+            productToUpdate.setName(name);
+            productToUpdate.setDescription(description);
+            productToUpdate.setPrice(price);
             if (imageUrl != null) {
-                currentProduct.product.setImageUrl(imageUrl);
+                productToUpdate.setImageUrl(imageUrl);
             }
             String now = java.time.LocalDateTime.now().toString();
-            currentProduct.product.setUpdatedAt(now);
+            productToUpdate.setUpdatedAt(now);
 
             List<Integer> selectedCategoryIds = categoryAdapter.getSelectedCategoryIds();
-            productDao.updateProductWithCategories(currentProduct.product, selectedCategoryIds);
+            productDao.updateProductWithCategories(productToUpdate, selectedCategoryIds);
 
             runOnUiThread(() -> {
                 Toast.makeText(this, "Product updated", Toast.LENGTH_SHORT).show();

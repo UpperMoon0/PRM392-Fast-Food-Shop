@@ -126,10 +126,11 @@ public class AddEditCategoryActivity extends BaseActivity {
                 currentCategory = new Category(name, description, imageUrl);
                 appDatabase.categoryDao().insert(currentCategory);
             } else {
-                currentCategory.setName(name);
-                currentCategory.setDescription(description);
-                currentCategory.setImageUrl(imageUrl);
-                appDatabase.categoryDao().update(currentCategory);
+                Category categoryToUpdate = currentCategory;
+                categoryToUpdate.setName(name);
+                categoryToUpdate.setDescription(description);
+                categoryToUpdate.setImageUrl(imageUrl);
+                appDatabase.categoryDao().update(categoryToUpdate);
             }
             runOnUiThread(() -> {
                 Toast.makeText(this, "Category saved", Toast.LENGTH_SHORT).show();
