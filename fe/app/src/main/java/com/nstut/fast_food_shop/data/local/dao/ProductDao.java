@@ -89,7 +89,6 @@ public interface ProductDao {
 
     @Transaction
     public default void deleteProduct(ProductRoom product) {
-        deleteProductCategoryCrossRef(product.getId());
         delete(product);
     }
 }

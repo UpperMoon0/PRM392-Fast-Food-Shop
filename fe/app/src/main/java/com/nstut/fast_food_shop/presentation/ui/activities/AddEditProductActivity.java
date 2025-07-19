@@ -34,7 +34,7 @@ public class AddEditProductActivity extends BaseActivity {
     private Button btnChooseImage, btnSave;
     private Uri selectedImageUri;
     private ProductDao productDao;
-    private String productId;
+    private int productId;
     private ProductWithCategories currentProduct;
     private String uploadedImageUrl = "";
     private List<Category> categoryList;
@@ -59,8 +59,8 @@ public class AddEditProductActivity extends BaseActivity {
         btnSave = findViewById(R.id.btnSave);
 
         productDao = AppDatabase.getInstance(this).productDao();
-        productId = getIntent().getStringExtra("product_id");
-        isEditMode = productId != null;
+        productId = getIntent().getIntExtra("product_id",-1);
+        isEditMode = productId != -1;
 
         setupRecyclerView();
         loadCategories();
@@ -97,7 +97,7 @@ public class AddEditProductActivity extends BaseActivity {
     }
 
     private void loadProductDetails() {
-        productDao.getProductWithCategories(Integer.parseInt(productId)).observe(this, product -> {
+        productDao.getProductWithCategories(productId).observe(this, product -> {
             currentProduct = product;
             if (currentProduct != null) {
                 edtName.setText(currentProduct.product.getName());
@@ -167,17 +167,18 @@ public class AddEditProductActivity extends BaseActivity {
 
     private void updateProduct(String name, String description, double price, String imageUrl) {
         Executors.newSingleThreadExecutor().execute(() -> {
-            currentProduct.product.setName(name);
-            currentProduct.product.setDescription(description);
-            currentProduct.product.setPrice(price);
+            ProductRoom productToUpdate = currentProduct.product;
+            productToUpdate.setName(name);
+            productToUpdate.setDescription(description);
+            productToUpdate.setPrice(price);
             if (imageUrl != null) {
-                currentProduct.product.setImageUrl(imageUrl);
+                productToUpdate.setImageUrl(imageUrl);
             }
             String now = java.time.LocalDateTime.now().toString();
-            currentProduct.product.setUpdatedAt(now);
+            productToUpdate.setUpdatedAt(now);
 
             List<Integer> selectedCategoryIds = categoryAdapter.getSelectedCategoryIds();
-            productDao.updateProductWithCategories(currentProduct.product, selectedCategoryIds);
+            productDao.updateProductWithCategories(productToUpdate, selectedCategoryIds);
 
             runOnUiThread(() -> {
                 Toast.makeText(this, "Product updated", Toast.LENGTH_SHORT).show();

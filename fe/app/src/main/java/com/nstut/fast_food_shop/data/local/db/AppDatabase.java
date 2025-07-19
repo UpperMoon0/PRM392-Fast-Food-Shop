@@ -22,7 +22,7 @@ import com.nstut.fast_food_shop.model.Order;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-@Database(entities = {ProductRoom.class, User.class, Category.class, ProductCategoryCrossRef.class, Order.class}, version = 13, exportSchema = false)
+@Database(entities = {ProductRoom.class, User.class, Category.class, ProductCategoryCrossRef.class, Order.class}, version = 14, exportSchema = false)
 @TypeConverters({Converters.class})
 public abstract class AppDatabase extends RoomDatabase {
     private static volatile AppDatabase INSTANCE;
